@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-11-18T07:05:29.672Z",
+  "thinkingLevel": "low",
+  "elapsedMs": 11683,
+  "listings": [
+    {
+      "title": "DeeprBetter Inflatable Duck Pool Float with Lights, 42\" Large Animal Swim Tube Ring Pool Float",
+      "sourceUrl": "https://www.amazon.com/DeeprBetter-Inflatable-Powered-Inflatables-Floaties/dp/B0BXH1H3YB",
+      "imageUrl": "https://m.media-amazon.com/images/I/71pQ8jeO4sL._AC_SX679_.jpg",
+      "location": "United States",
+      "price": 26.85,
+      "currency": "USD",
+      "priceUnit": "total",
+      "status": "listed",
+      "description": "42-inch large inflatable yellow duck pool float with solar-powered lights, fast valve, and 0.3mm PVC material, designed for adults.",
+      "highlights": [
+        "42\" large inflatable yellow duck",
+        "Solar-powered auto-illuminating lights",
+        "0.3mm extra-thick PVC material",
+        "Fast valve for 1-2 minute inflation"
+      ],
+      "caveats": [
+        "Product images may be illustrative",
+        "Free shipping requires Amazon Prime or orders over $35"
+      ],
+      "evidence": "Inflatable Duck Pool Float with Lights, Solar Pool Inflatables Duck Floaties for Adults, 42\" Large Animal Swim Tube Ring Pool Float with Fast Valve Summer Beach Pool Lounge 1pk",
+      "priceEvidence": "$26.85",
+      "statusEvidence": "In Stock",
+      "confidence": "high",
+      "matchReason": "Matches giant inflatable yellow duck pool float for sale in the United States.",
+      "id": "6fb3b9b2-6d74-42d8-8372-49ede4018364",
+      "source": "amazon.com",
+      "retrievedAt": "2026-11-18T07:01:39.005Z"
+    }
+  ]
+}

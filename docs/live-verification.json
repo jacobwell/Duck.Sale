@@ -1,0 +1,225 @@
+{
+  "checkedAt": "2026-11-18T06:51:10.476Z",
+  "run": {
+    "id": "487244bc-410c-4c15-bef9-ca4fc1dd8c69",
+    "status": "partial",
+    "listings": [
+      {
+        "id": "df4e7ad0-91a4-4d38-a6a0-83020a637482",
+        "price": null,
+        "title": "1983 Catalina 30 Boat for Sale in Long Beach",
+        "source": "rightboat.com",
+        "status": "listed",
+        "caveats": [
+          "Images are illustrative broker/seller photos; hull, rigging, and mechanical condition are unverified",
+          "Engine rebuild hours and recent upgrades are unverified owner/broker claims",
+          "Confirm current availability, slip status, and any broker/closing fees directly with Shoreline Yacht Group",
+          "Two other supplied source URLs returned HTTP 429 errors and could not be extracted"
+        ],
+        "currency": "USD",
+        "evidence": "1983 Catalina 30 Boat for Sale in Long Beach",
+        "imageUrl": "https://www.rightboat.com/media/6UmOVMqGagY7VUGUFhAa1g/rs:fill:1280:960/g:sm/plain/boat_images/image_32075214/7d476dc35e8340e39ec7caf6523665d9e39720c90fd54e4a823e3f34b737516f.webp",
+        "location": "Long Beach, CA, United States",
+        "priceUnit": "total",
+        "sourceUrl": "https://www.rightboat.com/boats-for-sale/catalina/30/rb604761",
+        "confidence": "high",
+        "highlights": [
+          "Used 1983 Catalina 30 (30.0 ft LOA, 10.1 ft beam, 5.3 ft draft) in Long Beach, CA",
+          "Listed at $7,500 after price reductions from $17,900",
+          "Reportedly rebuilt engine (<50 hours) plus new batteries, charger, and tanks",
+          "Fin keel fiberglass cruising sailboat with dodger frame"
+        ],
+        "description": "Used 1983 Catalina 30 fiberglass cruising sailboat (30.0 ft LOA, 10.1 ft beam, 5.3 ft fin keel draft) listed through Shoreline Yacht Group in Long Beach, California. The listing states the owner relocated to Arizona and is motivated to sell, and describes the boat as ready to sail with recent upgrades in the last two years including a rebuilt engine (<50 hours), new batteries, charger, gas tank, water heater, fresh water pump, macerator, and a dodger frame.",
+        "matchReason": "Matches used Catalina 30 sailboat for sale in California (Long Beach) at $7,500 total purchase price, well under the $35,000 budget.",
+        "retrievedAt": "2026-11-18T06:49:07.120Z",
+        "priceEvidence": null,
+        "statusEvidence": "Owner relocated to Arizona and says \"Sell It\"! No reasonable offer refused. Needs it sold!"
+      },
+      {
+        "id": "a33238d2-c3cb-4618-8b21-581795b8d4f3",
+        "price": 12000,
+        "title": "1982 Catalina 30",
+        "source": "boattrader.com",
+        "status": "listed",
+        "caveats": [
+          "Private seller listing; 2023 survey valuation ($22,750), upgrades, and engine hours are unverified seller claims",
+          "Listing photos are illustrative and cannot confirm hull, rigging, or mechanical condition",
+          "Availability and slip transferability in Alamitos Bay are not guaranteed"
+        ],
+        "currency": "USD",
+        "evidence": "La Sirena has been well cared for and has had several important recent upgrades and maintenance items completed. She is a great opportunity for someone looking for a classic Catalina 30 that is ready to enjoy.",
+        "imageUrl": "https://images.boattrader.com/resize/1/9/95/1982-catalina-30-sail-10320995-20260911153540511-0.jpg?w=429&ratio=default&t=1792802095000&format=webp&exact",
+        "location": "Long Beach, CA 90803",
+        "priceUnit": "total",
+        "sourceUrl": "https://www.boattrader.com/boat/1982-catalina-30-10320995/",
+        "confidence": "high",
+        "highlights": [
+          "Universal M25 21hp diesel inboard with 355 hours",
+          "2024 bottom paint and new retrofit windows",
+          "Raymarine ST60+ depth/wind displays and auto-pilot",
+          "Negotiable on price; taking offers"
+        ],
+        "description": "Used 1982 Catalina 30 fiberglass cruiser (\"La Sirena\") offered by a private seller in Long Beach, CA (Alamitos Bay). Equipped with a 21 hp Universal M25 diesel inboard engine (355 hours) and recent updates including 2024 bottom paint, retrofit windows, Raymarine electronics, and refinished interior and exterior woodwork.",
+        "matchReason": "Used 1982 Catalina 30 sailboat for sale in Long Beach, California for $12,000, well under the $35,000 budget.",
+        "retrievedAt": "2026-11-18T06:49:52.770Z",
+        "priceEvidence": "$12,000",
+        "statusEvidence": "Taking offers"
+      }
+    ],
+    "workers": [
+      {
+        "id": "1",
+        "name": "Core Listing Search",
+        "query": "Catalina 30 for sale California",
+        "status": "failed",
+        "cleanup": "stopped",
+        "message": "Worker failed. Check Boat/Context/Gateway access or retry this search.",
+        "sandboxId": "bx_mp9rmwpm"
+      },
+      {
+        "id": "2",
+        "name": "Yacht Broker Search",
+        "count": 1,
+        "query": "Catalina 30 sailboat yacht broker California",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Some pages could only be read partially.",
+        "sandboxId": "bx_q6gb76pp"
+      },
+      {
+        "id": "3",
+        "name": "Owner Direct Search",
+        "count": 1,
+        "query": "Catalina 30 sailboat by owner California",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "5 sources inspected",
+        "sandboxId": "bx_rvy2s77w"
+      }
+    ],
+    "warning": "1 of 3 workers failed. Any results shown are from the workers that succeeded."
+  },
+  "generations": [
+    {
+      "kind": "plan",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 1831,
+          "promptTokenCount": 477,
+          "thoughtsTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 477
+            }
+          ],
+          "candidatesTokenCount": 73,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 73
+            }
+          ]
+        },
+        "inputTokens": 477,
+        "totalTokens": 1831,
+        "outputTokens": 1354,
+        "inputTokenDetails": {
+          "noCacheTokens": 477,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 73,
+          "reasoningTokens": 1281
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 8635,
+          "promptTokenCount": 5608,
+          "thoughtsTokenCount": 2426,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 5608
+            }
+          ],
+          "candidatesTokenCount": 601,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 601
+            }
+          ]
+        },
+        "inputTokens": 5608,
+        "totalTokens": 8635,
+        "outputTokens": 3027,
+        "inputTokenDetails": {
+          "noCacheTokens": 5608,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 601,
+          "reasoningTokens": 2426
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "failed",
+      "usage": null,
+      "error": "AI_NoObjectGeneratedError: generation or persistence failed; inspect provider dashboard with this timestamp."
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 44485,
+          "promptTokenCount": 39469,
+          "thoughtsTokenCount": 4036,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 39469
+            }
+          ],
+          "candidatesTokenCount": 980,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 980
+            }
+          ]
+        },
+        "inputTokens": 39469,
+        "totalTokens": 44485,
+        "outputTokens": 5016,
+        "inputTokenDetails": {
+          "noCacheTokens": 39469,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 980,
+          "reasoningTokens": 4036
+        }
+      },
+      "error": null
+    }
+  ]
+}

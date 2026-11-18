@@ -1,0 +1,18 @@
+import type { Metadata } from "next";
+import "./globals.css";
+export const metadata: Metadata = {
+  title: "Boatduck — Find your next whatever.",
+  description:
+    "A little fleet of search agents. A whole internet of possibilities. Find boats and other hard-to-find things with source-backed results.",
+};
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}

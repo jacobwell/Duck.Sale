@@ -1,0 +1,185 @@
+{
+  "checkedAt": "2026-11-18T06:56:07.130Z",
+  "run": {
+    "id": "25b6c68c-fe09-4190-aa76-5692957a8802",
+    "status": "partial",
+    "listings": [
+      {
+        "id": "325953e0-48c6-47ef-a870-6325c53e1d4a",
+        "price": null,
+        "title": "NVIDIA DGX Spark Founders Edition (940-54242-0006-000) - NADDOD",
+        "source": "naddod.com",
+        "status": "unknown",
+        "caveats": [
+          "Captured page text truncated before product body; price and stock status unverified",
+          "Specific US stock location is not confirmed in captured text",
+          "No product image captured; supplied images were site logos and unrelated transceivers"
+        ],
+        "currency": null,
+        "evidence": "With the NVIDIA AI software stack preinstalled and 128 GB of memory, developers can prototype, fine-tune, and inference the latest generation of reasoning AI",
+        "imageUrl": null,
+        "location": null,
+        "priceUnit": "unknown",
+        "sourceUrl": "https://www.naddod.com/products/103029.html?srsltid=AYCX9vKnURy9_gNVbsC_d3aoryCSghxhy97FVJQQtIsM8uLIBeJnB1Hh",
+        "confidence": "low",
+        "highlights": [
+          "NVIDIA DGX Spark Founders Edition (940-54242-0006-000) system",
+          "128 GB memory stated in snippet",
+          "NVIDIA AI software stack preinstalled",
+          "NADDOD US support and worldwide shipping links present"
+        ],
+        "description": "Product page on NADDOD for the NVIDIA DGX Spark Founders Edition (part number 940-54242-0006-000) with 128 GB of memory and preinstalled NVIDIA AI software stack. Page text was truncated in the navigation header, so pricing and live stock details are not visible in the captured evidence.",
+        "matchReason": "Exact product URL for an NVIDIA DGX Spark Founders Edition with 128 GB memory for purchase, though price and availability could not be verified from truncated page text.",
+        "retrievedAt": "2026-11-18T06:53:48.855Z",
+        "priceEvidence": null,
+        "statusEvidence": null
+      },
+      {
+        "id": "708299c9-bbc2-4b05-8617-189657994697",
+        "price": null,
+        "title": "NVIDIA DGX Spark; 20 core Arm, 10 Cortex ... - Micro Center",
+        "source": "microcenter.com",
+        "status": "unknown",
+        "caveats": [
+          "Page text unavailable at retrieval; price and stock status could not be verified",
+          "Store-level and US shipping availability require checking the page directly",
+          "No product images captured",
+          "Full-page extraction was incomplete."
+        ],
+        "currency": null,
+        "evidence": "With 128 GB of unified system memory, fine-tune models up to 70 billion parameters to customize AI models and solutions for specific needs and use cases.",
+        "imageUrl": null,
+        "location": null,
+        "priceUnit": "unknown",
+        "sourceUrl": "https://www.microcenter.com/product/699008/nvidia-dgx-spark",
+        "confidence": "low",
+        "highlights": [
+          "NVIDIA DGX Spark system listing on Micro Center",
+          "128 GB of unified system memory stated in snippet",
+          "20 core Arm architecture referenced in title"
+        ],
+        "description": "Product page on Micro Center for the NVIDIA DGX Spark featuring 128 GB of unified system memory. Full page text was unavailable at retrieval time, so current price, store availability, and full specifications could not be extracted.",
+        "matchReason": "Exact product URL for an NVIDIA DGX Spark 128 GB computer on Micro Center matching buy intent, though price and availability are missing due to unavailable page text.",
+        "retrievedAt": "2026-11-18T06:54:18.083Z",
+        "priceEvidence": null,
+        "statusEvidence": null
+      }
+    ],
+    "workers": [
+      {
+        "id": "1",
+        "name": "Core United States Listing Search",
+        "query": "NVIDIA DGX Spark 128GB for sale United States",
+        "status": "failed",
+        "cleanup": "stopped",
+        "message": "Worker failed. Check Boat/Context/Gateway access or retry this search.",
+        "sandboxId": "bx_ynd2m7em"
+      },
+      {
+        "id": "2",
+        "name": "Authorized Dealer and Specialist Search",
+        "count": 2,
+        "query": "NVIDIA DGX Spark 128GB authorized dealer US",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Some pages could only be read partially.",
+        "sandboxId": "bx_j5n68qtp"
+      },
+      {
+        "id": "3",
+        "name": "Alternative Marketplace Listing Search",
+        "query": "NVIDIA DGX Spark 128GB marketplace listing USA",
+        "status": "failed",
+        "cleanup": "stopped",
+        "message": "Context search returned HTTP 429. The provider could not complete this request.",
+        "sandboxId": "bx_qfqmuz53"
+      }
+    ],
+    "warning": "2 of 3 workers failed. Any results shown are from the workers that succeeded."
+  },
+  "generations": [
+    {
+      "kind": "plan",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 1134,
+          "promptTokenCount": 471,
+          "thoughtsTokenCount": 575,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 471
+            }
+          ],
+          "candidatesTokenCount": 88,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 88
+            }
+          ]
+        },
+        "inputTokens": 471,
+        "totalTokens": 1134,
+        "outputTokens": 663,
+        "inputTokenDetails": {
+          "noCacheTokens": 471,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 88,
+          "reasoningTokens": 575
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 16590,
+          "promptTokenCount": 13343,
+          "thoughtsTokenCount": 2554,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 13343
+            }
+          ],
+          "candidatesTokenCount": 693,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 693
+            }
+          ]
+        },
+        "inputTokens": 13343,
+        "totalTokens": 16590,
+        "outputTokens": 3247,
+        "inputTokenDetails": {
+          "noCacheTokens": 13343,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 693,
+          "reasoningTokens": 2554
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "failed",
+      "usage": null,
+      "error": "TimeoutError: generation or persistence failed; inspect provider dashboard with this timestamp."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "result": {
+    "_meta": {
+      "mimeType": "text/plain"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"results\":[{\"url\":\"https://status.context.dev/\",\"title\":\"Context.dev status\",\"relevance\":\"low\",\"highlights\":[\"[Some services are down]\\n\\napi.context.dev/v1/web/scrape/markdown\\n\\n\u2026\\n\\napi.context.dev/v1/web/scrape/html\\n\\n\u2026\\n\\napi.context.dev/v1/web/scrape/images\\n\\n\u2026\\n\\napi.context.dev/v1/web/scrape/sitemap\\n\\napi.context.dev/v1/web/crawl\\n\\n\u2026\\n\\napi.context.dev/v1/brand/retrieve-by-email\\n\\n\u2026\\n\\napi.context.dev/v1/brand/retrieve-simplified\\n\\n\u2026\\n\\napi.context.dev/v1/brand/prefetch-by-email\"]}],\"query\":\"What's new on context.dev this week?\",\"request_id\":\"522a15f6-8a65-4976-b26e-6abc7d54f35a\"}"
+      }
+    ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+}

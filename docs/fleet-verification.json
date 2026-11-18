@@ -1,0 +1,329 @@
+{
+  "checkedAt": "2026-11-18T07:04:02.431Z",
+  "run": {
+    "id": "e4dcabe2-b704-4037-8676-610134fa4478",
+    "status": "partial",
+    "listings": [
+      {
+        "id": "24d64c61-1caf-4fc8-bd9c-62d37c8fa530",
+        "price": 34.99,
+        "title": "Hungdao 1 Pack 4 Feet Giant Inflatable Duck Pool Float, Yellow",
+        "source": "amazon.com",
+        "status": "listed",
+        "caveats": [
+          "No product image URL was available in the supplied page evidence.",
+          "Seller location is not explicitly stated; listing shows US fulfillment and delivery to New York 10001.",
+          "Specs list Product Dimensions as 9.45\"L x 8.66\"W (likely folded/packaged) vs. 4ft inflated size.",
+          "Age Range lists Child in specs while description states ideal for adults and youngsters."
+        ],
+        "currency": "USD",
+        "evidence": "Duck Inflatable Pool Float Swimming Inflatable Raft for Adults Summer Beach Party Decors Supplies ... Giant Inflatable Rubber Ducky Floatie, Swim Tube for Summer Beach Party, Birthday Carnival Supplies Decoration",
+        "imageUrl": null,
+        "location": "United States",
+        "workerId": "3",
+        "priceUnit": "total",
+        "sourceUrl": "https://www.amazon.com/Hungdao-Inflatable-Rubber-Swimming-Decoration/dp/B0CNCXVPRF",
+        "confidence": "high",
+        "highlights": [
+          "Approximately 4ft long, 44in high, and 42in wide",
+          "Yellow PVC plastic with quick inflation valve",
+          "Ships from Amazon, sold by Sheusualgirl",
+          "Free return option available via Amazon US"
+        ],
+        "description": "Hungdao 1 Pack 4 Feet Giant Inflatable Duck Pool Float in yellow PVC plastic. Measures approximately 4 feet in length, 44 inches in height, and 42 inches in width, featuring a quick inflation valve for pool, beach, and party use. Ships from Amazon and sold by third-party seller Sheusualgirl.",
+        "matchReason": "Directly matches the request to buy a giant inflatable yellow duck pool float in the United States.",
+        "retrievedAt": "2026-11-18T07:02:22.788Z",
+        "priceEvidence": "$34.99",
+        "statusEvidence": "In Stock"
+      }
+    ],
+    "workers": [
+      {
+        "id": "1",
+        "name": "Core Item Search",
+        "calls": [
+          {
+            "id": "f87d047c-ba8d-4d7b-97ce-7fba6090d7db",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T07:01:23.757Z",
+            "finishedAt": "2026-11-18T07:01:25.267Z",
+            "statusCode": 200
+          },
+          {
+            "id": "6b7e4c9a-e95a-4d2b-9434-3d4f2e5c711a",
+            "status": "complete",
+            "target": "www.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:01:25.277Z",
+            "finishedAt": "2026-11-18T07:01:39.005Z",
+            "statusCode": 200
+          },
+          {
+            "id": "274e9d08-5aaf-48e5-a045-39a7a0c8c096",
+            "status": "complete",
+            "target": "us.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:01:39.432Z",
+            "finishedAt": "2026-11-18T07:01:51.944Z",
+            "statusCode": 200
+          },
+          {
+            "id": "ad3d4b51-3c07-481a-9e32-2b1c0bcf46cd",
+            "status": "complete",
+            "target": "www.ebay.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:01:52.352Z",
+            "finishedAt": "2026-11-18T07:02:07.930Z",
+            "statusCode": 200
+          },
+          {
+            "id": "32febf29-7a21-4696-8d23-c1076719fdf9",
+            "status": "complete",
+            "target": "www.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:02:08.333Z",
+            "finishedAt": "2026-11-18T07:02:14.312Z",
+            "statusCode": 200
+          },
+          {
+            "id": "b01d465b-3dda-4839-a1a6-fb0353b9fb2f",
+            "status": "complete",
+            "target": "www.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:02:14.313Z",
+            "finishedAt": "2026-11-18T07:02:32.096Z",
+            "statusCode": 200
+          },
+          {
+            "id": "336df193-e5ae-4c29-b831-dd26bb135000",
+            "status": "failed",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T07:03:01.692Z",
+            "finishedAt": "2026-11-18T07:04:01.988Z"
+          }
+        ],
+        "query": "duck pool float for sale United States",
+        "status": "failed",
+        "cleanup": "stopped",
+        "message": "Worker failed. Check Boat/Context/Gateway access or retry this search.",
+        "sandboxId": "bx_4pc8r6x7"
+      },
+      {
+        "id": "2",
+        "name": "Specialist Pool Supply",
+        "calls": [
+          {
+            "id": "14bfcb2c-b3f7-488a-9789-af0da7b4e30c",
+            "status": "failed",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T07:01:26.230Z",
+            "finishedAt": "2026-11-18T07:01:26.561Z",
+            "statusCode": 429
+          },
+          {
+            "id": "da9e490a-52b5-4ea1-b48c-b20aaf0d25b3",
+            "status": "failed",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T07:01:27.562Z",
+            "finishedAt": "2026-11-18T07:01:27.705Z",
+            "statusCode": 429
+          },
+          {
+            "id": "34eff278-52a4-49c6-a450-7f6722785362",
+            "status": "failed",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T07:01:28.706Z",
+            "finishedAt": "2026-11-18T07:01:28.844Z",
+            "statusCode": 429
+          },
+          {
+            "id": "b03de1bc-6f5c-4490-822f-7c75cff0ce65",
+            "status": "failed",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T07:01:29.845Z",
+            "finishedAt": "2026-11-18T07:01:29.988Z",
+            "statusCode": 429
+          }
+        ],
+        "query": "giant inflatable duck float pool supply store",
+        "status": "failed",
+        "cleanup": "stopped",
+        "message": "Context search returned HTTP 429. The provider could not complete this request.",
+        "sandboxId": "bx_prsscxvg"
+      },
+      {
+        "id": "3",
+        "name": "Local and Alternative",
+        "calls": [
+          {
+            "id": "a18bdc9e-3e60-40dd-a742-33a30f35a22f",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T07:01:23.361Z",
+            "finishedAt": "2026-11-18T07:01:24.651Z",
+            "statusCode": 200
+          },
+          {
+            "id": "4e7c4da3-4043-4b10-b32a-f066b7088990",
+            "status": "complete",
+            "target": "www.ebay.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:01:24.662Z",
+            "finishedAt": "2026-11-18T07:01:52.583Z",
+            "statusCode": 200
+          },
+          {
+            "id": "3aafed19-5dad-4b43-a54b-887953dccda8",
+            "status": "complete",
+            "target": "www.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:01:52.990Z",
+            "finishedAt": "2026-11-18T07:02:22.788Z",
+            "statusCode": 200
+          },
+          {
+            "id": "5c650b27-cff3-4bad-9ae1-958373764927",
+            "status": "complete",
+            "target": "www.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:02:23.196Z",
+            "finishedAt": "2026-11-18T07:02:31.420Z",
+            "statusCode": 200
+          },
+          {
+            "id": "8134e0c8-d6cb-475b-b9c3-8eccaf6ebd26",
+            "status": "complete",
+            "target": "www.amazon.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T07:02:31.422Z",
+            "finishedAt": "2026-11-18T07:02:59.362Z",
+            "statusCode": 200
+          },
+          {
+            "id": "3cfab802-802b-4d43-b7f1-dc07dd7747f6",
+            "status": "complete",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T07:03:28.643Z",
+            "finishedAt": "2026-11-18T07:03:56.532Z"
+          }
+        ],
+        "count": 1,
+        "query": "giant yellow duck pool float local pickup",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Some pages could only be read partially.",
+        "sandboxId": "bx_xzjueqnt"
+      }
+    ],
+    "warning": "2 of 3 workers failed. Any results shown are from the workers that succeeded."
+  },
+  "generations": [
+    {
+      "kind": "plan",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 1229,
+          "promptTokenCount": 467,
+          "thoughtsTokenCount": 695,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 467
+            }
+          ],
+          "candidatesTokenCount": 67,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 67
+            }
+          ]
+        },
+        "inputTokens": 467,
+        "totalTokens": 1229,
+        "outputTokens": 762,
+        "inputTokenDetails": {
+          "noCacheTokens": 467,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 67,
+          "reasoningTokens": 695
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 26258,
+          "promptTokenCount": 24311,
+          "thoughtsTokenCount": 1538,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 24311
+            }
+          ],
+          "candidatesTokenCount": 409,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 409
+            }
+          ]
+        },
+        "inputTokens": 24311,
+        "totalTokens": 26258,
+        "outputTokens": 1947,
+        "inputTokenDetails": {
+          "noCacheTokens": 24311,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 409,
+          "reasoningTokens": 1538
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "failed",
+      "usage": null,
+      "error": "TimeoutError: generation or persistence failed; inspect provider dashboard with this timestamp."
+    }
+  ]
+}

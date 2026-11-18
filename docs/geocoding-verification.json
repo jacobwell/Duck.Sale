@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-11-18T07:05:30.880Z",
+  "points": [
+    {
+      "title": "1983 Catalina 30 Boat for Sale in Long Beach",
+      "location": "Long Beach, CA, United States",
+      "locationPoint": {
+        "latitude": 33.76696,
+        "longitude": -118.18923,
+        "label": "Long Beach, California, United States",
+        "provider": "Open-Meteo / GeoNames"
+      }
+    },
+    {
+      "title": "1982 Catalina 30",
+      "location": "Long Beach, CA 90803",
+      "locationPoint": {
+        "latitude": 33.76696,
+        "longitude": -118.18923,
+        "label": "Long Beach, California, United States",
+        "provider": "Open-Meteo / GeoNames"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-11-18T07:16:30.482660+00:00",
+  "deploymentId": "dpl_6FEmaLw1zT1qvgXSmNwVXckUL8hv",
+  "url": "https://boatduck.vercel.app",
+  "recordedDemo": true,
+  "liveSearchDuringDemo": false,
+  "listings": 20,
+  "uniqueSourceUrls": 20,
+  "sourcePhotoHttp200": 20,
+  "cityPoints": 20,
+  "routes": {
+    "Pacific": 6,
+    "Atlantic": 8,
+    "inland": 6
+  },
+  "browserChecks": [
+    "progressive reveal to 20",
+    "pause and resume",
+    "replay",
+    "show all",
+    "zoom",
+    "drag",
+    "reset",
+    "inland source detail and photo"
+  ],
+  "freshConsoleErrors": 0,
+  "staticChecks": [
+    "eslint passed",
+    "tsc passed",
+    "isolated production build passed"
+  ],
+  "authGuardStatus": 401
+}
