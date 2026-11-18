@@ -157,7 +157,15 @@ export async function executeSearch(
               /^Context (search|scrape) returned HTTP \d+$/.test(error.message)
                 ? error.message +
                   ". The provider could not complete this request."
-                : "Worker failed. Check Boat/Context/Gateway access or retry this search.",
+                : error instanceof Error &&
+                    /^Context (queue exceeded|request time budget)/.test(
+                      error.message,
+                    )
+                  ? "The shared Context queue reached this worker’s time limit. Try a narrower search or retry shortly."
+                  : error instanceof Error &&
+                      error.message === "Context request queue unavailable"
+                    ? "The shared Context queue is temporarily unavailable. Retry shortly."
+                    : "Worker failed. Check Boat/Context/Gateway access or retry this search.",
           });
         }
       }),

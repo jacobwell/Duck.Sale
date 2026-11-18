@@ -1,0 +1,351 @@
+{
+  "checkedAt": "2026-11-18T17:01:48.891Z",
+  "run": {
+    "id": "4828bdba-1170-42da-90f1-2e062aa28303",
+    "status": "partial",
+    "listings": [
+      {
+        "id": "d98a5d20-eeef-499e-83f5-ce28c9a99110",
+        "price": null,
+        "title": "CATALINA 30 SAILBOAT- FREE",
+        "source": "facebook.com",
+        "status": "unknown",
+        "caveats": [
+          "Listing details are behind a Facebook login wall",
+          "Title states FREE while description snippet lists $6,000 and $3,500 for different years",
+          "Availability and condition cannot be verified"
+        ],
+        "currency": null,
+        "evidence": "1976 Catalina 30 for sale - Used - $6,000 in Marina del Rey, CA. $6,000. 1976 ... 1979 Catalina 30 for sale - Used - $3,500 in Redondo Beach, CA. $3,500.",
+        "imageUrl": null,
+        "location": "Marina del Rey, CA",
+        "workerId": "1",
+        "priceUnit": "unknown",
+        "sourceUrl": "https://www.facebook.com/marketplace/item/1005920302232972/",
+        "confidence": "low",
+        "highlights": [
+          "Catalina 30 sailboat",
+          "Located in California"
+        ],
+        "description": "Facebook Marketplace listing for a Catalina 30 sailboat. The page content is behind a login wall, and the search snippet references a 1976 Catalina 30 for $6,000 in Marina del Rey, CA, as well as a 1979 Catalina 30 for $3,500 in Redondo Beach, CA.",
+        "matchReason": "Matches Catalina 30 sailboat for sale in California within the $35,000 budget based on snippet prices, though details are unverified due to login wall.",
+        "retrievedAt": "2026-11-18T16:59:14.745Z",
+        "locationPoint": {
+          "label": "Marina del Rey, California, United States",
+          "latitude": 33.98162,
+          "provider": "Open-Meteo / GeoNames",
+          "longitude": -118.45371
+        },
+        "priceEvidence": null,
+        "statusEvidence": null
+      }
+    ],
+    "workers": [
+      {
+        "id": "1",
+        "name": "Core Search",
+        "calls": [
+          {
+            "id": "eb3b75d1-8f09-41b6-b6d4-506e64de9cee",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T16:59:03.355Z",
+            "finishedAt": "2026-11-18T16:59:04.672Z",
+            "statusCode": 200
+          },
+          {
+            "id": "3a953e6b-f9a0-4aff-b32e-8a9fd19216ea",
+            "status": "complete",
+            "target": "www.facebook.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T16:59:09.339Z",
+            "finishedAt": "2026-11-18T16:59:14.308Z",
+            "statusCode": 200
+          },
+          {
+            "id": "f53ac0d6-b4d4-4984-8bc9-6c856745f310",
+            "status": "complete",
+            "target": "www.curtisstokes.net",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:00:42.534Z",
+            "finishedAt": "2026-11-18T17:00:46.776Z",
+            "statusCode": 200
+          },
+          {
+            "id": "e8298cf7-29cc-4104-be88-50a32930fadc",
+            "status": "failed",
+            "target": "www.yachtworld.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:00:51.716Z",
+            "finishedAt": "2026-11-18T17:01:01.061Z"
+          },
+          {
+            "id": "7a5151f6-e743-4c04-9423-130f3de2ce7e",
+            "status": "complete",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T17:01:02.775Z",
+            "finishedAt": "2026-11-18T17:01:12.870Z"
+          },
+          {
+            "id": "e8c8c14f-4842-4e8d-b4ca-494d93553045",
+            "status": "complete",
+            "target": "Marina del Rey, CA",
+            "service": "AI Gateway",
+            "operation": "normalize listing locations",
+            "startedAt": "2026-11-18T17:01:13.126Z",
+            "finishedAt": "2026-11-18T17:01:17.397Z"
+          },
+          {
+            "id": "2478bea8-f5e9-452d-a507-0ef4fb314df0",
+            "status": "complete",
+            "target": "Marina del Rey, California",
+            "service": "Geocoder",
+            "operation": "city → coordinates",
+            "startedAt": "2026-11-18T17:01:17.679Z",
+            "finishedAt": "2026-11-18T17:01:18.367Z",
+            "statusCode": 200
+          }
+        ],
+        "count": 1,
+        "query": "Catalina 30 for sale California",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Source search returned partial results.",
+        "partial": true,
+        "sandboxId": "bx_hvmvsgjn"
+      },
+      {
+        "id": "2",
+        "name": "Specialist Broker",
+        "calls": [],
+        "query": "Catalina 30 sailboat yacht broker California",
+        "status": "failed",
+        "cleanup": "stopped",
+        "message": "Worker failed. Check Boat/Context/Gateway access or retry this search.",
+        "sandboxId": "bx_m9fphsbp"
+      },
+      {
+        "id": "3",
+        "name": "Local Listings",
+        "calls": [
+          {
+            "id": "83161c51-d1d6-4294-b3e2-f7840fda94cf",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T16:59:19.190Z",
+            "finishedAt": "2026-11-18T16:59:20.757Z",
+            "statusCode": 200
+          },
+          {
+            "id": "83903616-23d4-48eb-9692-e0883e19386c",
+            "status": "complete",
+            "target": "www.modernsailing.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T16:59:25.267Z",
+            "finishedAt": "2026-11-18T16:59:30.247Z",
+            "statusCode": 200
+          },
+          {
+            "id": "bda1f955-45f7-461a-845d-967d5153a6b2",
+            "status": "complete",
+            "target": "www.boats.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T16:59:34.994Z",
+            "finishedAt": "2026-11-18T17:00:03.861Z",
+            "statusCode": 200
+          },
+          {
+            "id": "e213604e-008c-48f1-add9-84a0f13b9c03",
+            "status": "complete",
+            "target": "www.boattrader.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:00:08.585Z",
+            "finishedAt": "2026-11-18T17:00:37.873Z",
+            "statusCode": 200
+          },
+          {
+            "id": "f8247106-a25d-4f47-bda5-333b928a4b78",
+            "status": "complete",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T17:00:39.510Z",
+            "finishedAt": "2026-11-18T17:00:45.340Z"
+          }
+        ],
+        "count": 0,
+        "query": "Catalina 30 sailboat San Diego San Francisco",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Source search returned partial results.",
+        "partial": true,
+        "sandboxId": "bx_pk73agfn"
+      }
+    ],
+    "warning": "1 of 3 workers failed. Any results shown are from the workers that succeeded."
+  },
+  "generations": [
+    {
+      "kind": "plan",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 768,
+          "promptTokenCount": 477,
+          "thoughtsTokenCount": 221,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 477
+            }
+          ],
+          "candidatesTokenCount": 70,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 70
+            }
+          ]
+        },
+        "inputTokens": 477,
+        "totalTokens": 768,
+        "outputTokens": 291,
+        "inputTokenDetails": {
+          "noCacheTokens": 477,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 70,
+          "reasoningTokens": 221
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 3798,
+          "promptTokenCount": 3219,
+          "thoughtsTokenCount": 554,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 3219
+            }
+          ],
+          "candidatesTokenCount": 25,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 25
+            }
+          ]
+        },
+        "inputTokens": 3219,
+        "totalTokens": 3798,
+        "outputTokens": 579,
+        "inputTokenDetails": {
+          "noCacheTokens": 3219,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 25,
+          "reasoningTokens": 554
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 13693,
+          "promptTokenCount": 12527,
+          "thoughtsTokenCount": 703,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 12527
+            }
+          ],
+          "candidatesTokenCount": 463,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 463
+            }
+          ]
+        },
+        "inputTokens": 12527,
+        "totalTokens": 13693,
+        "outputTokens": 1166,
+        "inputTokenDetails": {
+          "noCacheTokens": 12527,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 463,
+          "reasoningTokens": 703
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "geocode",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 1160,
+          "promptTokenCount": 821,
+          "thoughtsTokenCount": 276,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 821
+            }
+          ],
+          "candidatesTokenCount": 63,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 63
+            }
+          ]
+        },
+        "inputTokens": 821,
+        "totalTokens": 1160,
+        "outputTokens": 339,
+        "inputTokenDetails": {
+          "noCacheTokens": 821,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 63,
+          "reasoningTokens": 276
+        }
+      },
+      "error": null
+    }
+  ]
+}

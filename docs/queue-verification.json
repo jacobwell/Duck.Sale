@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-11-18T17:02:09.553Z",
+  "receipts": [
+    {
+      "step": "first worker admitted",
+      "result": {
+        "waitMs": 0,
+        "granted": true
+      }
+    },
+    {
+      "step": "second worker waits",
+      "result": {
+        "waitMs": 54767,
+        "granted": false
+      }
+    },
+    {
+      "step": "third worker waits",
+      "result": {
+        "waitMs": 1500,
+        "granted": false
+      }
+    },
+    {
+      "step": "cooldown blocks second worker",
+      "result": {
+        "waitMs": 3621,
+        "granted": false
+      }
+    },
+    {
+      "step": "third worker cannot jump queue",
+      "result": {
+        "waitMs": 1500,
+        "granted": false
+      }
+    },
+    {
+      "step": "oldest waiting worker admitted",
+      "result": {
+        "waitMs": 0,
+        "granted": true
+      }
+    }
+  ],
+  "anonymousHttpStatus": 401,
+  "anonymousRpcError": "42501"
+}

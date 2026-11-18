@@ -137,7 +137,9 @@ export async function discover(
         exited = true;
         if (frame.exitCode !== 0 || frame.timedOut)
           throw new Error(
-            stderr.match(/Context (search|scrape) returned HTTP \d+/)?.[0] ||
+            stderr.match(
+              /Context (?:search|scrape) returned HTTP \d+|Context queue exceeded this worker’s time budget|Context request time budget exhausted|Context request queue unavailable/,
+            )?.[0] ||
               "This search worker could not complete its source requests.",
           );
       } else if (frame.type === "error")
