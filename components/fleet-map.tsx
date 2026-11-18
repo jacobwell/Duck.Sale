@@ -580,10 +580,12 @@ export function FleetMap({
                       {item.location || "Location unknown"} · {priceLabel(item)}
                     </small>
                   </div>
-                  {item.locationPoint ? (
-                    <MapPin size={13} />
+                  {points.some((p) => p.item.id === item.id) ? (
+                    <MapPin size={13} aria-label="City location resolved" />
                   ) : (
-                    <span className="unplaced-tag">unplaced</span>
+                    <span className="unplaced-tag">
+                      {item.locationPoint ? "outside US map" : "unplaced"}
+                    </span>
                   )}
                 </button>
               ))}
@@ -604,8 +606,8 @@ export function FleetMap({
           {unplaced.length > 0 && (
             <p className="map-unplaced">
               {unplaced.length}{" "}
-              {unplaced.length === 1 ? "find has" : "finds have"} no resolved US
-              city pin. They remain in the manifest.
+              {unplaced.length === 1 ? "find is" : "finds are"} outside this map
+              or still need a city location. They remain in the manifest.
             </p>
           )}
         </div>
@@ -619,7 +621,7 @@ export function FleetMap({
         >
           US Census / US Atlas
         </a>{" "}
-        · City lookup:{" "}
+        · AI location parsing + city lookup:{" "}
         <a
           href="https://open-meteo.com/en/docs/geocoding-api"
           target="_blank"

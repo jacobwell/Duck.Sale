@@ -2,7 +2,7 @@ import "server-only";
 import { adminDb, saveRun } from "./db";
 import { planSearch, extractListings } from "./ai";
 import { discover } from "./boat";
-import { locateListing } from "./geocode";
+import { locateListings } from "./geocode";
 import type {
   SearchInput,
   SearchRun,
@@ -99,13 +99,15 @@ export async function executeSearch(
             finishedAt: new Date().toISOString(),
           });
           extractionCall = undefined;
+          const located = await locateListings(
+            extracted.map((listing) => ({ ...listing, workerId: initial.id })),
+            id,
+            userId,
+            signal,
+            record,
+          );
           const added: Listing[] = [];
-          for (const extractedListing of extracted) {
-            const listing = await locateListing(
-              { ...extractedListing, workerId: initial.id },
-              signal,
-              record,
-            );
+          for (const listing of located) {
             const normalized = (s: string) => {
               const u = new URL(s);
               for (const k of [...u.searchParams.keys()])

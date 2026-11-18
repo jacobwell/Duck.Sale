@@ -1193,8 +1193,8 @@ export function Workspace({ initialId }: { initialId?: string }) {
               {run?.sample && view === "discover" && (
                 <div className="sample-caption">
                   <Info size={14} /> Recorded source listings, captured November
-                  18, 2026 (UTC). Prices and availability may change. City pins are
-                  approximate; animated routes are for demonstration.
+                  18, 2026 (UTC). Prices and availability may change. City pins
+                  are approximate; animated routes are for demonstration.
                 </div>
               )}
             </section>
@@ -1252,13 +1252,21 @@ export function Workspace({ initialId }: { initialId?: string }) {
               <Duck size={17} /> No judgment. Just ducks.
             </span>
             <nav className="demo-links" aria-label="Boatduck demo downloads">
-              <a href="/demo/boatduck-demo.mp4" target="_blank" rel="noreferrer">
+              <a
+                href="/demo/boatduck-demo.mp4"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Watch demo · 3 min
               </a>
               <a href="/demo/boatduck-deck.pptx" download>
                 Download deck
               </a>
-              <a href="/demo/boatduck-voyage.gif" target="_blank" rel="noreferrer">
+              <a
+                href="/demo/boatduck-voyage.gif"
+                target="_blank"
+                rel="noreferrer"
+              >
                 View GIF · 30 sec
               </a>
             </nav>
@@ -1490,7 +1498,10 @@ export function Workspace({ initialId }: { initialId?: string }) {
                 rel="noreferrer"
               >
                 <MapPin size={14} /> Approximate city:{" "}
-                {detail.locationPoint.label} <ExternalLink size={13} />
+                {detail.locationPoint.label} ·{" "}
+                {detail.locationPoint.latitude.toFixed(4)},{" "}
+                {detail.locationPoint.longitude.toFixed(4)}{" "}
+                <ExternalLink size={13} />
               </a>
             )}
             {detail.imageKind === "generated" && (
