@@ -130,6 +130,7 @@ export async function executeSearch(
             ...run.workers.find((w) => w.id === initial.id)!,
             status: "complete",
             count: extracted.length,
+            partial: evidence.partial || evidence.pages.some((p) => !!p.error),
             message: evidence.partial
               ? "Source search returned partial results."
               : evidence.pages.some((p) => p.error)
@@ -163,14 +164,18 @@ export async function executeSearch(
     );
     await writes;
     const failed = run.workers.filter((w) => w.status === "failed").length;
+    const incomplete = run.workers.filter((w) => w.partial).length;
     run.status =
       failed === 3
         ? "failed"
-        : failed || settled.some((s) => s.status === "rejected")
+        : failed || incomplete || settled.some((s) => s.status === "rejected")
           ? "partial"
           : "complete";
     if (failed)
       run.warning = `${failed} of 3 workers failed. Any results shown are from the workers that succeeded.`;
+    else if (incomplete)
+      run.warning =
+        "Some sources could only be read partially or reached the provider cooldown/time limit. Available findings were preserved.";
     if (!run.listings.length && run.status === "complete")
       run.warning =
         "No specific listings could be verified from the returned pages. Try a broader location or a more specific item.";

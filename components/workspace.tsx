@@ -198,6 +198,11 @@ export function Workspace({ initialId }: { initialId?: string }) {
     }
   }
   const requestRef = useRef<AbortController | null>(null);
+  const requestedRunId = useRef(initialId);
+  const loadedFormId = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    requestedRunId.current = initialId;
+  }, [initialId]);
   const hydrate = useCallback(async (s: Session) => {
     const db = browserDb();
     if (!db) return;
@@ -232,26 +237,52 @@ export function Workspace({ initialId }: { initialId?: string }) {
     }
   }, [hydrate]);
   useEffect(() => {
-    if (!initialId || !session) return;
+    if (!initialId || !session || requestedRunId.current !== initialId) return;
     let active = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const controller = new AbortController();
     const load = async () => {
-      const r = await fetch(
-        `/api/searches?id=${encodeURIComponent(initialId)}`,
-        { headers: { Authorization: `Bearer ${session.access_token}` } },
-      );
-      const data = await r.json();
-      if (!active) return;
-      if (data.runs?.[0]) {
+      if (!active || requestedRunId.current !== initialId) return;
+      try {
+        const response = await fetch(
+          `/api/searches?id=${encodeURIComponent(initialId)}`,
+          {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+            signal: controller.signal,
+          },
+        );
+        const data = await response.json();
+        if (!active || requestedRunId.current !== initialId) return;
+        const restored = data.runs?.[0] as SearchRun | undefined;
+        if (!response.ok || !restored) {
+          setNotice(data.error || "Search not found in your account.");
+          return;
+        }
         setDemoStep(null);
-        setRun(data.runs[0]);
-        setQuery(data.runs[0].query);
-      } else setNotice(data.error || "Search not found in your account.");
+        setRun(restored);
+        if (loadedFormId.current !== initialId) {
+          loadedFormId.current = initialId;
+          setQuery(restored.query);
+          setLocation(restored.location);
+          setBudget(restored.budget == null ? "" : String(restored.budget));
+          setIntent(restored.intent);
+        }
+        if (restored.status === "running")
+          timer = setTimeout(() => void load(), 8000);
+      } catch {
+        if (
+          active &&
+          !controller.signal.aborted &&
+          requestedRunId.current === initialId
+        )
+          setNotice("Could not refresh this search. Reload to try again.");
+      }
     };
     void load();
-    const timer = setInterval(() => void load(), 8000);
     return () => {
       active = false;
-      clearInterval(timer);
+      controller.abort();
+      if (timer) clearTimeout(timer);
     };
   }, [initialId, session]);
   useEffect(() => () => requestRef.current?.abort(), []);
@@ -359,6 +390,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
   }
   function reset() {
     if (busy) return;
+    requestedRunId.current = undefined;
     setView("discover");
     setDemoStep(null);
     setRun(null);
@@ -371,6 +403,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
   }
   function sample() {
     if (busy) return;
+    requestedRunId.current = undefined;
     setDemoStep(0);
     setDemoPaused(false);
     setRun(demoFrame(0));
@@ -407,6 +440,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
       setNotice("Tell the ducks a little more — at least 5 characters.");
       return;
     }
+    requestedRunId.current = undefined;
     setBusy(true);
     setDemoStep(null);
     setRun(null);
@@ -432,6 +466,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
     const apply = (event: SearchEvent) => {
       if (event.type === "run") {
         current = { ...current, id: event.id };
+        requestedRunId.current = event.id;
         window.history.replaceState(null, "", `/search/${event.id}`);
       }
       if (event.type === "worker") {

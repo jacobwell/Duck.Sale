@@ -59,6 +59,7 @@ export type WorkerState = {
     "queued" | "starting" | "searching" | "extracting" | "complete" | "failed";
   sandboxId?: string;
   count?: number;
+  partial?: boolean;
   message?: string;
   cleanup?: "stopped" | "ttl-fallback";
   calls?: ApiCall[];

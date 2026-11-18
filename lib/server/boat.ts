@@ -7,6 +7,7 @@ import {
 } from "@boatdev/sdk";
 import { z } from "zod";
 import { workerSource } from "./worker-source";
+import { issueContextPermit } from "./context-permit";
 import type { WorkerState, ApiCall } from "@/lib/types";
 const evidenceSchema = z.object({
   pages: z
@@ -48,6 +49,7 @@ export async function discover(
     }),
   );
   let sandboxId: string | undefined;
+  let evidence: Evidence | undefined;
   try {
     signal.throwIfAborted();
     await update({ ...worker, status: "starting" });
@@ -64,7 +66,11 @@ export async function discover(
         { path: "boatduck-worker.mjs", content: workerSource },
         {
           path: "boatduck-input.json",
-          content: JSON.stringify({ query: worker.query }),
+          content: JSON.stringify({
+            query: worker.query,
+            permitUrl: `${process.env.BOATDUCK_APP_URL || "https://boatduck.vercel.app"}/api/context-permit`,
+            permitToken: issueContextPermit(runId, worker.id),
+          }),
         },
       ],
     });
@@ -79,7 +85,6 @@ export async function discover(
     await update({ ...worker, status: "searching" });
     let buffer = "",
       stderr = "",
-      evidence: Evidence | undefined,
       exited = false;
     worker = { ...worker, status: "searching", calls: worker.calls || [] };
     const callSchema = z.object({
@@ -105,6 +110,10 @@ export async function discover(
         await update({ ...worker });
       } else if (data.type === "evidence")
         evidence = evidenceSchema.parse(data);
+      else if (data.type === "throttle" && typeof data.message === "string") {
+        worker = { ...worker, message: data.message.slice(0, 200) };
+        await update(worker);
+      }
     }
     for await (const frame of streamCommand(
       boat,
@@ -138,6 +147,9 @@ export async function discover(
     if (!exited || !evidence)
       throw new Error("Worker stream ended before returning evidence.");
     return evidence;
+  } catch (error) {
+    if (evidence?.pages.length) return { ...evidence, partial: true };
+    throw error;
   } finally {
     if (sandboxId) {
       try {
