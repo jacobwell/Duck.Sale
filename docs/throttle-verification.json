@@ -1,0 +1,422 @@
+{
+  "checkedAt": "2026-11-18T17:05:07.708Z",
+  "run": {
+    "id": "6ae40e78-5d87-4ab4-844c-ca40f8865854",
+    "status": "partial",
+    "listings": [
+      {
+        "id": "fac459f2-3fda-488c-a71f-b61a754283d6",
+        "price": null,
+        "title": "1985 Catalina 30",
+        "source": "seacoastyachts.com",
+        "status": "listed",
+        "caveats": [
+          "Page was not yet inspected; full details and price are unavailable",
+          "Price is unknown and may exceed the $35,000 budget",
+          "Full-page extraction was incomplete."
+        ],
+        "currency": null,
+        "evidence": "1985 Catalina 30 for sale at Seacoast Yachts — 30 ft, located in Santa Barbara, CA.",
+        "imageUrl": null,
+        "location": "Santa Barbara, CA",
+        "workerId": "2",
+        "priceUnit": "unknown",
+        "sourceUrl": "https://www.seacoastyachts.com/listings/1985-catalina-30-30-45097",
+        "confidence": "low",
+        "highlights": [
+          "1985 Catalina 30",
+          "30 ft sailboat",
+          "Located in Santa Barbara, CA"
+        ],
+        "description": "1985 Catalina 30 (30 ft) for sale at Seacoast Yachts in Santa Barbara, CA. Full specifications and pricing were not retrieved because the page was not yet inspected.",
+        "matchReason": "Matches the requested Catalina 30 model and California location (Santa Barbara, CA), though price is unknown.",
+        "retrievedAt": "2026-11-18T17:02:49.493Z",
+        "locationPoint": {
+          "label": "Santa Barbara, California, United States",
+          "latitude": 34.42083,
+          "provider": "Open-Meteo / GeoNames",
+          "longitude": -119.69819
+        },
+        "priceEvidence": null,
+        "statusEvidence": "1985 Catalina 30 for sale at Seacoast Yachts"
+      }
+    ],
+    "workers": [
+      {
+        "id": "1",
+        "name": "Core Listing Search",
+        "calls": [
+          {
+            "id": "53b0bf5b-2245-4b72-9fbb-c772caa12151",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T17:02:28.085Z",
+            "finishedAt": "2026-11-18T17:02:29.335Z",
+            "statusCode": 200
+          },
+          {
+            "id": "def556fc-342a-4d28-b874-763be2b57169",
+            "status": "complete",
+            "target": "www.yachtworld.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:02:53.875Z",
+            "finishedAt": "2026-11-18T17:03:25.420Z",
+            "statusCode": 200
+          },
+          {
+            "id": "efe7a5f3-58a7-4ee4-a5b5-3ff9ddb83d23",
+            "status": "failed",
+            "target": "www.boats.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:04:15.989Z",
+            "finishedAt": "2026-11-18T17:04:25.849Z"
+          },
+          {
+            "id": "0e6e1a8e-1769-4919-ac83-05f0a328982a",
+            "status": "complete",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T17:04:27.460Z",
+            "finishedAt": "2026-11-18T17:04:33.445Z"
+          }
+        ],
+        "count": 0,
+        "query": "Catalina 30 for sale California",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Source search returned partial results.",
+        "partial": true,
+        "sandboxId": "bx_jxwjd3dc"
+      },
+      {
+        "id": "2",
+        "name": "Yacht Broker Search",
+        "calls": [
+          {
+            "id": "c6745c2a-0ccb-4ddb-9615-c8d1c38ce699",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T17:02:47.536Z",
+            "finishedAt": "2026-11-18T17:02:48.850Z",
+            "statusCode": 200
+          },
+          {
+            "id": "2120f822-d0bd-4684-b2bd-c361d1f04fa9",
+            "status": "complete",
+            "target": "www.curtisstokes.net",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:04:04.976Z",
+            "finishedAt": "2026-11-18T17:04:11.127Z",
+            "statusCode": 200
+          },
+          {
+            "id": "a08e1c65-e62b-4fda-a997-92248642cbdc",
+            "status": "complete",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T17:04:20.913Z",
+            "finishedAt": "2026-11-18T17:04:32.693Z"
+          },
+          {
+            "id": "4c6cd58f-0a3a-4cd5-b76c-0d46fa39f23a",
+            "status": "complete",
+            "target": "Santa Barbara, CA",
+            "service": "AI Gateway",
+            "operation": "normalize listing locations",
+            "startedAt": "2026-11-18T17:04:32.791Z",
+            "finishedAt": "2026-11-18T17:04:36.916Z"
+          },
+          {
+            "id": "31191e9d-6fd7-42e0-80b4-71a49010fb65",
+            "status": "complete",
+            "target": "Santa Barbara, California",
+            "service": "Geocoder",
+            "operation": "city → coordinates",
+            "startedAt": "2026-11-18T17:04:37.010Z",
+            "finishedAt": "2026-11-18T17:04:37.700Z",
+            "statusCode": 200
+          }
+        ],
+        "count": 1,
+        "query": "Catalina 30 yacht broker California",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Source search returned partial results.",
+        "partial": true,
+        "sandboxId": "bx_578bfznc"
+      },
+      {
+        "id": "3",
+        "name": "Local Classifieds Search",
+        "calls": [
+          {
+            "id": "1f749b36-678f-44cd-bb5d-73d55a39d654",
+            "status": "complete",
+            "target": "web discovery",
+            "service": "Context.dev",
+            "operation": "search",
+            "startedAt": "2026-11-18T17:02:34.142Z",
+            "finishedAt": "2026-11-18T17:02:42.643Z",
+            "statusCode": 200
+          },
+          {
+            "id": "b244fc3f-870f-4575-bf5d-7d3ce810e057",
+            "status": "complete",
+            "target": "www.boats.com",
+            "service": "Context.dev",
+            "operation": "scrape",
+            "startedAt": "2026-11-18T17:03:30.384Z",
+            "finishedAt": "2026-11-18T17:03:59.784Z",
+            "statusCode": 200
+          },
+          {
+            "id": "5fea2614-d09b-4ffd-a8e4-5d8895b74f5c",
+            "status": "complete",
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "startedAt": "2026-11-18T17:04:22.353Z",
+            "finishedAt": "2026-11-18T17:04:28.837Z"
+          }
+        ],
+        "count": 0,
+        "query": "Catalina 30 sailboat classifieds California",
+        "status": "complete",
+        "cleanup": "stopped",
+        "message": "Source search returned partial results.",
+        "partial": true,
+        "sandboxId": "bx_44skrgxn"
+      }
+    ],
+    "warning": "Some sources could only be read partially or reached the provider cooldown/time limit. Available findings were preserved."
+  },
+  "generations": [
+    {
+      "kind": "plan",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 768,
+          "promptTokenCount": 477,
+          "thoughtsTokenCount": 167,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 477
+            }
+          ],
+          "candidatesTokenCount": 124,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 124
+            }
+          ]
+        },
+        "inputTokens": 477,
+        "totalTokens": 768,
+        "outputTokens": 291,
+        "inputTokenDetails": {
+          "noCacheTokens": 477,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 124,
+          "reasoningTokens": 167
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 2381,
+          "promptTokenCount": 1695,
+          "thoughtsTokenCount": 666,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1695
+            }
+          ],
+          "candidatesTokenCount": 20,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 20
+            }
+          ]
+        },
+        "inputTokens": 1695,
+        "totalTokens": 2381,
+        "outputTokens": 686,
+        "inputTokenDetails": {
+          "noCacheTokens": 1695,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 20,
+          "reasoningTokens": 666
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 13744,
+          "promptTokenCount": 12271,
+          "thoughtsTokenCount": 1099,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 12271
+            }
+          ],
+          "candidatesTokenCount": 374,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 374
+            }
+          ]
+        },
+        "inputTokens": 12271,
+        "totalTokens": 13744,
+        "outputTokens": 1473,
+        "inputTokenDetails": {
+          "noCacheTokens": 12271,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 374,
+          "reasoningTokens": 1099
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "extract",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 2371,
+          "promptTokenCount": 1703,
+          "thoughtsTokenCount": 648,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1703
+            }
+          ],
+          "candidatesTokenCount": 20,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 20
+            }
+          ]
+        },
+        "inputTokens": 1703,
+        "totalTokens": 2371,
+        "outputTokens": 668,
+        "inputTokenDetails": {
+          "noCacheTokens": 1703,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 20,
+          "reasoningTokens": 648
+        }
+      },
+      "error": null
+    },
+    {
+      "kind": "geocode",
+      "model": "google/gemini-4-hydrogen",
+      "status": "complete",
+      "usage": {
+        "raw": {
+          "trafficType": "ON_DEMAND",
+          "totalTokenCount": 1090,
+          "promptTokenCount": 820,
+          "thoughtsTokenCount": 171,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 820
+            }
+          ],
+          "candidatesTokenCount": 99,
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 99
+            }
+          ]
+        },
+        "inputTokens": 820,
+        "totalTokens": 1090,
+        "outputTokens": 270,
+        "inputTokenDetails": {
+          "noCacheTokens": 820,
+          "cacheReadTokens": 0
+        },
+        "outputTokenDetails": {
+          "textTokens": 99,
+          "reasoningTokens": 171
+        }
+      },
+      "error": null
+    }
+  ],
+  "throttleSummary": {
+    "deployment": "dpl_GcfWNovXCHC6r3nnZoGRTFZTwqtm",
+    "status": "partial",
+    "listings": 1,
+    "contextCalls": 7,
+    "http200": 6,
+    "rateLimits": 0,
+    "otherFailures": 1,
+    "minGapMs": 4807,
+    "maxGapMs": 5192,
+    "workers": [
+      {
+        "id": "1",
+        "status": "complete",
+        "cleanup": "stopped",
+        "partial": true
+      },
+      {
+        "id": "2",
+        "status": "complete",
+        "cleanup": "stopped",
+        "partial": true
+      },
+      {
+        "id": "3",
+        "status": "complete",
+        "cleanup": "stopped",
+        "partial": true
+      }
+    ]
+  }
+}
