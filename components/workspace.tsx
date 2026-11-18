@@ -1251,6 +1251,17 @@ export function Workspace({ initialId }: { initialId?: string }) {
             <span>
               <Duck size={17} /> No judgment. Just ducks.
             </span>
+            <nav className="demo-links" aria-label="Boatduck demo downloads">
+              <a href="/demo/boatduck-demo.mp4" target="_blank" rel="noreferrer">
+                Watch demo · 3 min
+              </a>
+              <a href="/demo/boatduck-deck.pptx" download>
+                Download deck
+              </a>
+              <a href="/demo/boatduck-voyage.gif" target="_blank" rel="noreferrer">
+                View GIF · 30 sec
+              </a>
+            </nav>
             <span>
               POWERED BY{" "}
               <a href="https://boat.dev" target="_blank" rel="noreferrer">

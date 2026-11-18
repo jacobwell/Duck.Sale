@@ -612,6 +612,7 @@ main {
 }
 .main-footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
@@ -636,6 +637,25 @@ main {
   letter-spacing: -0.2px;
   color: #88917c;
   font-weight: 600;
+}
+.demo-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+}
+.demo-links a {
+  padding: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.demo-links a:hover {
+  color: var(--ink);
+}
+.demo-links a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 .notice {
   display: flex;
