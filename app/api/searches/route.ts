@@ -29,11 +29,24 @@ export async function GET(request: Request) {
       { error: "Could not load searches." },
       { status: 500 },
     );
+  const pcIds = new Set<string>();
+  if (data?.length) {
+    const pc = await adminDb()
+      .from("pc_builds")
+      .select("id")
+      .eq("user_id", user.id)
+      .in(
+        "id",
+        data.map((r) => r.id),
+      );
+    for (const row of pc.data || []) pcIds.add(row.id);
+  }
   return Response.json(
     {
       runs: await Promise.all(
         (data || []).map(async (run) => ({
           ...run,
+          pcBuild: pcIds.has(run.id),
           listings: await signIllustrations(run.listings, user.id),
         })),
       ),

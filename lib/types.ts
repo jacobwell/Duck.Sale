@@ -90,6 +90,7 @@ export type WorkerState = {
   excludeUrls?: string[];
 };
 export type SearchRun = {
+  pcBuild?: boolean;
   id: string;
   query: string;
   location: string;

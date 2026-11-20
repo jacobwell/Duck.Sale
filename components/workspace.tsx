@@ -111,12 +111,22 @@ function ListingImage({ listing }: { listing: Listing }) {
     </div>
   );
 }
-export function Workspace({ initialId }: { initialId?: string }) {
+export function Workspace({
+  initialId,
+  initialSearch,
+}: {
+  initialId?: string;
+  initialSearch?: { query: string; location: string; budget: string };
+}) {
   const [view, setView] = useState<View>("discover"),
     [run, setRun] = useState<SearchRun | null>(null),
-    [query, setQuery] = useState<string>(categories[0].options[0].query),
-    [location, setLocation] = useState("San Francisco Bay"),
-    [budget, setBudget] = useState("30000"),
+    [query, setQuery] = useState<string>(
+      initialSearch?.query || categories[0].options[0].query,
+    ),
+    [location, setLocation] = useState(
+      initialSearch?.location || "San Francisco Bay",
+    ),
+    [budget, setBudget] = useState(initialSearch?.budget ?? "30000"),
     [intent, setIntent] = useState("buy");
   const [busy, setBusy] = useState(false),
     [config, setConfig] = useState<AppConfig | null>(null),
@@ -152,8 +162,10 @@ export function Workspace({ initialId }: { initialId?: string }) {
   const [feedbackTarget, setFeedbackTarget] = useState<Listing | null>(null);
   const [feedbackNote, setFeedbackNote] = useState("");
   const [hiddenListings, setHiddenListings] = useState<string[]>([]);
-  const [categoryId, setCategoryId] = useState<CategoryId>("boats");
-  const [categoryOption, setCategoryOption] = useState(0);
+  const [categoryId, setCategoryId] = useState<CategoryId>(
+    initialSearch ? "compute" : "boats",
+  );
+  const [categoryOption, setCategoryOption] = useState(initialSearch ? -1 : 0);
   const [condition, setCondition] = useState("Any condition");
   const category = categories.find((c) => c.id === categoryId)!;
   const categoryCopy = personality[categoryId];
@@ -729,6 +741,9 @@ export function Workspace({ initialId }: { initialId?: string }) {
           >
             🕵️ Private Mode
           </Link>
+          <Link href="/pc" style={{ padding: "12px 16px", display: "block" }}>
+            🖥️ Build a PC
+          </Link>
           <Link href="/food" style={{ padding: "12px 16px", display: "block" }}>
             🍕 Feed the crew
           </Link>
@@ -873,45 +888,56 @@ export function Workspace({ initialId }: { initialId?: string }) {
                   </button>
                 ))}
               </div>
-              <div className="category-options">
-                <label>
-                  {category.optionLabel}
-                  <select
-                    aria-label={category.optionLabel}
-                    value={categoryOption}
-                    disabled={busy}
-                    onChange={(e) =>
-                      chooseCategory(
-                        categoryId,
-                        Number(e.target.value),
-                        condition,
-                      )
-                    }
-                  >
-                    {category.options.map((o, i) => (
-                      <option value={i} key={o.label}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Condition
-                  <select
-                    aria-label="Item condition"
-                    value={condition}
-                    disabled={busy}
-                    onChange={(e) =>
-                      chooseCategory(categoryId, categoryOption, e.target.value)
-                    }
-                  >
-                    {category.conditions.map((c) => (
-                      <option key={c}>{c}</option>
-                    ))}
-                  </select>
-                </label>
-                <span>{category.hint}</span>
-              </div>
+              {categoryOption === -1 ? (
+                <p className="muted">
+                  Custom PC part · edit the description below or choose a
+                  category preset.
+                </p>
+              ) : (
+                <div className="category-options">
+                  <label>
+                    {category.optionLabel}
+                    <select
+                      aria-label={category.optionLabel}
+                      value={categoryOption}
+                      disabled={busy}
+                      onChange={(e) =>
+                        chooseCategory(
+                          categoryId,
+                          Number(e.target.value),
+                          condition,
+                        )
+                      }
+                    >
+                      {category.options.map((o, i) => (
+                        <option value={i} key={o.label}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Condition
+                    <select
+                      aria-label="Item condition"
+                      value={condition}
+                      disabled={busy}
+                      onChange={(e) =>
+                        chooseCategory(
+                          categoryId,
+                          categoryOption,
+                          e.target.value,
+                        )
+                      }
+                    >
+                      {category.conditions.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <span>{category.hint}</span>
+                </div>
+              )}
               <form className="search-box" onSubmit={search}>
                 <div className="search-prompt">
                   <Sparkles size={24} />
@@ -1135,7 +1161,9 @@ export function Workspace({ initialId }: { initialId?: string }) {
                       .map((h) => (
                         <Link
                           className="history-row"
-                          href={`/search/${h.id}`}
+                          href={
+                            h.pcBuild ? `/pc?id=${h.id}` : `/search/${h.id}`
+                          }
                           key={h.id}
                         >
                           <span className="history-icon">
