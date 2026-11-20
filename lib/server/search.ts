@@ -47,7 +47,9 @@ export async function executeSearch(
     const snapshot = JSON.parse(
       JSON.stringify({ workers: run.workers, listings: run.listings }),
     );
-    writes = writes.then(() => saveRun(id, snapshot));
+    // Each snapshot is complete, so one failed write must not reject every later
+    // one: the next snapshot (or the final save below) catches storage up.
+    writes = writes.then(() => saveRun(id, snapshot)).catch(() => {});
     return writes;
   }
   async function update(worker: WorkerState) {
