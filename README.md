@@ -6,37 +6,83 @@
 
 A fleet of little search boats. Real source links. A suspiciously large duck budget.
 
-**[Try Duck.Sale](https://duck.sale)** · **[Watch the 3-minute demo](https://youtu.be/XXRGiBiYMJ0)** · **[Open Private Mode](https://duck.sale/private)** · **[Download the deck](https://duck.sale/demo/duck-sale-deck.pptx)**
+**[Try it live](https://duck.sale)** · **[Install & run locally](#install-and-run-locally)** · **[Watch the 3-minute demo](https://youtu.be/XXRGiBiYMJ0)** · **[Open Private Mode](https://duck.sale/private)** · **[Download the deck](https://duck.sale/demo/duck-sale-deck.pptx)**
 
 ![Duck.Sale: boats searching across the US, followed by Private Mode](docs/assets/duck-sale-teaser.gif)
 
 </div>
 
-## Ahoy, judges 👋
+## Ahoy, treasure hunters 🏴‍☠️
 
-**You do not need to install anything or bring API keys to inspect the product.** Open [duck.sale](https://duck.sale) and click **Watch 20-boat voyage**. It replays real listing snapshots across the coasts and inland lakes. The movement is simulated, the replay is labeled, and it makes no paid API calls.
+Looking for a sailboat? A GPU with more memory than your first computer? A giant inflatable duck that absolutely counts as a sensible purchase?
 
-For a **fresh search**, sign in on the website or request a temporary hosted-access token from the maintainer. Fresh searches use paid services and can return partial results. No token is published in this repository.
+**Tell Duck.Sale what you want. Send the ducks. Follow the treasure.** A fleet of AI-powered search boats heads out across the web and brings back prices, photos, locations, and links to the original listings. Watch the boats work, inspect their receipts, and save the good finds.
 
-Duck.Sale finds boats, GPUs and AI computers, Pokémon boxes, giant inflatable ducks—or whatever oddly specific thing you type. It collects prices, photos, locations, and original links, then makes the search process visible instead of asking you to trust a spinner.
+### Pick your first voyage
 
-> **What is real?** Live voyages use actual provider requests. The radio panel records calls, timings, and failures. Missing facts stay unknown. Generated pictures are labeled illustrations, never passed off as seller photos.
+| Try it live | Install it yourself |
+|---|---|
+| Open **[duck.sale](https://duck.sale)**, sign in, and describe your treasure. We run the services. | Clone this repo and follow the **[installation guide below](#install-and-run-locally)**. Explore the local app first, then connect your own services for fresh searches. |
+| Want a quick look first? Click **Watch 20-boat voyage** for a recorded tour with no sign-in. | **Node.js 22+, Git, and four commands** get the app running. No API keys are needed for the recorded tour. |
+
+Boats, GPUs and AI computers, Pokémon boxes, giant rubber ducks—or type your own hunt. For surprise gifts and private preferences, there’s also **[Private Mode](#private-mode-plainly-explained)**. The duck can keep a birthday plan out of the public search query.
+
+> **Real treasure, honest receipts.** Fresh searches make real provider calls and may return partial results. The recorded tour uses source snapshots and simulated travel, clearly labeled. Missing facts stay unknown, and AI-generated pictures are labeled illustrations.
+
+## Install and run locally
+
+### 1. Get your supplies
+
+Install **[Node.js 22 or newer](https://nodejs.org/en/download)** (includes npm) and **[Git](https://git-scm.com/downloads)**. Check they’re available in your terminal:
+
+```bash
+node --version
+npm --version
+git --version
+```
+
+### 2. Launch the app
+
+Run these four commands, one line at a time:
+
+```bash
+git clone https://github.com/jacobwell/Duck.Sale.git
+cd Duck.Sale
+npm ci
+npm run dev
+```
+
+### 3. Open your harbor
+
+Visit **[http://localhost:3000](http://localhost:3000)**. Keep that terminal open while you use the app; press **Ctrl+C** in that terminal when you’re finished.
+
+Click **Watch 20-boat voyage** to explore the map, boats, and listing snapshots. This first run needs no `.env` file or API keys. The tour is a recorded replay; fresh searches, sign-in, and saved finds become available when you connect the services below.
+
+### 4. Send a fresh search
+
+Choose how you want to power your searches:
+
+- **Your own app and keys:** follow [self-host live searches](#self-host-live-searches) to connect Supabase, Boat.dev, Context.dev, and either OpenAI or Vercel AI Gateway.
+- **Our backend from your terminal:** follow [hosted access](#use-our-hosted-backend) to use one temporary token instead of setting up provider accounts.
+- **Ready to sail right now:** the hosted app at [duck.sale](https://duck.sale) is available too.
+
+If port 3000 is already occupied, use the existing Duck.Sale server or free that port before running the command. You only need one local server.
 
 ## Find your way around
 
-- [Why this build stands out](#why-this-build-stands-out)
-- [A 60-second judge walkthrough](#a-60-second-judge-walkthrough)
-- [How the boats work](#how-the-boats-work)
-- [What each tool actually does](#what-each-tool-actually-does)
-- [Private Mode, plainly explained](#private-mode-plainly-explained)
+- [Install and run locally](#install-and-run-locally)
 - [Choose your setup](#choose-your-setup)
-- [A. Run the replay locally—no keys](#a-run-the-replay-locallyno-keys)
-- [B. Use our hosted backend—one token](#b-use-our-hosted-backendone-token)
-- [C. Self-host live searches](#c-self-host-live-searches)
+- [Self-host live searches](#self-host-live-searches)
+- [Use our hosted backend](#use-our-hosted-backend)
 - [Requirements and environment variables](#requirements-and-environment-variables)
 - [Deploy your own copy](#deploy-your-own-copy)
 - [Troubleshooting](#troubleshooting)
+- [Why this build stands out](#why-this-build-stands-out)
+- [How the boats work](#how-the-boats-work)
+- [What each tool actually does](#what-each-tool-actually-does)
+- [Private Mode, plainly explained](#private-mode-plainly-explained)
 - [What works, what is limited](#what-works-what-is-limited)
+- [A 60-second judge walkthrough](#a-60-second-judge-walkthrough)
 - [Code map and verification](#code-map-and-verification)
 
 ## Why this build stands out
@@ -47,18 +93,7 @@ Duck.Sale finds boats, GPUs and AI computers, Pokémon boxes, giant inflatable d
 4. **The interface teaches the system.** Boats, routes, treasure pins, and the radio panel explain parallel discovery without hiding uncertainty.
 5. **The ducks have brakes.** Bounded worker lifetimes, transactional admission limits, a shared Context request queue, and explicit cleanup help contain spending and failures.
 
-These are reasons to consider the build, not claims that it has won a prize. [Hackathon requirements and evidence](docs/HACKATHON.md) remain separate from product claims. Built with AI-agent assistance under human direction.
-
-## A 60-second judge walkthrough
-
-| Time | What to do | What it demonstrates |
-|---|---|---|
-| 0–15s | Open the site and start **Watch 20-boat voyage** | Source snapshots, geographic pins, clearly labeled replay |
-| 15–30s | Open a treasure pin and its original source | Prices/photos with provenance, approximate city locations |
-| 30–45s | Open **Private Mode** | Public-query approval, separate private brief, service manifest |
-| 45–60s | Watch the [demo](https://youtu.be/XXRGiBiYMJ0), or inspect this README’s source links | Real live-search receipts, partial failures, labeled generated imagery |
-
-A fresh live search can take a few minutes. The edited demo shortens waiting; the app does not fake progress to match it.
+Built for the Boat hackathon with AI-agent assistance under human direction. Curious about the challenge? See the [hackathon requirements and evidence](docs/HACKATHON.md).
 
 ## How the boats work
 
@@ -109,35 +144,15 @@ Imagine buying a surprise giant duck. The internet needs to know **“giant infl
 
 | You want to… | Provider keys needed? | Database needed? | Start here |
 |---|---|---|---|
-| Inspect the hosted replay and UI | No | No | [duck.sale](https://duck.sale) |
-| Run the UI and recorded replay locally | No | No | A below |
-| Ask our backend to do a fresh search | No provider keys; one temporary access token | No local database | B below |
-| Run your own live-search installation | Boat + Context + Gateway **or** OpenAI | Your own Supabase project | C below |
-| Self-host Private Mode | Above, plus TrustedRouter and WireGuard | Your own Supabase project | C + [private setup](docs/PRIVATE-MODE.md) |
+| Explore the hosted replay and UI | No | No | [duck.sale](https://duck.sale) |
+| Run the UI and recorded replay locally | No | No | [Local installation](#install-and-run-locally) |
+| Ask our backend to do a fresh search | No provider keys; one temporary access token | No local database | [Hosted access](#use-our-hosted-backend) |
+| Run your own live-search installation | Boat + Context + Gateway **or** OpenAI | Your own Supabase project | [Self-hosting](#self-host-live-searches) |
+| Self-host Private Mode | Above, plus TrustedRouter and WireGuard | Your own Supabase project | [Self-hosting](#self-host-live-searches) + [private setup](docs/PRIVATE-MODE.md) |
 
 **An OpenAI key replaces the standard AI provider, not Boat, Context, or Supabase.** It does not turn ordinary OpenAI inference into confidential inference.
 
-## A. Run the replay locally—no keys
-
-### You need
-
-- Git
-- **Node.js 22 or newer** and npm (`node --version` / `npm --version`)
-- A browser
-- Repository access if the repository is still private
-
-```bash
-git clone https://github.com/jacobwell/Duck.Sale.git
-cd Duck.Sale
-npm ci
-npm run dev
-```
-
-Open **http://localhost:3000**, then click **Watch 20-boat voyage**. No `.env` file is required for the recorded replay. Fresh searches, login, saved finds, and Private Mode need configured services.
-
-Already using port 3000? Stop here and manage your existing server yourself. This project does not need a second development server or port 3001.
-
-## B. Use our hosted backend—one token
+## Use our hosted backend
 
 This is the **API/terminal path**: your local client calls our server, and our server manages the provider calls. For the full UI, use [duck.sale](https://duck.sale).
 
@@ -160,15 +175,15 @@ Run a fresh search:
 npm run search:hosted -- "Catalina 30 sailboat for sale California"
 ```
 
-The command streams real search events as newline-delimited JSON. Do not expect an instant complete result. Authentication, provider quotas, and the app’s search limits still apply.
+The command streams real search events as newline-delimited JSON as the boats work. A fresh voyage can take a few minutes; the same provider quotas and search limits apply as on the website.
 
 **No provider keys are shared. No arbitrary token is accepted.** The issued token is random, expires, and only grants the dedicated demo search endpoints. It cannot read history or saved finds. Keep it out of screenshots, commits, and public README files. [Hosted/private API examples, issuance, limits, and revocation](docs/HOSTED-ACCESS.md).
 
-## C. Self-host live searches
+## Self-host live searches
 
 ### 1. Install and copy the example
 
-Follow A’s clone/install steps, then:
+After [installing the app](#install-and-run-locally), open another terminal in the `Duck.Sale` folder and run:
 
 ```bash
 cp .env.example .env.local
@@ -271,7 +286,7 @@ Already using the original checkout? Its `.vercel` directory is ignored. A clone
 
 | Symptom | First thing to check |
 |---|---|
-| “Repository not found” | GitHub access; this repo may still be private |
+| “Repository not found” | Copy the clone URL above exactly: `https://github.com/jacobwell/Duck.Sale.git` |
 | Replay works, but live search is unavailable | Expected with no keys; inspect Service setup |
 | Hosted access returns 401 | Token missing, wrong, expired, or not enabled on the selected server |
 | Hosted access works but history is denied | Expected: demo capabilities do not grant history access |
@@ -294,6 +309,17 @@ Already using the original checkout? Its `.vercel` directory is ignored. A clone
 - **Persistence:** standard mode stores searches and evidence; Private Mode retains only admission metadata. “Estimated cost unavailable” is not “free.”
 - **Not implemented:** seller outreach, buying, price alerts, authenticated marketplace crawling, or a promise of exhaustive coverage.
 - **Geocoding:** the free endpoint is for noncommercial use; commercial deployments need the appropriate license.
+
+## A 60-second judge walkthrough
+
+| Time | What to do | What it demonstrates |
+|---|---|---|
+| 0–15s | Open the site and start **Watch 20-boat voyage** | Source snapshots, geographic pins, clearly labeled replay |
+| 15–30s | Open a treasure pin and its original source | Prices/photos with provenance, approximate city locations |
+| 30–45s | Open **Private Mode** | Public-query approval, separate private brief, service manifest |
+| 45–60s | Watch the [demo](https://youtu.be/XXRGiBiYMJ0), or inspect this README’s source links | Real live-search receipts, partial failures, labeled generated imagery |
+
+A fresh live search can take a few minutes. The edited demo shortens waiting; the app does not fake progress to match it.
 
 ## Code map and verification
 
