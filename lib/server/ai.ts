@@ -4,7 +4,8 @@ import { z } from "zod";
 import { adminDb } from "./db";
 import type { Evidence } from "./boat";
 import { listingSchema, type Listing, type SearchInput } from "@/lib/types";
-const model = process.env.AI_MODEL || "google/gemini-4-hydrogen";
+import { textModel, textModelId, aiService } from "./models";
+const model = textModelId();
 const planSchema = z.object({
   workers: z
     .array(z.object({ name: z.string().max(60), query: z.string().max(400) }))
@@ -31,7 +32,7 @@ async function generate<T extends z.ZodType>(
       .map((m) => m.content)
       .join("\n");
     const result = await generateText({
-      model,
+      model: textModel(),
       output: Output.object({ schema }),
       instructions,
       messages: messages.filter((m) => m.role !== "system"),
@@ -72,7 +73,7 @@ async function generate<T extends z.ZodType>(
       })
       .eq("id", id);
     throw new Error(
-      `${kind === "plan" ? "Search planning" : "Listing extraction"} failed. Check AI Gateway access and try again.`,
+      `${kind === "plan" ? "Search planning" : "Listing extraction"} failed. Check ${aiService()} access and try again.`,
     );
   }
 }

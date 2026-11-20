@@ -1,4 +1,5 @@
 import "server-only";
+import { demoUserFor } from "./demo-access";
 import { createClient } from "@supabase/supabase-js";
 export function adminDb() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -9,6 +10,8 @@ export function adminDb() {
   });
 }
 export async function userFor(request: Request) {
+  const demo = demoUserFor(request);
+  if (demo) return demo;
   const token = request.headers.get("authorization")?.replace(/^Bearer /i, "");
   if (!token || token.length > 8192) return null;
   const { data, error } = await adminDb().auth.getUser(token);

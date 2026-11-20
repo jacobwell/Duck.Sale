@@ -1,3 +1,4 @@
+import { aiService } from "./models";
 import "server-only";
 import type { ApiCall, Listing, LocationPoint } from "@/lib/types";
 import { normalizeLocations } from "./ai";
@@ -168,7 +169,7 @@ export async function locateListings(
     const batch = locations.slice(offset, offset + 12);
     const call: ApiCall = {
       id: crypto.randomUUID(),
-      service: "AI Gateway",
+      service: aiService(),
       operation: "normalize listing locations",
       target: batch.join(" · "),
       startedAt: new Date().toISOString(),

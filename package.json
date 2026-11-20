@@ -8,13 +8,16 @@
     "build:check": "DUCK_SALE_BUILD_DIR=.next-build next build",
     "start": "next start --port 3000",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "search:hosted": "node --env-file-if-exists=.env.hosted.local scripts/hosted-search.mjs",
+    "demo:issue": "node --env-file=.env.local scripts/issue-demo-access.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.121",
     "@boatdev/sdk": "^1.13.0",
     "@lore-hex/trusted-router": "^0.10.1",
     "@supabase/supabase-js": "^2.119.0",

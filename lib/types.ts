@@ -36,7 +36,7 @@ export const listingSchema = z.object({
 });
 export type ApiCall = {
   id: string;
-  service: "Boat.dev" | "Context.dev" | "AI Gateway" | "Geocoder";
+  service: "Boat.dev" | "Context.dev" | "AI Gateway" | "OpenAI" | "Geocoder";
   operation: string;
   status: "running" | "complete" | "failed";
   startedAt: string;

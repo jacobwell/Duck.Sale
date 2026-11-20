@@ -54,3 +54,12 @@ The user supplied Boat's incident notice: its overloaded snapshot system was cau
 ## Private Mode — November 19, 2026
 
 See PRIVATE-MODE.md and private-live-verification.json. A real protected-preview voyage returned one source-supported match with partial coverage. VPN exit 185.156.46.142 was confirmed as Mullvad us-qas-wg-101; a separate tunnel-down check blocked outbound HTTPS. NYTE confidential inference used a gateway TLS session verified with fresh hardware attestation. The worker deletion operation reached completed. The database held only the admission placeholder, with zero source-evidence and generation rows; the temporary user was removed. Chrome verified explicit query consent and scuttle clearing the form. Lint, TypeScript and Vercel builds passed. Production deployment dpl_EenXEhRx21QxoN3j657qibcfA9rp is Ready. This is not zero trace: hosted server memory, account/timing metadata, and external provider retention remain explicit boundaries.
+
+
+## Judge setup and hosted access
+
+The README now separates no-key replay, hosted CLI access, and full self-hosting. Direct OpenAI text/image model selection is implemented using `@ai-sdk/openai`; lint, TypeScript, and the isolated production build pass. No OpenAI key was available, so direct OpenAI network inference and image generation remain unverified. Private Mode still uses only TrustedRouter.
+
+A one-off capability smoke check accepted the two scoped POST routes and rejected history access, a wrong method, an arbitrary token, and expiry. The issuer created a dedicated demo account and private, ignored 0600 credential files; only the hash/account/expiry configuration is deployed. No unit test files were added.
+
+Protected preview `dpl_3jpHGTvaf8orVudbj9qgbUyMW6yf` reached READY. Real HTTP checks returned 200 for the issued capability, 401 for an invalid token, and 401 for history access using the demo token. Authenticated empty requests reached validation and returned 400 on both demo search routes. These checks performed no paid discovery or inference; they verify deployment/auth/validation, not a new end-to-end provider voyage.

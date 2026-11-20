@@ -1,3 +1,4 @@
+import { aiService } from "./models";
 import "server-only";
 import { adminDb, saveRun } from "./db";
 import { planSearch, planContinuation, extractListings } from "./ai";
@@ -102,7 +103,7 @@ export async function executeSearch(
           });
           extractionCall = {
             id: crypto.randomUUID(),
-            service: "AI Gateway",
+            service: aiService(),
             operation: "extract listings",
             startedAt: new Date().toISOString(),
             status: "running",
@@ -185,18 +186,20 @@ export async function executeSearch(
               )
                 ? error.message + ". No Context calls were made."
                 : error instanceof Error &&
-              /^Context (search|scrape) returned HTTP \d+$/.test(error.message)
-                ? error.message +
-                  ". The provider could not complete this request."
-                : error instanceof Error &&
-                    /^Context (queue exceeded|request time budget)/.test(
+                    /^Context (search|scrape) returned HTTP \d+$/.test(
                       error.message,
                     )
-                  ? "The shared Context queue reached this worker’s time limit. Try a narrower search or retry shortly."
+                  ? error.message +
+                    ". The provider could not complete this request."
                   : error instanceof Error &&
-                      error.message === "Context request queue unavailable"
-                    ? "The shared Context queue is temporarily unavailable. Retry shortly."
-                    : "Worker failed. Check Boat/Context/Gateway access or retry this search.",
+                      /^Context (queue exceeded|request time budget)/.test(
+                        error.message,
+                      )
+                    ? "The shared Context queue reached this worker’s time limit. Try a narrower search or retry shortly."
+                    : error instanceof Error &&
+                        error.message === "Context request queue unavailable"
+                      ? "The shared Context queue is temporarily unavailable. Retry shortly."
+                      : "Worker failed. Check Boat, Context, and AI provider access or retry this search.",
           });
         }
       }),

@@ -2,3 +2,5 @@
 .next-build
 **/~$*
 docs/*verification.json
+
+.demo-access

@@ -1,6 +1,7 @@
 import "server-only";
 import { getVercelOidcTokenSync } from "@vercel/oidc";
 import type { AppConfig } from "@/lib/types";
+import { usesOpenAI, aiService } from "./models";
 export function appConfig(): AppConfig {
   let gatewayConfigured = !!process.env.AI_GATEWAY_API_KEY;
   if (!gatewayConfigured) {
@@ -14,8 +15,10 @@ export function appConfig(): AppConfig {
     { name: "Boat.dev", configured: !!process.env.BOAT_API_KEY },
     { name: "Context.dev", configured: !!process.env.CONTEXT_DEV_API_KEY },
     {
-      name: "AI Gateway",
-      configured: gatewayConfigured,
+      name: aiService(),
+      configured: usesOpenAI()
+        ? !!process.env.OPENAI_API_KEY
+        : gatewayConfigured,
     },
     {
       name: "Supabase",

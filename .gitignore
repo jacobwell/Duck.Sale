@@ -9,3 +9,5 @@ node_modules/
 .vercel
 supabase/.temp/
 **/~$*
+
+.demo-access/
