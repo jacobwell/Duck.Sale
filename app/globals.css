@@ -3871,3 +3871,5 @@ main {
 .food-footer { border-top:1px solid #cbd2bf; padding-top:26px; font-size:13px; line-height:1.7; }.food-footer a { color:#284e3b; font-weight:700; }
 @media(max-width:700px) { .food-page { padding:20px 18px 40px; }.food-nav span { display:none; }.food-nav a { font-size:12px; }.food-hero { padding:28px 0; }.food-mascot { display:none; }.food-search { padding:20px; }.food-cards { grid-template-columns:1fr; }.food-location { flex-wrap:wrap; }.food-location button { width:100%; } }
 @media(prefers-reduced-motion:reduce) { .food-progress > span { animation:none; } }
+
+.food-modes { display:flex; gap:8px; margin:12px 0 24px; flex-wrap:wrap; }.food-modes button { border:1px solid #bbcab3; border-radius:9px; padding:12px 18px; background:#edf0e1; color:#254c39; }.food-modes button[aria-pressed=true] { background:#254c39; color:#fffde7; }.food-store-name { font-weight:700; color:#5c653e; }

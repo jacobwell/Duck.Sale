@@ -1,16 +1,18 @@
 # Feed the crew: DoorDash discovery
 
-`/food` is an optional, signed-in restaurant-discovery feature. Visitors choose a city, search for food, and follow a canonical DoorDash store link. Ordering happens on DoorDash with the visitor's own account.
+`/food` is an optional, signed-in food and retail discovery feature. Visitors choose a city, search restaurants or retail items, and follow a validated DoorDash store or product link. Ordering happens on DoorDash with the visitor's own account.
 
 ## Account boundary
 
-- The only executable operation is the literal CLI `search` command, with validated query, explicit latitude/longitude, a fixed limit and a fixed discovery-only purpose.
+- The only executable operations are the literal CLI `search` and `find-item-across-retailers` commands, with validated query, explicit latitude/longitude, a fixed limit and a fixed discovery-only purpose.
 - No arbitrary command, flags, URL, saved-address ID or account ID can be supplied. `execFile` runs without a shell.
 - No routes expose carts, ordering, checkout, payments, history, addresses, promotions or account management.
 - The CLI process receives only the DoorDash access token and basic runtime environment. Other application secrets are not inherited.
-- The raw DoorDash search response can include account and delivery-address metadata. It is never returned or logged. Only validated restaurant fields are projected into the API response. Store links are rebuilt from numeric store IDs; account/session query parameters cannot escape in links.
+- The raw DoorDash search response can include account and delivery-address metadata. It is never returned or logged. Only validated restaurant or product fields are projected into the API response. Store links are rebuilt from numeric store IDs. Product links must match the returned store and product IDs and only retain the product_id query parameter; account/session parameters are discarded.
 - Search queries and locations are not saved by Duck.Sale. Supabase stores user ID and start/finish timestamps for admission control. DoorDash receives search queries, selected coordinates, and a fixed discovery-purpose message; its retention policies apply. This is separate from Private Mode.
 - Restaurant photos load from DoorDash's public CDN. Browser requests to DoorDash links and photos are external requests.
+
+Retail returns up to 12 items within five miles of the selected city point. Product names, stores and prices come directly from DoorDash. The response does not supply currency or photos, so currency is not inferred and no product photos are fabricated. Confirm currency and stock on DoorDash.
 
 ## Limits
 

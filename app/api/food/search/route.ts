@@ -9,6 +9,7 @@ export async function GET() {
 }
 const input = z
   .object({
+    mode: z.enum(["restaurants", "retail"]).default("restaurants"),
     query: z.string().trim().min(2).max(160),
     latitude: z.number().finite().min(-90).max(90),
     longitude: z.number().finite().min(-180).max(180),
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     data = input.parse(JSON.parse(body));
   } catch {
     return Response.json(
-      { error: "Choose a city and enter a food or restaurant name." },
+      { error: "Choose a city and enter a food, restaurant or retail item." },
       { status: 400, headers },
     );
   }
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
       data.latitude,
       data.longitude,
       AbortSignal.any([request.signal, AbortSignal.timeout(58000)]),
+      data.mode,
     );
     return Response.json(
       { stores, source: "DoorDash", retrievedAt: new Date().toISOString() },

@@ -6,6 +6,9 @@ import { Duck } from "@/components/duck";
 import { browserDb } from "@/lib/supabase";
 type Place = { id: number; label: string; latitude: number; longitude: number };
 type Store = {
+  kind: "restaurant" | "item";
+  storeName: string | null;
+  price: number | null;
   id: string;
   name: string;
   image: string | null;
@@ -16,6 +19,7 @@ type Store = {
   url: string;
 };
 export function FoodWorkspace() {
+  const [mode, setMode] = useState<"restaurants" | "retail">("restaurants");
   const [query, setQuery] = useState("pizza"),
     [city, setCity] = useState("San Francisco"),
     [places, setPlaces] = useState<Place[]>([]),
@@ -90,13 +94,18 @@ export function FoodWorkspace() {
     setSeconds(0);
     setSearchedPlace(place.label);
     setStores(null);
-    setNotice("Asking DoorDash for restaurants near your selected city…");
+    setNotice(
+      mode === "retail"
+        ? "Searching nearby retailers for matching items…"
+        : "Asking DoorDash for restaurants near your selected city…",
+    );
     try {
       const r = await fetch("/api/food/search", {
         method: "POST",
         headers: { ...(await auth()), "Content-Type": "application/json" },
         body: JSON.stringify({
           query,
+          mode,
           latitude: place.latitude,
           longitude: place.longitude,
         }),
@@ -108,8 +117,8 @@ export function FoodWorkspace() {
       setStores(d.stores);
       setNotice(
         d.stores.length
-          ? "The duck found food. Open DoorDash to choose your delivery address and order yourself."
-          : "No restaurants returned for that search. Try a different food or check DoorDash directly.",
+          ? "The duck found options. Open DoorDash to choose your delivery address and order yourself."
+          : "No results returned for that search. Try a different item or check DoorDash directly.",
       );
     } catch (e) {
       if (!c.signal.aborted)
@@ -137,10 +146,11 @@ export function FoodWorkspace() {
           <h1>
             Questionable purchases.
             <br />
-            <em>Excellent snack breaks.</em>
+            <em>Snacks. Supplies. Sorted.</em>
           </h1>
           <p>
-            Find food near your city. The duck scouts. You order on DoorDash.
+            Find food and retail items near your city. The duck scouts. You
+            order on DoorDash.
           </p>
         </div>
         <div className="food-mascot" aria-hidden="true">
@@ -150,18 +160,51 @@ export function FoodWorkspace() {
         </div>
       </section>
       <section className="food-search">
-        <h2>Feed the crew.</h2>
-        <label htmlFor="food-query">What sounds good?</label>
+        <h2>Feed the crew. Stock the boat.</h2>
+        <div className="food-modes" role="group" aria-label="Search type">
+          {(["restaurants", "retail"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              disabled={busy}
+              aria-pressed={mode === value}
+              onClick={() => {
+                setMode(value);
+                setQuery(value === "retail" ? "AA batteries" : "pizza");
+                setStores(null);
+                setNotice("");
+              }}
+            >
+              {value === "retail" ? "🛍️ Retail & groceries" : "🍕 Restaurants"}
+            </button>
+          ))}
+        </div>
+        <label htmlFor="food-query">
+          {mode === "retail" ? "What do you need?" : "What sounds good?"}
+        </label>
         <input
           id="food-query"
           value={query}
           maxLength={160}
           disabled={busy}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Pizza, ramen, tacos, a restaurant…"
+          placeholder={
+            mode === "retail"
+              ? "Batteries, milk, dog treats, USB-C cable…"
+              : "Pizza, ramen, tacos, a restaurant…"
+          }
         />
         <div className="food-chips">
-          {["Pizza", "Ramen", "Tacos", "Burgers", "Coffee"].map((q) => (
+          {(mode === "retail"
+            ? [
+                "AA batteries",
+                "USB-C cable",
+                "Dog treats",
+                "Milk",
+                "Pokémon cards",
+              ]
+            : ["Pizza", "Ramen", "Tacos", "Burgers", "Coffee"]
+          ).map((q) => (
             <button
               key={q}
               type="button"
@@ -231,7 +274,9 @@ export function FoodWorkspace() {
               ? "Food scout temporarily offline"
               : available === null
                 ? "Checking the galley…"
-                : "Find food with DoorDash ↗"}
+                : mode === "retail"
+                  ? "Find retail items ↗"
+                  : "Find food with DoorDash ↗"}
         </button>
         {busy && (
           <div className="food-progress">
@@ -239,7 +284,7 @@ export function FoodWorkspace() {
             <p>
               {seconds > 20
                 ? "DoorDash is taking a little longer. We’ll show its response when it arrives."
-                : "Searching real restaurants. No cart is being created."}
+                : "Searching DoorDash. No cart is being created."}
             </p>
             <button
               onClick={() => {
@@ -263,10 +308,10 @@ export function FoodWorkspace() {
       </section>
       {stores && (
         <section className="food-results">
-          <p className="food-kicker">THE GALLEY MANIFEST</p>
+          <p className="food-kicker">THE CREW MANIFEST</p>
           <h2 ref={results} tabIndex={-1}>
             {stores.length
-              ? `${stores.length} places. One hungry crew.`
+              ? `${stores.length} ${stores[0]?.kind === "item" ? "items" : "places"}. Pick your next stop.`
               : "Nothing on the menu this time."}
           </h2>
           <p>
@@ -288,17 +333,32 @@ export function FoodWorkspace() {
                   />
                 ) : (
                   <div className="food-photo-empty" aria-hidden="true">
-                    🍽️
+                    📦
                   </div>
                 )}
                 <div className="food-card-copy">
                   <h3>{s.name}</h3>
-                  <p>
-                    {s.rating !== null
-                      ? `★ ${s.rating}${s.reviewCount !== null ? ` (${s.reviewCount})` : ""}`
-                      : "Rating not supplied"}
-                    {s.distance ? ` · ${s.distance}` : ""}
-                  </p>
+                  {s.kind === "item" && (
+                    <>
+                      <p>{s.storeName}</p>
+                      <p>
+                        {s.price !== null
+                          ? `Listed price: ${s.price.toFixed(2)}`
+                          : "Price not supplied"}
+                      </p>
+                      <small>
+                        Confirm currency, stock and final price on DoorDash.
+                      </small>
+                    </>
+                  )}
+                  {s.kind === "restaurant" && (
+                    <p>
+                      {s.rating !== null
+                        ? `★ ${s.rating}${s.reviewCount !== null ? ` (${s.reviewCount})` : ""}`
+                        : "Rating not supplied"}
+                      {s.distance ? ` · ${s.distance}` : ""}
+                    </p>
+                  )}
                   {s.pickup === true && (
                     <small>Pickup offered · confirm on DoorDash</small>
                   )}
@@ -332,8 +392,9 @@ export function FoodWorkspace() {
           Continue on DoorDash ↗
         </a>
         <p>
-          Restaurant photos and information come from DoorDash. Availability and
-          prices can change.
+          Product and restaurant information comes from DoorDash. Retail search
+          covers up to 12 item/store matches within five miles of the selected
+          city point. Availability and prices can change.
         </p>
       </footer>
     </main>
