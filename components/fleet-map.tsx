@@ -29,12 +29,13 @@ const stateShapes = states.features.map((s) => ({
   id: String(s.id),
   path: path(s) || "",
 }));
-const colors = ["#f4be59", "#77bba6", "#e58e77"];
-const names = ["Captain Quack", "Duck Norris", "The Quackup Plan"];
-const destinations: [[number, number], [number, number], [number, number]] = [
+const colors = ["#f4be59", "#77bba6", "#e58e77", "#79a9d6"];
+const names = ["Captain Quack", "Duck Norris", "The Quackup Plan", "Dash Duck"];
+const destinations: [number, number][] = [
   [138, 150],
   [815, 230],
   [480, 455],
+  [820, 390],
 ];
 const port: [number, number] = [94, 380];
 function Boat({ color }: { color: string }) {
@@ -254,7 +255,7 @@ export function FleetMap({
             drag.current = null;
           }}
           role="group"
-          aria-label="US coastline with three search boats and approximate city locations of results"
+          aria-label="US coastline with search boats and approximate city locations of results"
         >
           <defs>
             <pattern
@@ -346,93 +347,97 @@ export function FleetMap({
               search origin · not a location
             </text>
           </g>
-          {names.map((name, i) => {
-            const w = workers.find((w) => w.id === String(i + 1));
-            const phase = w?.status || "queued";
-            const found = [...points]
-              .reverse()
-              .find((p) => p.item.workerId === w?.id);
-            const target = found
-              ? [found.xy[0] - 30, found.xy[1] - 35]
-              : destinations[i];
-            const isMoving =
-              !(preview && demoPaused) &&
-              ["starting", "searching", "extracting"].includes(phase);
-            const afloat = phase !== "queued";
-            const position =
-              phase === "queued"
-                ? [100 + i * 115, 440]
-                : phase === "starting"
-                  ? [port[0] + 35 + i * 25, port[1] - 45 - i * 15]
-                  : target;
-            const route = `M ${port[0]} ${port[1]} Q ${port[0] + (target[0] - port[0]) * 0.25} ${Math.min(port[1], target[1]) - 80 - i * 20} ${target[0]} ${target[1]}`;
-            return (
-              <g
-                key={name}
-                opacity={
-                  selectedWorker && selectedWorker !== String(i + 1) ? 0.35 : 1
-                }
-              >
-                {afloat && (
-                  <path
-                    d={route}
-                    className={`boat-route ${isMoving ? "traveling" : ""}`}
-                    fill="none"
-                    stroke={colors[i]}
-                    strokeWidth="2.5"
-                    strokeDasharray="5 7"
-                  />
-                )}
-                {afloat && isMoving && (
-                  <circle
-                    cx={target[0]}
-                    cy={target[1]}
-                    r="29"
-                    className="sonar-ring"
-                    fill="none"
-                    stroke={colors[i]}
-                    strokeWidth="2"
-                  />
-                )}
+          {names
+            .slice(0, workers.some((w) => w.id === "4") ? 4 : 3)
+            .map((name, i) => {
+              const w = workers.find((w) => w.id === String(i + 1));
+              const phase = w?.status || "queued";
+              const found = [...points]
+                .reverse()
+                .find((p) => p.item.workerId === w?.id);
+              const target = found
+                ? [found.xy[0] - 30, found.xy[1] - 35]
+                : destinations[i];
+              const isMoving =
+                !(preview && demoPaused) &&
+                ["starting", "searching", "extracting"].includes(phase);
+              const afloat = phase !== "queued";
+              const position =
+                phase === "queued"
+                  ? [100 + i * 115, 440]
+                  : phase === "starting"
+                    ? [port[0] + 35 + i * 25, port[1] - 45 - i * 15]
+                    : target;
+              const route = `M ${port[0]} ${port[1]} Q ${port[0] + (target[0] - port[0]) * 0.25} ${Math.min(port[1], target[1]) - 80 - i * 20} ${target[0]} ${target[1]}`;
+              return (
                 <g
-                  className={`chart-boat ${isMoving ? "working" : ""}`}
-                  style={{
-                    transform: `translate(${position[0]}px,${position[1]}px)`,
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${name}: ${phase}. Show ${preview ? "recorded discoveries" : "API calls"}`}
-                  onClick={() =>
-                    setSelectedWorker(
-                      selectedWorker === String(i + 1) ? null : String(i + 1),
-                    )
+                  key={name}
+                  opacity={
+                    selectedWorker && selectedWorker !== String(i + 1)
+                      ? 0.35
+                      : 1
                   }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setSelectedWorker(String(i + 1));
-                    }
-                  }}
                 >
-                  <title>{`${name} · ${phase}${w?.sandboxId ? ` · ${w.sandboxId}` : ""}`}</title>
-                  <Boat color={colors[i]} />
-                  <text y="42" textAnchor="middle" className="boat-name">
-                    {name}
-                  </text>
-                  <text y="55" textAnchor="middle" className="boat-phase">
-                    {preview ? "demo · " : ""}
-                    {phase === "queued"
-                      ? "in port"
-                      : phase === "complete"
-                        ? "back with receipts"
-                        : phase === "failed"
-                          ? "hit rough seas"
-                          : phase}
-                  </text>
+                  {afloat && (
+                    <path
+                      d={route}
+                      className={`boat-route ${isMoving ? "traveling" : ""}`}
+                      fill="none"
+                      stroke={colors[i]}
+                      strokeWidth="2.5"
+                      strokeDasharray="5 7"
+                    />
+                  )}
+                  {afloat && isMoving && (
+                    <circle
+                      cx={target[0]}
+                      cy={target[1]}
+                      r="29"
+                      className="sonar-ring"
+                      fill="none"
+                      stroke={colors[i]}
+                      strokeWidth="2"
+                    />
+                  )}
+                  <g
+                    className={`chart-boat ${isMoving ? "working" : ""}`}
+                    style={{
+                      transform: `translate(${position[0]}px,${position[1]}px)`,
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${name}: ${phase}. Show ${preview ? "recorded discoveries" : "API calls"}`}
+                    onClick={() =>
+                      setSelectedWorker(
+                        selectedWorker === String(i + 1) ? null : String(i + 1),
+                      )
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedWorker(String(i + 1));
+                      }
+                    }}
+                  >
+                    <title>{`${name} · ${phase}${w?.sandboxId ? ` · ${w.sandboxId}` : ""}`}</title>
+                    <Boat color={colors[i]} />
+                    <text y="42" textAnchor="middle" className="boat-name">
+                      {name}
+                    </text>
+                    <text y="55" textAnchor="middle" className="boat-phase">
+                      {preview ? "demo · " : ""}
+                      {phase === "queued"
+                        ? "in port"
+                        : phase === "complete"
+                          ? "back with receipts"
+                          : phase === "failed"
+                            ? "hit rough seas"
+                            : phase}
+                    </text>
+                  </g>
                 </g>
-              </g>
-            );
-          })}
+              );
+            })}
           {groups.map((g, i) => (
             <g
               key={i}
@@ -470,24 +475,26 @@ export function FleetMap({
         </div>
       </div>
       <div className="boat-selectors">
-        {names.map((name, i) => {
-          const w = workers.find((w) => w.id === String(i + 1));
-          return (
-            <button
-              key={name}
-              className={selectedWorker === String(i + 1) ? "selected" : ""}
-              onClick={() =>
-                setSelectedWorker(
-                  selectedWorker === String(i + 1) ? null : String(i + 1),
-                )
-              }
-            >
-              <span style={{ background: colors[i] }} />
-              {name}
-              <small>{w?.status || "in port"}</small>
-            </button>
-          );
-        })}
+        {names
+          .slice(0, workers.some((w) => w.id === "4") ? 4 : 3)
+          .map((name, i) => {
+            const w = workers.find((w) => w.id === String(i + 1));
+            return (
+              <button
+                key={name}
+                className={selectedWorker === String(i + 1) ? "selected" : ""}
+                onClick={() =>
+                  setSelectedWorker(
+                    selectedWorker === String(i + 1) ? null : String(i + 1),
+                  )
+                }
+              >
+                <span style={{ background: colors[i] }} />
+                {name}
+                <small>{w?.status || "in port"}</small>
+              </button>
+            );
+          })}
       </div>
       <div className="expedition-bottom">
         <div className="radio-log">
@@ -557,7 +564,7 @@ export function FleetMap({
                 {preview
                   ? "The boats are acting. The listings are real source snapshots. No APIs are called during playback."
                   : busy
-                    ? "The captain is plotting three search routes. Actual API activity will appear as the workers report in."
+                    ? "The captain is plotting search routes. Actual API activity will appear as the workers report in."
                     : "No mysterious numbers. No pretend progress. Send the ducks and watch the actual calls arrive."}
               </p>
             )}

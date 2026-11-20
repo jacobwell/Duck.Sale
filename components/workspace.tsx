@@ -729,7 +729,9 @@ export function Workspace({ initialId }: { initialId?: string }) {
           >
             🕵️ Private Mode
           </Link>
-          <Link href="/food" style={{ padding: "12px 16px", display: "block" }}>🍕 Feed the crew</Link>
+          <Link href="/food" style={{ padding: "12px 16px", display: "block" }}>
+            🍕 Feed the crew
+          </Link>
           <button
             className={view === "discover" ? "active" : ""}
             onClick={() => setView("discover")}
@@ -1061,9 +1063,12 @@ export function Workspace({ initialId }: { initialId?: string }) {
                     <div>
                       <strong>
                         <span className="worker-callsign">
-                          {["Captain Quack", "Duck Norris", "The Quackup Plan"][
-                            Number(w.id) - 1
-                          ] || "Field duck"}
+                          {[
+                            "Captain Quack",
+                            "Duck Norris",
+                            "The Quackup Plan",
+                            "Dash Duck",
+                          ][Number(w.id) - 1] || "Field duck"}
                         </span>
                         {w.name}
                       </strong>
@@ -1699,12 +1704,14 @@ export function Workspace({ initialId }: { initialId?: string }) {
           <div className="how-list">
             <p>
               <strong>01 · A plan, made for you</strong>AI turns your request
-              into three different search angles.
+              into three web search angles, plus a DoorDash retail scout when a
+              nearby item, alternative or accessory is plausible.
             </p>
             <p>
               <strong>02 · Three ducks, out exploring</strong>Each duck gets a
               Boat.dev sandbox. Context.dev finds and reads pages, including
-              source images.
+              source images. Dash Duck is a separate server-side scout: it
+              checks DoorDash catalogs through a shared FIFO queue.
             </p>
             <p>
               <strong>03 · Evidence, brought together</strong>AI Gateway

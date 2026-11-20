@@ -7,6 +7,10 @@ const config: NextConfig = {
     ".next",
   serverExternalPackages: ["@boatdev/sdk", "@lore-hex/trusted-router"],
   outputFileTracingIncludes: {
+    "/api/search": ["./.vendor/doordash/dd-cli-v0.2.6-linux-amd64/**/*"],
+    "/api/search/continue": [
+      "./.vendor/doordash/dd-cli-v0.2.6-linux-amd64/**/*",
+    ],
     "/api/food/search": ["./.vendor/doordash/dd-cli-v0.2.6-linux-amd64/**/*"],
   },
   images: {

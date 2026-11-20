@@ -1,3 +1,5 @@
+import { doorDashScout } from "./doordash-scout";
+import { foodReady } from "./doordash";
 import { aiService } from "./models";
 import "server-only";
 import { adminDb, saveRun } from "./db";
@@ -64,6 +66,14 @@ export async function executeSearch(
       id: String(i + 1),
       status: "queued",
     }));
+    if (plan.doorDash && input.intent !== "rent" && foodReady())
+      run.workers.push({
+        id: "4",
+        name: `DoorDash ${plan.doorDash.kind} scout`,
+        query: plan.doorDash.query,
+        status: "queued",
+        message: plan.doorDash.reason,
+      });
     await persist();
     run.workers.forEach((worker) => emit({ type: "worker", worker }));
     const settled = await Promise.allSettled(
@@ -78,6 +88,65 @@ export async function executeSearch(
             ].slice(-45),
           });
         };
+        if (initial.id === "4" && plan.doorDash) {
+          try {
+            await update({
+              ...initial,
+              status: "searching",
+              message:
+                "Resolving a city, then joining the shared DoorDash FIFO queue.",
+            });
+            const result = await doorDashScout(
+              id,
+              userId,
+              input,
+              plan.doorDash,
+              AbortSignal.any([signal, AbortSignal.timeout(75000)]),
+              async (call) => {
+                await record(call);
+                await update({
+                  ...run.workers.find((w) => w.id === "4")!,
+                  message: call.operation,
+                });
+              },
+            );
+            const added = result.listings.filter(
+              (l) =>
+                !run.listings.some(
+                  (old) =>
+                    normalizeSourceUrl(old.sourceUrl) ===
+                    normalizeSourceUrl(l.sourceUrl),
+                ) &&
+                !continuation?.urls.some(
+                  (url) =>
+                    normalizeSourceUrl(url) === normalizeSourceUrl(l.sourceUrl),
+                ),
+            );
+            run.listings.push(...added);
+            await update({
+              ...run.workers.find((w) => w.id === "4")!,
+              status: "complete",
+              count: added.length,
+              partial: result.partial,
+              message: result.message,
+            });
+            if (added.length) emit({ type: "results", listings: added });
+          } catch (error) {
+            const safe =
+              error instanceof Error &&
+              /^(Food search (hourly|is busy)|DoorDash (queue|admission|city))/.test(
+                error.message,
+              )
+                ? error.message
+                : "DoorDash search could not finish within its queue/provider time budget. Other boats continue.";
+            await update({
+              ...run.workers.find((w) => w.id === "4")!,
+              status: "failed",
+              message: safe,
+            });
+          }
+          return;
+        }
         let extractionCall: ApiCall | undefined;
         try {
           const evidence = await discover(id, initial, update, signal);
@@ -208,13 +277,13 @@ export async function executeSearch(
     const failed = run.workers.filter((w) => w.status === "failed").length;
     const incomplete = run.workers.filter((w) => w.partial).length;
     run.status =
-      failed === 3
+      failed === run.workers.length
         ? "failed"
         : failed || incomplete || settled.some((s) => s.status === "rejected")
           ? "partial"
           : "complete";
     if (failed)
-      run.warning = `${failed} of 3 workers failed. Any results shown are from the workers that succeeded.`;
+      run.warning = `${failed} of ${run.workers.length} workers failed. Any results shown are from the workers that succeeded.`;
     else if (incomplete)
       run.warning =
         "Some sources could only be read partially or reached the provider cooldown/time limit. Available findings were preserved.";

@@ -1,4 +1,6 @@
 import "server-only";
+import { doorDashPermit } from "./doordash-queue";
+import type { ApiCall } from "@/lib/types";
 import { retailDiscovery } from "./retail-discovery";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -32,6 +34,19 @@ export function foodReady() {
     expiry > Date.now() + 60000
   );
 }
+export type DoorDashResult = {
+  id: string;
+  name: string;
+  storeName: string | null;
+  price: number | null;
+  image: string | null;
+  distance: string | null;
+  rating: number | null;
+  reviewCount: number | null;
+  pickup: boolean | null;
+  url: string;
+  kind: "item" | "restaurant";
+};
 export async function discoverFood(
   query: string,
   latitude: number,
@@ -39,7 +54,11 @@ export async function discoverFood(
   signal: AbortSignal,
   mode: "restaurants" | "retail" = "restaurants",
   storeId?: string,
-) {
+  record?: (call: ApiCall) => Promise<void>,
+): Promise<{
+  stores: DoorDashResult[];
+  coverage: { summary: string; receipts: string[] } | null;
+}> {
   if (!foodReady()) throw Error("unavailable");
   const bin =
     process.platform === "linux"
@@ -57,32 +76,66 @@ export async function discoverFood(
       | "find-items",
     args: string[],
   ) => {
-    const { stdout } = await execute(
-      bin,
-      [
-        "--json-output",
-        command,
-        ...args,
-        "--intent",
-        'Summary: Help a Duck.Sale visitor discover food or retail items; no orders.\nuser prompt/purpose: "Find nearby options; do not order."',
-      ],
-      {
-        encoding: "utf8",
-        timeout: 15000,
-        maxBuffer: 1_000_000,
+    const call: ApiCall = {
+      id: crypto.randomUUID(),
+      service: "DoorDash",
+      operation: command,
+      startedAt: new Date().toISOString(),
+      status: "running",
+    };
+    await record?.(call);
+    try {
+      const { stdout } = await doorDashPermit(
         signal,
-        env: {
-          NODE_ENV: "production",
-          PATH: "/usr/bin:/bin",
-          HOME: "/tmp",
-          TMPDIR: "/tmp",
-          LANG: "en_US.UTF-8",
-          DD_CLI_ACCESS_TOKEN: process.env.DD_CLI_ACCESS_TOKEN!,
-          PYTHON_KEYRING_BACKEND: "keyring.backends.null.Keyring",
+        async (position) => {
+          await record?.({
+            ...call,
+            operation: `${command} · FIFO queue #${position}`,
+          });
         },
-      },
-    );
-    return JSON.parse(stdout);
+        async () => {
+          await record?.(call);
+          return execute(
+            bin,
+            [
+              "--json-output",
+              command,
+              ...args,
+              "--intent",
+              'Summary: Help a Duck.Sale visitor discover food or retail items; no orders.\nuser prompt/purpose: "Find nearby options; do not order."',
+            ],
+            {
+              encoding: "utf8",
+              timeout: 15000,
+              maxBuffer: 1_000_000,
+              signal,
+              env: {
+                NODE_ENV: "production",
+                PATH: "/usr/bin:/bin",
+                HOME: "/tmp",
+                TMPDIR: "/tmp",
+                LANG: "en_US.UTF-8",
+                DD_CLI_ACCESS_TOKEN: process.env.DD_CLI_ACCESS_TOKEN!,
+                PYTHON_KEYRING_BACKEND: "keyring.backends.null.Keyring",
+              },
+            },
+          );
+        },
+      );
+      await record?.({
+        ...call,
+        status: "complete",
+        finishedAt: new Date().toISOString(),
+      });
+      return JSON.parse(stdout);
+    } catch (error) {
+      await record?.({
+        ...call,
+        status: "failed",
+        finishedAt: new Date().toISOString(),
+      });
+      throw error;
+    }
   };
   const discovery =
     mode === "retail"

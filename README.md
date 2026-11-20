@@ -8,7 +8,7 @@ A fleet of little search boats. Real source links. A suspiciously large duck bud
 
 **[Try it live](https://duck.sale)** · **[Install & run locally](#install-and-run-locally)** · **[Watch the 3-minute demo](https://youtu.be/XXRGiBiYMJ0)** · **[Open Private Mode](https://duck.sale/private)** · **[Download the deck](https://duck.sale/demo/duck-sale-deck.pptx)**
 
-🍕 **[Feed the crew](https://duck.sale/food)** — a bonus DoorDash food and retail scout. Pick a city, find restaurants, groceries or retail items, then browse and order yourself on DoorDash. Search only: no carts, payments, orders, or personal account data are exposed. [Optional setup and token renewal](docs/DOORDASH.md).
+🍕 **[Feed the crew](https://duck.sale/food)** — a DoorDash food and retail scout. Main searches can also launch **Dash Duck**, a fourth scout for plausible retail items, alternatives or accessories. Pick a city, find restaurants, groceries or retail items, then browse and order yourself on DoorDash. Search only: no carts, payments, orders, or personal account data are exposed. [Optional setup and token renewal](docs/DOORDASH.md).
 
 
 ![Duck.Sale: boats searching across the US, followed by Private Mode](docs/assets/duck-sale-teaser.gif)

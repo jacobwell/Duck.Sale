@@ -9,7 +9,7 @@
 - No routes expose carts, ordering, checkout, payments, history, addresses, promotions or account management.
 - The CLI process receives only the DoorDash access token and basic runtime environment. Other application secrets are not inherited.
 - The raw DoorDash search response can include account and delivery-address metadata. It is never returned or logged. Only validated restaurant or product fields are projected into the API response. Store links are rebuilt from numeric store IDs. Product links must match the returned store and product IDs and only retain the product_id query parameter; account/session parameters are discarded.
-- Search queries and locations are not saved by Duck.Sale. Supabase stores user ID and start/finish timestamps for admission control. DoorDash receives search queries, selected coordinates, and a fixed discovery-purpose message; its retention policies apply. This is separate from Private Mode.
+- Standalone `/food` search queries and locations are not saved by Duck.Sale. Main fleet searches save public listing evidence and scout activity with the existing account-owned search run. Supabase stores user ID and start/finish timestamps for admission control. DoorDash receives search queries, selected coordinates, and a fixed discovery-purpose message; its retention policies apply. This is separate from Private Mode.
 - Restaurant photos load from DoorDash's public CDN. Browser requests to DoorDash links and photos are external requests.
 
 Retail starts with a 25-mile search and up to 40 provider candidates. A deterministic title filter retains model numbers and requires substantial query-word overlap. This is a heuristic, not semantic AI verification; synonyms can be missed. If fewer than three matches remain, four discovery centers shifted ten miles north/south/east/west find additional branches (each provider discovery area has a fixed 16-mile radius). Up to six branch catalogs are searched, prioritized by broad product-category rules. Branch IDs stay distinct. At most eleven provider calls are made, with no more than two in flight per search. A specific numeric store ID bypasses discovery and searches only that branch. This does not read favorites or saved addresses.
@@ -22,7 +22,7 @@ Ten searches per account per hour, sixty across the feature per hour, one active
 
 ## Setup and expiry
 
-The official CLI requires DoorDash beta approval. Version 0.2.6 is pinned; the Linux archive is verified against the release SHA-256 before extraction during `npm run build`. The binary lives in ignored `.vendor/` and is included only in the food-search function's deployment trace.
+The official CLI requires DoorDash beta approval. Version 0.2.6 is pinned; the Linux archive is verified against the release SHA-256 before extraction during `npm run build`. The binary lives in ignored `.vendor/` and is included in the standalone food-search and main search/continuation function deployment traces.
 
 Use the official CLI `export-token` flow on your trusted computer. Store these **server-only** variables in Vercel and your ignored `.env.local`:
 
@@ -50,3 +50,9 @@ Official CLI and release: https://github.com/doordash-oss/doordash-cli/releases/
 - Lint, TypeScript and production compilation passed. No order, cart, payment or account-history operations were invoked.
 
 - Expanded live local discovery found Explorer 200 at Big 5 branches 37130185 and 37129964 for $19.99 each in approximately six seconds; the initial broad search alone found no qualifying title matches.
+
+## Fourth fleet scout and shared FIFO
+
+The normal search planner can add Dash Duck alongside the three web workers. It selects one concrete retail query, explicitly classifies it as an item, alternative or accessory, and resolves a city from the user request. Rental-only requests and requests without a resolvable supported city do not launch it. Accessories and alternatives are labeled in listing titles; no store coordinates are inferred from the search center. Private Mode does not invoke DoorDash.
+
+Every DoorDash CLI request, from both the standalone page and main fleet, acquires a service-role-only PostgreSQL FIFO permit. One global request runs at a time, with 500 ms spacing, expiring waiters, a 20-second crash-recovery lease and a 15-second process timeout. Provider rate-limit errors add a 30-second cooldown. Queue positions and actual call completion/failure appear in the main fleet radio. The scout shares existing food-search admission limits and gets a 75-second overall budget; other web workers continue if it cannot finish.
