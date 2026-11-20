@@ -3661,3 +3661,16 @@ main {
     display: none;
   }
 }
+
+/* Confidential preparation and source-backed facts. */
+.secret-form .secret-prepare {
+  width: 100%; padding: 14px 18px; margin-top: 10px; border: 1px solid #24483c;
+  background: #24483c; color: #fff9e8; font-weight: 700; border-radius: 8px;
+}
+.secret-form .secret-prepare:disabled { opacity: .5; cursor: not-allowed; }
+.secret-preparation-receipt { margin: 14px 0 24px; overflow-wrap: anywhere; }
+.secret-preparation-receipt summary { cursor: pointer; font-weight: 700; }
+.secret-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.secret-facts dt { font-size: 12px; text-transform: uppercase; opacity: .7; }
+.secret-facts dd { margin: 6px 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .secret-facts { grid-template-columns: 1fr; gap: 6px; } }

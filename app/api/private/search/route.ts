@@ -52,6 +52,7 @@ export async function POST(request: Request) {
   const id = admission.data as string;
   let vpnExit: string | null = null,
     deleted = false;
+  let stage: "discovery" | "confidential inference" = "discovery";
   const signal = AbortSignal.any([request.signal, AbortSignal.timeout(255000)]);
   try {
     const evidence = await discover(
@@ -74,11 +75,12 @@ export async function POST(request: Request) {
       },
     );
     signal.throwIfAborted();
+    stage = "confidential inference";
     const ranked = await privateRank(input.brief, evidence, signal);
     return Response.json(
       {
         ...ranked,
-        partial: evidence.partial,
+        partial: evidence.partial || ranked.partial,
         receipt: {
           publicQuery: input.publicQuery,
           vpnExit,
@@ -93,8 +95,7 @@ export async function POST(request: Request) {
   } catch {
     return Response.json(
       {
-        error:
-          "Private voyage could not complete. No ordinary network or AI fallback was used.",
+        error: `Private voyage stopped during ${stage}. No ordinary network or AI fallback was used.`,
         receipt: {
           vpnExit,
           sandboxDeleted: deleted,

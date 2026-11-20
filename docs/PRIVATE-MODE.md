@@ -34,3 +34,20 @@ Verification receipts: private-vpn-verification.json, private-ai-verification.js
 ## Production release
 
 November 19, 2026: promoted preview `dpl_Box2kMcFCrnQEUeLahMbEYAb5YjV` to production `dpl_EenXEhRx21QxoN3j657qibcfA9rp`, Ready at https://boatduck.vercel.app/private. Full private voyage was exercised on preview `dpl_5gq1iS2roytUfFJ9nvS8LEmK7bno`; subsequent changes expose attestation details in the UI, clear restored pages, tighten referrer policy, and bound trust-release fetch time. Final preview config, page, and unauthorized-request checks passed. No extra paid production search was made.
+
+
+## Confidential query preparation and extraction
+
+Private Mode now offers an optional **Let NYTE draft the public query** action before discovery. `POST /api/private/prepare` requires a signed-in Supabase user, calls the same attested confidential-only transport, and returns a draft for editing. It never calls Boat or Context. Approval is cleared when a draft is requested, the brief changes, or the public query is edited. The user must explicitly approve and send the final query. This is a human-reviewed suggestion, not a guaranteed automatic redaction system.
+
+Migration `202611200008_private_preparation.sql` adds a service-only admission function and RLS-protected metadata table containing only ID, user ID, creation time and finish time. Preparation allows five attempts per user/hour, 30 globally/hour and one in-flight attempt per user (two-minute recovery window). It does not consume the separate search allowance. The existing hosted demo capability does not grant preparation access; hosted clients can still supply their own approved query.
+
+NYTE also extracts optional price, location and availability strings while ranking. Each retained field must occur verbatim in its source markdown; unsupported fields become null. The UI displays source claims, not independently verified inventory or seller information. Ordinary Gateway/OpenAI inference is never used for these Private Mode steps. Briefs, drafts and results stay out of app persistence; hosted memory and external provider retention remain the documented boundaries.
+
+### Verification of the expanded flow
+
+Real NYTE query preparation passed locally and on a protected Vercel preview (4.2 seconds on the preview), using DeepSeek Flash with `tls-exporter` gateway binding. The sample name, occasion, and budget were omitted from the proposed query; discovery had not started. This is one checked example, not a redaction guarantee. Chrome verified that editing the private brief revokes approval, disables launch, and clearing the voyage empties both fields.
+
+The new admission function rejects concurrent preparation and the hourly limit, and neither anon nor authenticated database roles can execute it directly. Verification-only quota inserts were rolled back. Lint, TypeScript, and the isolated production build passed during development.
+
+Live discovery returned real pages and confirmed VPN egress and completed worker deletion. The initial expanded ranking failed on an overlong title; a subsequent response was truncated. The revised implementation shortens display titles, validates matches individually, preserves supported results with a partial flag, and uses a larger bounded output allowance. Final real-page ranking verification is **pending**: the provider returned HTTP 402 at its credit admission boundary. No ordinary inference fallback was used. The expanded flow is not yet promoted to production.

@@ -8,7 +8,15 @@ type Status = {
   ready: boolean;
   services: { name: string; configured: boolean }[];
 };
-type Result = { title: string; reason: string; quote: string; url: string };
+type Result = {
+  title: string;
+  reason: string;
+  quote: string;
+  url: string;
+  price: string | null;
+  location: string | null;
+  availability: string | null;
+};
 type Reply = {
   results?: Result[];
   error?: string;
@@ -30,6 +38,8 @@ export function PrivateWorkspace() {
     [brief, setBrief] = useState(""),
     [approved, setApproved] = useState(false),
     [busy, setBusy] = useState(false),
+    [preparing, setPreparing] = useState(false),
+    [prepared, setPrepared] = useState<Reply | null>(null),
     [reply, setReply] = useState<Reply | null>(null),
     [notice, setNotice] = useState("");
   const abort = useRef<AbortController | null>(null);
@@ -40,6 +50,8 @@ export function PrivateWorkspace() {
     setQuery("");
     setApproved(false);
     setReply(null);
+    setPrepared(null);
+    setPreparing(false);
     setBusy(false);
     setNotice(
       "Voyage cleared from this page. Server cleanup may still be finishing; provider copies and backups are not proven erased.",
@@ -52,6 +64,10 @@ export function PrivateWorkspace() {
       .catch(() => setNotice("Service setup could not be loaded."));
     const clear = () => {
       abort.current?.abort();
+      abort.current = null;
+      setPrepared(null);
+      setPreparing(false);
+      setNotice("");
       setBrief("");
       setQuery("");
       setReply(null);
@@ -71,32 +87,57 @@ export function PrivateWorkspace() {
       abort.current?.abort();
     };
   }, []);
-  async function launch() {
-    const session = await browserDb()?.auth.getSession();
-    if (!session?.data.session) {
-      setNotice("Sign in on the main page, then return to Private Mode.");
-      return;
-    }
+  async function run(action: "prepare" | "search") {
+    if (abort.current || (action === "search" && !approved)) return;
     const controller = new AbortController();
     abort.current = controller;
     setBusy(true);
+    setPreparing(action === "prepare");
     setReply(null);
+    if (action === "prepare") {
+      setApproved(false);
+      setPrepared(null);
+    }
     setNotice(
-      "Checking VPN, gathering public sources, then privately ranking. This may take a few minutes.",
+      action === "prepare"
+        ? "NYTE is drafting a public query. Nothing goes to Boat or Context until you approve and send it."
+        : "Checking VPN, gathering public sources, then confidentially extracting and ranking with NYTE. This may take a few minutes.",
     );
     try {
-      const r = await fetch("/api/private/search", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.data.session.access_token}`,
-          "Content-Type": "application/json",
+      const session = await browserDb()?.auth.getSession();
+      if (controller.signal.aborted) return;
+      if (!session?.data.session) {
+        setNotice("Sign in on the main page, then return to Private Mode.");
+        return;
+      }
+      const r = await fetch(
+        `/api/private/${action === "prepare" ? "prepare" : "search"}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.data.session.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(
+            action === "prepare"
+              ? { brief }
+              : { publicQuery: query, brief, approved },
+          ),
+          signal: controller.signal,
+          cache: "no-store",
         },
-        body: JSON.stringify({ publicQuery: query, brief, approved }),
-        signal: controller.signal,
-        cache: "no-store",
-      });
+      );
       const data = await r.json();
-      if (!controller.signal.aborted) {
+      if (controller.signal.aborted) return;
+      if (action === "prepare") {
+        if (r.ok) {
+          setQuery(data.publicQuery);
+          setPrepared(data);
+          setNotice(
+            "Draft ready. Review and edit every word, then approve it below. No discovery has started.",
+          );
+        } else setNotice(data.error || "Query preparation could not complete.");
+      } else {
         setReply(data);
         setNotice(
           r.ok
@@ -107,12 +148,15 @@ export function PrivateWorkspace() {
     } catch {
       if (!controller.signal.aborted)
         setNotice(
-          "Connection ended. Results were not saved. Worker deletion may still be pending.",
+          action === "prepare"
+            ? "Preparation connection ended. Nothing was sent to discovery. You can retry or write your own public query."
+            : "Connection ended. Results were not saved. Worker deletion may still be pending.",
         );
     } finally {
       if (abort.current === controller) {
         abort.current = null;
         setBusy(false);
+        setPreparing(false);
       }
     }
   }
@@ -177,7 +221,7 @@ export function PrivateWorkspace() {
           <div>
             <span>02 / BELOW DECK</span>
             <h2>Your reasons stay separate</h2>
-            <p>NYTE / TrustedRouter confidential inference.</p>
+            <p>NYTE drafts queries, extracts facts, and ranks finds.</p>
           </div>
         </div>
         <div>
@@ -196,15 +240,78 @@ export function PrivateWorkspace() {
       <div className="secret-grid">
         <section className="secret-panel secret-form">
           <div className="secret-panel-heading">
+            <PrivacyMark kind="brief" />
+            <div>
+              <span>01 / THE PRIVATE PART</span>
+              <h2>Keep the details below deck</h2>
+            </div>
+          </div>
+          <label htmlFor="private-brief">Private shopping brief</label>
+          <textarea
+            id="private-brief"
+            autoComplete="off"
+            spellCheck={false}
+            maxLength={6000}
+            rows={6}
+            value={brief}
+            disabled={busy}
+            onChange={(e) => {
+              setBrief(e.target.value);
+              setApproved(false);
+              setPrepared(null);
+              setReply(null);
+            }}
+            placeholder="My actual budget and private buying requirements…"
+          />
+          <p>
+            The hosted Duck.Sale server receives this brief in memory and sends
+            it to NYTE for query preparation and ranking, with confidential
+            routing required. Boat and Context receive only the approved query.
+            This is not browser-to-enclave encryption.
+          </p>
+          <button
+            className="secret-prepare"
+            disabled={
+              !config?.services.find(
+                (s) => s.name === "NYTE confidential route",
+              )?.configured ||
+              brief.trim().length < 5 ||
+              busy
+            }
+            onClick={() => run("prepare")}
+          >
+            {preparing
+              ? "NYTE is drafting…"
+              : "Let NYTE draft the public query ↗"}
+          </button>
+          <p>
+            Optional confidential preparation: five drafts per account per hour.
+            You can also write the public query yourself.
+          </p>
+          {prepared?.attestation && (
+            <details className="secret-preparation-receipt">
+              <summary>NYTE draft receipt · discovery not started</summary>
+              <p>
+                Model: {prepared.model}. Gateway binding:{" "}
+                {prepared.attestation.binding}. Brief and draft not saved;
+                account/timing metadata retained.
+              </p>
+              <p style={{ overflowWrap: "anywhere" }}>
+                Verified image: {prepared.attestation.imageDigest}
+              </p>
+            </details>
+          )}
+          <div className="secret-panel-heading">
             <PrivacyMark kind="query" />
             <div>
-              <span>THE PUBLIC PART</span>
+              <span>02 / THE PUBLIC PART</span>
               <h2>What can leave the boat?</h2>
             </div>
           </div>
           <p>
-            Only type terms you approve sharing with Boat and Context. Keep
-            names, exact addresses, budgets and secrets out.
+            Review the NYTE draft or write your own query. AI can miss sensitive
+            details: keep names, exact addresses, budgets and secrets out. Only
+            the exact text you approve goes to Boat and Context.
           </p>
           <label htmlFor="public-query">Public search query</label>
           <input
@@ -217,6 +324,8 @@ export function PrivateWorkspace() {
             onChange={(e) => {
               setQuery(e.target.value);
               setApproved(false);
+              setPrepared(null);
+              setReply(null);
             }}
             placeholder="DGX Spark 128 GB for sale US"
           />
@@ -229,31 +338,6 @@ export function PrivateWorkspace() {
             />{" "}
             I approve sending exactly this query to discovery providers.
           </label>
-          <div className="secret-panel-heading secret-below">
-            <PrivacyMark kind="brief" />
-            <div>
-              <span>THE PRIVATE PART</span>
-              <h2>Keep the details below deck</h2>
-            </div>
-          </div>
-          <label htmlFor="private-brief">Private ranking brief</label>
-          <textarea
-            id="private-brief"
-            autoComplete="off"
-            spellCheck={false}
-            maxLength={6000}
-            rows={6}
-            value={brief}
-            disabled={busy}
-            onChange={(e) => setBrief(e.target.value)}
-            placeholder="My actual budget and private buying requirements…"
-          />
-          <p>
-            The hosted Duck.Sale server receives this brief in memory and sends
-            it to NYTE with confidential routing required. Boat and Context
-            receive only the approved query. This is not browser-to-enclave
-            encryption.
-          </p>
           <button
             className="secret-launch"
             disabled={
@@ -263,10 +347,12 @@ export function PrivateWorkspace() {
               brief.length < 5 ||
               busy
             }
-            onClick={launch}
+            onClick={() => run("search")}
           >
             {busy
-              ? "Secret Duck is at sea…"
+              ? preparing
+                ? "Prepare, review, then sail…"
+                : "Secret Duck is at sea…"
               : config?.ready
                 ? "Send the secret duck ↗"
                 : "Docked — services need setup"}
@@ -294,16 +380,16 @@ export function PrivateWorkspace() {
             ))}
           </ul>
           <p>
-            Configured does not mean a live check. Each voyage verifies gateway
-            attestation and checks the VPN exit before discovery; unsupported
-            confidential inference fails closed.
+            Configured does not mean a live check. Each NYTE call verifies
+            gateway attestation; the VPN exit is checked before discovery.
+            Unsupported confidential inference fails closed.
           </p>
           <hr />
           <h3>What we keep</h3>
           <p>
-            Account and timing metadata for rate limiting. No brief, approved
-            query, source content, or AI result is written to Duck.Sale’s search
-            history.
+            Account and timing metadata for rate limiting. No brief, draft,
+            approved query, source content, or AI result is written to
+            Duck.Sale’s search history.
           </p>
           <h3>What can still be seen</h3>
           <p>
@@ -340,6 +426,20 @@ export function PrivateWorkspace() {
           {reply.results?.map((r, i) => (
             <article className="secret-result" key={i}>
               <h3>{r.title}</h3>
+              <dl className="secret-facts">
+                <div>
+                  <dt>Price</dt>
+                  <dd>{r.price || "Not stated in source"}</dd>
+                </div>
+                <div>
+                  <dt>Location</dt>
+                  <dd>{r.location || "Not stated in source"}</dd>
+                </div>
+                <div>
+                  <dt>Availability</dt>
+                  <dd>{r.availability || "Not stated in source"}</dd>
+                </div>
+              </dl>
               <p>{r.reason}</p>
               <blockquote>{r.quote}</blockquote>
               <a

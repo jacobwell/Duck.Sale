@@ -89,7 +89,7 @@ If port 3000 is already occupied, use the existing Duck.Sale server or free that
 
 1. **Useful beyond the boat joke.** One brief searches across sources and categories, with specialist and local search angles.
 2. **You can inspect the work.** Select a boat to see its actual provider calls. Open a listing to inspect source evidence. Errors and partial coverage remain visible.
-3. **Privacy has a concrete data flow.** Private Mode separates an approved public query from a private ranking brief, verifies the confidential gateway connection, and checks worker VPN egress.
+3. **Privacy has a concrete data flow.** Private Mode uses NYTE to draft a public query from your private brief, asks for your approval, then confidentially extracts and ranks the discoveries. It verifies the confidential gateway connection and checks worker VPN egress.
 4. **The interface teaches the system.** Boats, routes, treasure pins, and the radio panel explain parallel discovery without hiding uncertainty.
 5. **The ducks have brakes.** Bounded worker lifetimes, transactional admission limits, a shared Context request queue, and explicit cleanup help contain spending and failures.
 
@@ -118,7 +118,7 @@ The AI can suggest a location interpretation, but a geocoder supplies the displa
 | **Context.dev** | Searches the web and reads source pages inside the workers | [Worker program](lib/server/worker-source.ts) |
 | **Vercel AI Gateway** | Standard-mode planning, structured extraction, location normalization, optional image generation | [AI pipeline](lib/server/ai.ts), [illustrations](lib/server/illustrations.ts) |
 | **OpenAI directly** | Optional alternative to Gateway for standard-mode text and images, using your OpenAI key | [Model selection](lib/server/models.ts) |
-| **NY Token Exchange / TrustedRouter** | Private Mode’s confidential-only inference, with gateway attestation and TLS binding checks | [Private inference](lib/server/private/inference.ts), [transport](lib/server/private/transport.ts) |
+| **NY Token Exchange / TrustedRouter** | Private query preparation, source-fact extraction, and personalized ranking, with confidential-only routing, gateway attestation, and TLS binding checks | [Private inference](lib/server/private/inference.ts), [transport](lib/server/private/transport.ts) |
 | **Mullvad / WireGuard** | Private workers use an isolated network namespace and a checked VPN exit; no direct-network fallback | [VPN launcher](lib/server/private/vpn-source.ts) |
 | **Supabase** | Login, account-isolated standard searches and saved finds, generation records, and admission limits | [Migrations](supabase/migrations), [server auth](lib/server/db.ts) |
 | **Next.js + Vercel** | UI, server routes, streaming updates, hosting, and environment configuration | [App](app), [deployment config](vercel.json) |
@@ -131,12 +131,12 @@ The AI can suggest a location interpretation, but a geocoder supplies the displa
 
 Imagine buying a surprise giant duck. The internet needs to know **“giant inflatable duck for sale.”** It does not need the birthday plan or your real budget.
 
-1. **You approve the public query.** Only those search terms go to Boat/Context for discovery.
-2. **You enter your private preferences separately.** The app processes them in server memory and sends them to NYTE/TrustedRouter with confidential routing required.
-3. **The worker uses a VPN.** Its exit is checked before discovery. If the required confidential route or VPN is unavailable, the private request stops rather than switching to an ordinary route.
-4. **You get a privacy receipt.** The response reports VPN verification, worker cleanup, and content-storage behavior.
+1. **Start with your private brief.** NYTE can propose a minimal public query while omitting budgets, names, and personal reasons. The app handles the brief in server memory; preparation makes no Boat or Context calls.
+2. **Review, edit, and approve the public query.** AI can miss sensitive details. Only the exact terms you approve go to Boat/Context when you click **Send the secret duck**. You can also skip preparation and write the query yourself.
+3. **The worker uses a VPN.** Its exit is checked before discovery. NYTE then extracts source-backed prices, locations, and availability and ranks results against your original private brief. Unsupported facts remain unknown. If confidential inference or the required VPN is unavailable, the request stops without an ordinary fallback.
+4. **Inspect the receipts.** Query preparation reports its gateway verification and confirms discovery has not started. The final voyage reports inference verification, VPN verification, worker cleanup, and content-storage behavior.
 
-**What is not saved:** the private brief, approved query, retrieved content, and results are not written to Duck.Sale’s search history. **What remains:** account/timing metadata for admission and rate limits. The browser clears page content on departure or after 15 minutes.
+**What is not saved:** the private brief, proposed query, approved query, retrieved content, and results are not written to Duck.Sale’s search history. **What remains:** account/timing metadata for admission and rate limits. The browser clears page content on departure or after 15 minutes.
 
 **Honest boundary:** this is not zero trace or browser-to-enclave encryption. The hosted app sees the brief in memory; providers receive the approved public query and requested pages; infrastructure metadata may remain. Context’s remote crawlers do not inherit the worker VPN. Photos do not load automatically in Private Mode. [Full privacy design and dated verification](docs/PRIVATE-MODE.md).
 
@@ -306,7 +306,7 @@ Already using the original checkout? Its `.vercel` directory is ignored. A clone
 - **Live:** parallel discovery, source receipts, city pins, continuation, account history, shortlist, and optional labeled illustrations.
 - **Private:** separate approved query/private brief, confidential gateway verification, VPN worker checks, bounded cleanup, and no saved private search content.
 - **Without keys:** the UI and recorded 20-boat replay. This is not a free live-search engine.
-- **Limits:** five searches per account per hour, one active search per account, and 30 across the fleet per hour. Private voyages additionally serialize access to the dedicated VPN identity.
+- **Limits:** five searches per account per hour, one active search per account, and 30 across the fleet per hour. Private voyages additionally serialize access to the dedicated VPN identity. Optional NYTE query preparation has a separate allowance of five drafts/account/hour and 30 fleet-wide/hour, with one active draft per account.
 - **Coverage:** searches can be partial or empty. Prices, seller identity, inventory, condition, and shipping still require confirmation with the source.
 - **Persistence:** standard mode stores searches and evidence; Private Mode retains only admission metadata. “Estimated cost unavailable” is not “free.”
 - **Not implemented:** seller outreach, buying, price alerts, authenticated marketplace crawling, or a promise of exhaustive coverage.
