@@ -3815,3 +3815,21 @@ main {
 }
 
 .secret-task-first .secret-form summary { color: #465e4d; }
+
+/* Bring the destination forward after the voyage. */
+.secret-shortlist { background: #f3f2e5; color: #233d31; }
+.secret-shortlist h2 { margin-top: 12px; scroll-margin-top: 24px; }
+.secret-shortlist h2:focus { outline: none; }
+.secret-shortlist .secret-eyebrow, .secret-shortlist summary { color: #47604e; }
+.secret-shortlist .secret-source-note { font-size: 12px; color: #556458; }
+.secret-shortlist .secret-result { background: #fffef7; border: 1px solid #cbd1c2; border-radius: 12px; padding: 24px; margin: 22px 0; }
+.secret-result-top { display:flex; justify-content:space-between; gap: 12px; flex-wrap:wrap; font-size: 11px; letter-spacing: 1px; color:#576752; }
+.secret-shortlist .secret-source-button { display:inline-flex; flex-direction:column; gap:6px; padding:14px 22px; border-radius:8px; background:#264c3b; color:#fffbe5; text-decoration:none; font-weight:700; }
+.secret-source-button small { font-size:11px; font-weight:400; }
+.secret-source-button:hover { filter:brightness(1.15); }
+.secret-source-button:focus-visible { outline:3px solid #a77d26; outline-offset:4px; }
+.secret-refine { color:#284f3b; text-underline-offset:4px; }
+.secret-result-receipt { border-top:1px solid #cbd1c2; padding-top:12px; }
+.secret-shortlist h4 { margin-bottom:6px; }
+.secret-voyage-details > summary { padding:16px 0; }
+@media(max-width:640px) { .secret-shortlist .secret-result { padding:18px; } .secret-shortlist .secret-source-button { display:flex; text-align:center; } }

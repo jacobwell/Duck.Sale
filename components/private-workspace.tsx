@@ -34,6 +34,14 @@ type Reply = {
     admissionMetadataRetained: boolean;
   };
 };
+function sourceUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url : null;
+  } catch {
+    return null;
+  }
+}
 export function PrivateWorkspace() {
   const [config, setConfig] = useState<Status | null>(null),
     [query, setQuery] = useState(""),
@@ -50,6 +58,7 @@ export function PrivateWorkspace() {
   const [finishedAt, setFinishedAt] = useState<number | null>(null);
   const [pulseAt, setPulseAt] = useState<number | null>(null);
   const [voyageFailed, setVoyageFailed] = useState(false);
+  const resultsHeading = useRef<HTMLHeadingElement | null>(null);
   const tracker = useRef<HTMLDivElement | null>(null);
   const abort = useRef<AbortController | null>(null);
   function scuttle() {
@@ -111,6 +120,17 @@ export function PrivateWorkspace() {
       document.getElementById("public-query")?.focus();
     }
   }, [busy, prepared, voyageMode]);
+  useEffect(() => {
+    if (!busy && reply) {
+      resultsHeading.current?.focus({ preventScroll: true });
+      resultsHeading.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+        block: "start",
+      });
+    }
+  }, [busy, reply]);
   async function run(action: "prepare" | "search") {
     if (abort.current || (action === "search" && !approved)) return;
     const controller = new AbortController();
@@ -236,7 +256,7 @@ export function PrivateWorkspace() {
         setReply(data);
         setNotice(
           ok
-            ? "Voyage returned. Inspect your privacy receipt below."
+            ? "Your shortlist is ready. Open a listing to view the seller’s page."
             : "The voyage stopped safely.",
         );
       }
@@ -484,32 +504,157 @@ export function PrivateWorkspace() {
           </details>
         </aside>
       </div>
-      <div ref={tracker} className="private-tracker-anchor">
-        {startedAt ? (
-          <PrivateVoyage
-            activities={activities}
-            busy={busy}
-            preparing={voyageMode === "prepare"}
-            startedAt={startedAt}
-            finishedAt={finishedAt}
-            pulseAt={pulseAt}
-            failed={voyageFailed}
-            onCancel={scuttle}
-            model={voyageMode === "prepare" ? prepared?.model : reply?.model}
-          />
-        ) : (
-          <div className="pv-standby">
-            <span aria-hidden="true">◈</span>
-            <div>
-              <b>Captain Incognito’s live voyage bridge</b>
+      {reply && (
+        <section
+          className="secret-panel secret-shortlist"
+          aria-labelledby="private-results-heading"
+        >
+          <span className="secret-eyebrow">
+            BACK WITH RECEIPTS · YOUR RESULTS
+          </span>
+          <h2 id="private-results-heading" ref={resultsHeading} tabIndex={-1}>
+            {reply.error
+              ? "Voyage report"
+              : `${reply.results?.length || 0} finds. Pick one to investigate.`}
+          </h2>
+          <p>
+            Each <strong>View listing</strong> button opens the original seller
+            or source in a new tab. Review the fit notes before you go.
+          </p>
+          <p className="secret-source-note">
+            You’ll leave Private Mode when opening a source: that website can
+            see your browser connection. These results are temporary and are not
+            saved to your history.
+          </p>
+          <a className="secret-refine" href="#private-brief">
+            Refine your search ↑
+          </a>
+          {reply.error && <p role="alert">{reply.error}</p>}
+          {reply.partial && (
+            <p>Partial source coverage; these results are not exhaustive.</p>
+          )}
+          {reply.results?.length === 0 && (
+            <p>No source-supported matches. Nothing was invented.</p>
+          )}
+          {reply.results?.map((r, i) => (
+            <article className="secret-result" key={i}>
+              <div className="secret-result-top">
+                <span>FIND {String(i + 1).padStart(2, "0")}</span>
+                <span>
+                  {sourceUrl(r.url)?.hostname.replace(/^www\./, "") ||
+                    "Source unavailable"}
+                </span>
+              </div>
+              <h3>{r.title}</h3>
+              {sourceUrl(r.url) ? (
+                <a
+                  className="secret-source-button"
+                  href={sourceUrl(r.url)!.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  referrerPolicy="no-referrer"
+                  aria-label={`View listing: ${r.title} (opens in new tab)`}
+                >
+                  View listing ↗{" "}
+                  <small>
+                    {sourceUrl(r.url)!.hostname.replace(/^www\./, "")} · new tab
+                  </small>
+                </a>
+              ) : (
+                <p>Source link unavailable.</p>
+              )}
+              <dl className="secret-facts">
+                <div>
+                  <dt>Price</dt>
+                  <dd>{r.price || "Not stated in source"}</dd>
+                </div>
+                <div>
+                  <dt>Location</dt>
+                  <dd>{r.location || "Not stated in source"}</dd>
+                </div>
+                <div>
+                  <dt>Availability</dt>
+                  <dd>{r.availability || "Not stated in source"}</dd>
+                </div>
+              </dl>
+              <h4>How it fits your brief</h4>
+              <p>{r.reason}</p>
+              <details className="secret-source-evidence">
+                <summary>Read the source evidence</summary>
+                <blockquote>{r.quote}</blockquote>
+              </details>
+            </article>
+          ))}
+          {reply.receipt && (
+            <details className="secret-result-receipt">
+              <summary>Privacy receipt &amp; model details</summary>
               <p>
-                Launch a draft or a search to follow the duck, inspect real API
-                calls, and watch the privacy checks.
+                VPN exit checked: {reply.receipt.vpnExit || "not confirmed"}.
+                Worker deletion:{" "}
+                {reply.receipt.sandboxDeleted
+                  ? "API reports completed"
+                  : "not confirmed; deletion may be pending or TTL fallback may stop it"}
+                .
               </p>
+              <p>
+                No search content saved by Duck.Sale. Admission metadata
+                retained. Third-party erasure not verified.
+              </p>
+              <p>{reply.routing}</p>
+              {reply.attestation && (
+                <details>
+                  <summary>Inspect gateway verification</summary>
+                  <p>
+                    Model: {reply.model}. Binding: {reply.attestation.binding}.
+                  </p>
+                  <p style={{ overflowWrap: "anywhere" }}>
+                    Verified image: {reply.attestation.imageDigest}
+                  </p>
+                  <p>
+                    The published release policy and a fresh Google-signed
+                    attestation were checked before the prompt was sent over the
+                    same TLS connection. Upstream confidentiality is enforced by
+                    NYTE.
+                  </p>
+                </details>
+              )}
+            </details>
+          )}
+        </section>
+      )}
+      <div ref={tracker} className="private-tracker-anchor">
+        <details className="secret-voyage-details" open={!reply || busy}>
+          <summary>
+            {reply && !busy
+              ? "View voyage log, API calls & privacy checks"
+              : "Live voyage & API calls"}
+          </summary>
+          {startedAt ? (
+            <PrivateVoyage
+              activities={activities}
+              busy={busy}
+              preparing={voyageMode === "prepare"}
+              startedAt={startedAt}
+              finishedAt={finishedAt}
+              pulseAt={pulseAt}
+              failed={voyageFailed}
+              onCancel={scuttle}
+              model={voyageMode === "prepare" ? prepared?.model : reply?.model}
+            />
+          ) : (
+            <div className="pv-standby">
+              <span aria-hidden="true">◈</span>
+              <div>
+                <b>Captain Incognito’s live voyage bridge</b>
+                <p>
+                  Launch a draft or a search to follow the duck, inspect real
+                  API calls, and watch the privacy checks.
+                </p>
+              </div>
+              <small>RADIO ON STANDBY</small>
             </div>
-            <small>RADIO ON STANDBY</small>
-          </div>
-        )}
+          )}
+        </details>
         {startedAt && (
           <p className="pv-action-notice" role="status">
             {notice}
@@ -545,84 +690,6 @@ export function PrivateWorkspace() {
           </div>
         </div>
       </section>
-      {reply && (
-        <section className="secret-panel">
-          <h2>
-            {reply.error ? "Voyage report" : "The confidential shortlist"}
-          </h2>
-          {reply.error && <p role="alert">{reply.error}</p>}
-          {reply.partial && (
-            <p>Partial source coverage; these results are not exhaustive.</p>
-          )}
-          {reply.results?.length === 0 && (
-            <p>No source-supported matches. Nothing was invented.</p>
-          )}
-          {reply.results?.map((r, i) => (
-            <article className="secret-result" key={i}>
-              <h3>{r.title}</h3>
-              <dl className="secret-facts">
-                <div>
-                  <dt>Price</dt>
-                  <dd>{r.price || "Not stated in source"}</dd>
-                </div>
-                <div>
-                  <dt>Location</dt>
-                  <dd>{r.location || "Not stated in source"}</dd>
-                </div>
-                <div>
-                  <dt>Availability</dt>
-                  <dd>{r.availability || "Not stated in source"}</dd>
-                </div>
-              </dl>
-              <p>{r.reason}</p>
-              <blockquote>{r.quote}</blockquote>
-              <a
-                href={/^https:\/\//.test(r.url) ? r.url : undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                referrerPolicy="no-referrer"
-              >
-                Open original source ↗
-              </a>
-            </article>
-          ))}
-          {reply.receipt && (
-            <div>
-              <h3>Privacy receipt</h3>
-              <p>
-                VPN exit checked: {reply.receipt.vpnExit || "not confirmed"}.
-                Worker deletion:{" "}
-                {reply.receipt.sandboxDeleted
-                  ? "API reports completed"
-                  : "not confirmed; deletion may be pending or TTL fallback may stop it"}
-                .
-              </p>
-              <p>
-                No search content saved by Duck.Sale. Admission metadata
-                retained. Third-party erasure not verified.
-              </p>
-              <p>{reply.routing}</p>
-              {reply.attestation && (
-                <details>
-                  <summary>Inspect gateway verification</summary>
-                  <p>
-                    Model: {reply.model}. Binding: {reply.attestation.binding}.
-                  </p>
-                  <p style={{ overflowWrap: "anywhere" }}>
-                    Verified image: {reply.attestation.imageDigest}
-                  </p>
-                  <p>
-                    The published release policy and a fresh Google-signed
-                    attestation were checked before the prompt was sent over the
-                    same TLS connection. Upstream confidentiality is enforced by
-                    NYTE.
-                  </p>
-                </details>
-              )}
-            </div>
-          )}
-        </section>
-      )}
     </main>
   );
 }
