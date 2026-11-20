@@ -82,7 +82,7 @@ node --conditions=react-server --env-file=.env.local --import tsx scripts/live-c
 
 ## Deployment
 
-Project: `jacobwells-projects/duck-sale`. The Supabase resource is `boatduck-db`, installed through the existing Vercel Supabase integration. Check its billing in the Vercel/Supabase dashboard; Marketplace lists the Pro offering from $25/month.
+Project: `jacobwells-projects/duck-sale`. The Supabase project display name is `Duck.Sale` (its Vercel Marketplace resource identifier remains `boatduck-db`), installed through the existing Vercel Supabase integration. Check its billing in the Vercel/Supabase dashboard; Marketplace lists the Pro offering from $25/month.
 
 Use `vercel deploy` for a preview and verify before promoting. API keys must be set on the matching Vercel environment. Gateway uses project OIDC on Vercel.
 
@@ -100,4 +100,4 @@ Boat workers call the public `/api/context-permit` endpoint using short-lived, r
 
 ## Brand and compatibility
 
-The product is Duck.Sale and its GitHub repository is `jacobwell/Duck.Sale`. The existing `boatduck-db` Supabase resource, migration ledger, illustration bucket, worker protocol filenames, and signed-token namespace retain their original identifiers to preserve existing data and in-flight work. Legacy `BOATDUCK_*` environment variables remain supported as fallbacks for `DUCK_SALE_*`. Historical verification receipts and recorded demo footage describe the original release.
+The product is Duck.Sale and its GitHub repository is `jacobwell/Duck.Sale`. The existing `boatduck-db` Supabase resource, migration ledger, illustration bucket, worker protocol filenames, and signed-token namespace retain their original identifiers to preserve existing data and in-flight work. Legacy `BOATDUCK_*` environment variables remain supported as fallbacks for `DUCK_SALE_*`. Historical verification receipts describe the original release. Demo title cards and the deck use Duck.Sale; captured application footage remains unchanged.

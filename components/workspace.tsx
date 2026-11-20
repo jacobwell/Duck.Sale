@@ -1545,6 +1545,13 @@ export function Workspace({ initialId }: { initialId?: string }) {
               >
                 Watch demo · 3 min
               </a>
+              <a
+                href="https://www.youtube.com/watch?v=XXRGiBiYMJ0"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Watch on YouTube
+              </a>
               <a href="/demo/duck-sale-deck.pptx" download>
                 Download deck
               </a>
