@@ -106,6 +106,11 @@ export function PrivateWorkspace() {
       abort.current?.abort();
     };
   }, []);
+  useEffect(() => {
+    if (!busy && prepared && voyageMode === "prepare") {
+      document.getElementById("public-query")?.focus();
+    }
+  }, [busy, prepared, voyageMode]);
   async function run(action: "prepare" | "search") {
     if (abort.current || (action === "search" && !approved)) return;
     const controller = new AbortController();
@@ -116,12 +121,13 @@ export function PrivateWorkspace() {
     setPulseAt(null);
     setVoyageFailed(false);
     setVoyageMode(action);
-    tracker.current?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-      block: "start",
-    });
+    if (action === "search")
+      tracker.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+        block: "start",
+      });
     setBusy(true);
     setPreparing(action === "prepare");
     setReply(null);
@@ -248,7 +254,7 @@ export function PrivateWorkspace() {
     }
   }
   return (
-    <main className="secret-duck">
+    <main className="secret-duck secret-task-first">
       <header>
         <Link href="/" className="secret-brand">
           <Duck size={30} /> Duck.Sale<span> / </span>
@@ -291,82 +297,12 @@ export function PrivateWorkspace() {
           </p>
         </div>
       </section>
-      <section
-        className="secret-route"
-        aria-label="How Private Mode handles your search"
-      >
-        <div>
-          <PrivacyMark kind="query" />
-          <div>
-            <span>01 / ABOVE DECK</span>
-            <h2>A query you approve</h2>
-            <p>Boat + Context discover public sources.</p>
-          </div>
-        </div>
-        <div>
-          <PrivacyMark kind="brief" />
-          <div>
-            <span>02 / BELOW DECK</span>
-            <h2>Your reasons stay separate</h2>
-            <p>NYTE drafts queries, extracts facts, and ranks finds.</p>
-          </div>
-        </div>
-        <div>
-          <PrivacyMark kind="wake" />
-          <div>
-            <span>03 / NO SAVED SEARCH</span>
-            <h2>A temporary voyage</h2>
-            <p>VPN worker traffic. Search content not saved.</p>
-          </div>
-        </div>
-      </section>
-      <div className="secret-section-label">
-        <span>YOUR DISCREET LITTLE SEARCH PARTY</span>
-        <span>Public sources. Private preferences.</span>
-      </div>
-      <div ref={tracker} className="private-tracker-anchor">
-        {startedAt ? (
-          <PrivateVoyage
-            activities={activities}
-            busy={busy}
-            preparing={voyageMode === "prepare"}
-            startedAt={startedAt}
-            finishedAt={finishedAt}
-            pulseAt={pulseAt}
-            failed={voyageFailed}
-            onCancel={scuttle}
-            model={voyageMode === "prepare" ? prepared?.model : reply?.model}
-          />
-        ) : (
-          <div className="pv-standby">
-            <span aria-hidden="true">◈</span>
-            <div>
-              <b>Captain Incognito’s live voyage bridge</b>
-              <p>
-                Launch a draft or a search to follow the duck, inspect real API
-                calls, and watch the privacy checks.
-              </p>
-            </div>
-            <small>RADIO ON STANDBY</small>
-          </div>
-        )}
-        {startedAt && (
-          <p className="pv-action-notice" role="status">
-            {notice}
-          </p>
-        )}
-      </div>
-      {!busy && prepared && voyageMode === "prepare" && (
-        <a className="pv-review-link" href="#public-query">
-          Review your draft and approve it below ↓
-        </a>
-      )}
       <div className="secret-grid">
         <section className="secret-panel secret-form">
           <div className="secret-panel-heading">
             <PrivacyMark kind="brief" />
             <div>
-              <span>01 / THE PRIVATE PART</span>
+              <span>START HERE · 01 / THE PRIVATE PART</span>
               <h2>Keep the details below deck</h2>
             </div>
           </div>
@@ -387,12 +323,15 @@ export function PrivateWorkspace() {
             }}
             placeholder="My actual budget and private buying requirements…"
           />
-          <p>
-            The hosted Duck.Sale server receives this brief in memory and sends
-            it to NYTE for query preparation and ranking, with confidential
-            routing required. Boat and Context receive only the approved query.
-            This is not browser-to-enclave encryption.
-          </p>
+          <details className="secret-explainer">
+            <summary>Who can see my brief?</summary>
+            <p>
+              The hosted Duck.Sale server receives this brief in memory and
+              sends it to NYTE for query preparation and ranking, with
+              confidential routing required. Boat and Context receive only the
+              approved query. This is not browser-to-enclave encryption.
+            </p>
+          </details>
           <button
             className="secret-prepare"
             disabled={
@@ -408,10 +347,7 @@ export function PrivateWorkspace() {
               ? "NYTE is drafting…"
               : "Let NYTE draft the public query ↗"}
           </button>
-          <p>
-            Optional confidential preparation: five drafts per account per hour.
-            You can also write the public query yourself.
-          </p>
+          <p>Draft it with NYTE, or write your public query below.</p>
           {prepared?.attestation && (
             <details className="secret-preparation-receipt">
               <summary>NYTE draft receipt · discovery not started</summary>
@@ -486,55 +422,125 @@ export function PrivateWorkspace() {
           </p>
         </section>
         <aside className="secret-panel secret-manifest">
-          <div className="secret-panel-heading">
-            <PrivacyMark kind="wake" />
-            <div>
-              <span>CHECK THE MANIFEST</span>
-              <h2>Discreet. Not invisible.</h2>
+          <h2>Your discreet little search party</h2>
+          <ol className="secret-flow">
+            <li>Write your private requirements.</li>
+            <li>Review the public query. You decide what leaves.</li>
+            <li>Approve, launch, then follow the live voyage below.</li>
+          </ol>
+          <details>
+            <summary>Privacy, services &amp; what we keep</summary>
+            <div className="secret-panel-heading">
+              <PrivacyMark kind="wake" />
+              <div>
+                <span>CHECK THE MANIFEST</span>
+                <h2>Discreet. Not invisible.</h2>
+              </div>
             </div>
-          </div>
-          <ul>
-            {config?.services.map((s) => (
-              <li key={s.name}>
-                <span className={s.configured ? "secret-configured" : ""}>
-                  {s.configured ? "✓ Configured" : "○ Missing"}
-                </span>
-                <span>{s.name}</span>
-              </li>
-            ))}
-          </ul>
-          <p>
-            Configured does not mean a live check. Each NYTE call verifies
-            gateway attestation; the VPN exit is checked before discovery.
-            Unsupported confidential inference fails closed.
-          </p>
-          <hr />
-          <h3>What we keep</h3>
-          <p>
-            Account and timing metadata for rate limiting. No brief, draft,
-            approved query, source content, or AI result is written to
-            Duck.Sale’s search history.
-          </p>
-          <h3>What can still be seen</h3>
-          <p>
-            Infrastructure operators can access server memory. Context sees your
-            public query and requested pages. Network and provider metadata may
-            remain. The VPN protects worker egress only; Context’s own crawlers
-            use its network.
-          </p>
-          <h3>Ephemeral by default</h3>
-          <p>
-            Page content clears on departure or after 15 minutes. No private
-            content is put in browser storage. Scuttle clears the page and
-            requests cancellation; it cannot prove erasure from RAM,
-            infrastructure logs or backups.
-          </p>
-          <p>
-            Photos do not load automatically. Opening a source exposes your
-            browser to that site.
-          </p>
+            <ul>
+              {config?.services.map((s) => (
+                <li key={s.name}>
+                  <span className={s.configured ? "secret-configured" : ""}>
+                    {s.configured ? "✓ Configured" : "○ Missing"}
+                  </span>
+                  <span>{s.name}</span>
+                </li>
+              ))}
+            </ul>
+            <p>
+              Configured does not mean a live check. Each NYTE call verifies
+              gateway attestation; the VPN exit is checked before discovery.
+              Unsupported confidential inference fails closed.
+            </p>
+            <hr />
+            <h3>What we keep</h3>
+            <p>
+              Account and timing metadata for rate limiting. No brief, draft,
+              approved query, source content, or AI result is written to
+              Duck.Sale’s search history.
+            </p>
+            <h3>What can still be seen</h3>
+            <p>
+              Infrastructure operators can access server memory. Context sees
+              your public query and requested pages. Network and provider
+              metadata may remain. The VPN protects worker egress only;
+              Context’s own crawlers use its network.
+            </p>
+            <h3>Ephemeral by default</h3>
+            <p>
+              Page content clears on departure or after 15 minutes. No private
+              content is put in browser storage. Scuttle clears the page and
+              requests cancellation; it cannot prove erasure from RAM,
+              infrastructure logs or backups.
+            </p>
+            <p>
+              Photos do not load automatically. Opening a source exposes your
+              browser to that site.
+            </p>
+          </details>
         </aside>
       </div>
+      <div ref={tracker} className="private-tracker-anchor">
+        {startedAt ? (
+          <PrivateVoyage
+            activities={activities}
+            busy={busy}
+            preparing={voyageMode === "prepare"}
+            startedAt={startedAt}
+            finishedAt={finishedAt}
+            pulseAt={pulseAt}
+            failed={voyageFailed}
+            onCancel={scuttle}
+            model={voyageMode === "prepare" ? prepared?.model : reply?.model}
+          />
+        ) : (
+          <div className="pv-standby">
+            <span aria-hidden="true">◈</span>
+            <div>
+              <b>Captain Incognito’s live voyage bridge</b>
+              <p>
+                Launch a draft or a search to follow the duck, inspect real API
+                calls, and watch the privacy checks.
+              </p>
+            </div>
+            <small>RADIO ON STANDBY</small>
+          </div>
+        )}
+        {startedAt && (
+          <p className="pv-action-notice" role="status">
+            {notice}
+          </p>
+        )}
+      </div>
+      <section
+        className="secret-route"
+        aria-label="How Private Mode handles your search"
+      >
+        <div>
+          <PrivacyMark kind="query" />
+          <div>
+            <span>01 / ABOVE DECK</span>
+            <h2>A query you approve</h2>
+            <p>Boat + Context discover public sources.</p>
+          </div>
+        </div>
+        <div>
+          <PrivacyMark kind="brief" />
+          <div>
+            <span>02 / BELOW DECK</span>
+            <h2>Your reasons stay separate</h2>
+            <p>NYTE drafts queries, extracts facts, and ranks finds.</p>
+          </div>
+        </div>
+        <div>
+          <PrivacyMark kind="wake" />
+          <div>
+            <span>03 / NO SAVED SEARCH</span>
+            <h2>A temporary voyage</h2>
+            <p>VPN worker traffic. Search content not saved.</p>
+          </div>
+        </div>
+      </section>
       {reply && (
         <section className="secret-panel">
           <h2>
