@@ -3813,3 +3813,5 @@ main {
     letter-spacing: -1px;
   }
 }
+
+.secret-task-first .secret-form summary { color: #465e4d; }

@@ -59,7 +59,7 @@ export function PrivateVoyage({
     ? [
         { id: "attestation", name: "Verify gateway" },
         { id: "inference", name: "Draft privately" },
-        { id: "review", name: "Your review" },
+        { id: "review", name: "Draft ready" },
       ]
     : [
         { id: "worker", name: "Launch worker" },

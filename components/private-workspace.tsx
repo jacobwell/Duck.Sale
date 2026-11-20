@@ -271,7 +271,7 @@ export function PrivateWorkspace() {
             <span /> LOOSE BEAKS SINK SHIPS
           </p>
           <h1>
-            Your business.
+            Your business.{" "}
             <br />
             Our very <em>quiet</em> ducks.
           </h1>
