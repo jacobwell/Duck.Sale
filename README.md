@@ -234,7 +234,9 @@ OPENAI_IMAGE_MODEL=gpt-image-2.6-flare
 
 Choose models available to your account. Text models must support structured output. The radio and service setup panel identify **OpenAI** when that route is selected; private inference still uses NYTE. Image generation is optional and billed separately.
 
-### 5. Run it
+### 5. Load your configuration
+
+If the app is still running from the quickstart, press **Ctrl+C in its terminal**, then start it again to load your new environment variables:
 
 ```bash
 npm run dev
