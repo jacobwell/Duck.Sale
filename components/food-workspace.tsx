@@ -62,7 +62,7 @@ export function FoodWorkspace() {
       throw Error("Sign in on the main page, then come back for snacks.");
     return { Authorization: `Bearer ${s.data.session.access_token}` };
   }
-  async function locate() {
+  async function locate(): Promise<Place | null> {
     setFinding(true);
     setNotice("");
     setPlaces([]);
@@ -75,6 +75,11 @@ export function FoodWorkspace() {
       const d = await r.json();
       if (!r.ok) throw Error(d.error);
       setPlaces(d.places);
+      if (d.places.length === 1) {
+        setPlace(d.places[0]);
+        setNotice(`Search area: ${d.places[0].label}`);
+        return d.places[0];
+      }
       setNotice(
         d.places.length
           ? "Choose the city below."
@@ -85,14 +90,25 @@ export function FoodWorkspace() {
     } finally {
       setFinding(false);
     }
+    return null;
   }
   async function search() {
-    if (!place || busy) return;
+    if (busy || finding || available !== true) return;
+    if (query.trim().length < 2) {
+      setNotice("Enter at least two characters to search.");
+      return;
+    }
+    if (city.trim().length < 2) {
+      setNotice("Enter a city to search nearby.");
+      return;
+    }
+    const selectedPlace = place ?? (await locate());
+    if (!selectedPlace) return;
     const c = new AbortController();
     controller.current = c;
     setBusy(true);
     setSeconds(0);
-    setSearchedPlace(place.label);
+    setSearchedPlace(selectedPlace.label);
     setStores(null);
     setNotice(
       mode === "retail"
@@ -106,8 +122,8 @@ export function FoodWorkspace() {
         body: JSON.stringify({
           query,
           mode,
-          latitude: place.latitude,
-          longitude: place.longitude,
+          latitude: selectedPlace.latitude,
+          longitude: selectedPlace.longitude,
         }),
         signal: c.signal,
       });
@@ -263,20 +279,20 @@ export function FoodWorkspace() {
         </p>
         <button
           className="food-launch"
-          disabled={
-            busy || available !== true || !place || query.trim().length < 2
-          }
+          disabled={busy || finding || available !== true}
           onClick={() => void search()}
         >
-          {busy
-            ? `The duck is scouting · ${seconds}s`
-            : available === false
-              ? "Food scout temporarily offline"
-              : available === null
-                ? "Checking the galley…"
-                : mode === "retail"
-                  ? "Find retail items ↗"
-                  : "Find food with DoorDash ↗"}
+          {finding
+            ? "Finding your city…"
+            : busy
+              ? `The duck is scouting · ${seconds}s`
+              : available === false
+                ? "Food scout temporarily offline"
+                : available === null
+                  ? "Checking the galley…"
+                  : mode === "retail"
+                    ? "Find retail items ↗"
+                    : "Find food with DoorDash ↗"}
         </button>
         {busy && (
           <div className="food-progress">
