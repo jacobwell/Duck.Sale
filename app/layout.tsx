@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { SiteAnalytics } from "@/components/site-analytics";
 import "./globals.css";
 export const metadata: Metadata = {
   title: "Duck.Sale — Find your next whatever.",
@@ -12,7 +14,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Suspense fallback={null}>
+          <SiteAnalytics />
+        </Suspense>
+      </body>
     </html>
   );
 }
