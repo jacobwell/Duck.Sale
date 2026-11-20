@@ -1,6 +1,15 @@
 import { userFor } from "@/lib/server/db";
 export async function GET(request: Request) {
-  if (!(await userFor(request)))
+  let user;
+  try {
+    user = await userFor(request);
+  } catch {
+    return Response.json(
+      { error: "Supabase is not configured." },
+      { status: 503 },
+    );
+  }
+  if (!user)
     return Response.json(
       { error: "Sign in on the main page first." },
       { status: 401 },

@@ -4,7 +4,15 @@ import { illustrate, signIllustrations } from "@/lib/server/illustrations";
 import type { Listing } from "@/lib/types";
 export const maxDuration = 120;
 export async function POST(request: Request) {
-  const user = await userFor(request);
+  let user;
+  try {
+    user = await userFor(request);
+  } catch {
+    return Response.json(
+      { error: "Supabase is not configured." },
+      { status: 503 },
+    );
+  }
   if (!user)
     return Response.json(
       { error: "Sign in to create an illustration." },
