@@ -28,6 +28,7 @@ export function PcWorkspace() {
     const id = new URLSearchParams(window.location.search).get("id");
     if (!id) return;
     let stopped = false;
+    let initialized = false;
     let timer: ReturnType<typeof setTimeout>;
     async function poll() {
       try {
@@ -38,6 +39,12 @@ export function PcWorkspace() {
         const b = await r.json();
         if (!r.ok) throw Error(b.error);
         if (!stopped) {
+          if (!initialized) {
+            setBudget(String(b.input.budget));
+            setPurpose(b.input.purpose);
+            setLocation(b.input.location);
+            initialized = true;
+          }
           setBuild(b);
           setBusy(working(b));
           if (working(b)) timer = setTimeout(poll, 3000);
