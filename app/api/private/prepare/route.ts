@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { adminDb, userFor } from "@/lib/server/db";
 import { preparePrivateQuery } from "@/lib/server/private/inference";
+import {
+  privateResponse,
+  activity,
+  inferenceActivity,
+} from "@/lib/server/private/stream";
 export const runtime = "nodejs";
 export const maxDuration = 120;
 const headers = {
@@ -48,24 +53,41 @@ export async function POST(request: Request) {
       },
       { status: 429, headers },
     );
-  try {
-    const prepared = await preparePrivateQuery(
-      input.brief,
-      AbortSignal.any([request.signal, AbortSignal.timeout(100000)]),
-    );
-    return Response.json(prepared, { headers });
-  } catch {
-    return Response.json(
-      {
-        error:
-          "Confidential preparation could not complete. Nothing was sent to discovery; no ordinary AI fallback was used.",
-      },
-      { status: 502, headers },
-    );
-  } finally {
-    await db
-      .from("private_preparations")
-      .update({ finished_at: new Date().toISOString() })
-      .eq("id", id);
-  }
+  return privateResponse(request, async (emit, requestSignal) => {
+    try {
+      const prepared = await preparePrivateQuery(
+        input.brief,
+        AbortSignal.any([requestSignal, AbortSignal.timeout(100000)]),
+        inferenceActivity(emit, "Draft public query"),
+      );
+      activity(
+        emit,
+        "review",
+        "Duck.Sale",
+        "Draft ready for your review",
+        "complete",
+      );
+      return { body: prepared, status: 200 };
+    } catch {
+      activity(
+        emit,
+        "failure",
+        "Duck.Sale",
+        "Confidential preparation stopped",
+        "failed",
+      );
+      return {
+        body: {
+          error:
+            "Confidential preparation could not complete. Nothing was sent to discovery; no ordinary AI fallback was used.",
+        },
+        status: 502,
+      };
+    } finally {
+      await db
+        .from("private_preparations")
+        .update({ finished_at: new Date().toISOString() })
+        .eq("id", id);
+    }
+  });
 }

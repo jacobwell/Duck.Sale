@@ -36,6 +36,7 @@ export async function discover(
   privacy?: {
     onVpn: (exitIp: string) => void;
     onCleanup: (deleted: boolean) => void;
+    onCleanupStart?: () => void;
   },
 ): Promise<Evidence> {
   const boat = new BoatApi(
@@ -222,6 +223,7 @@ export async function discover(
     if (sandboxId) {
       try {
         if (privacy) {
+          privacy.onCleanupStart?.();
           let deletion = await boat.deleteSandbox({
             sandboxId,
             xAsciiConfirmDelete: sandboxId,

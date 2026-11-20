@@ -59,3 +59,16 @@ Protected preview `dpl_8tA74nQq2uVrnFSPAE47RWpjRKZH` completed a fresh query pre
 The real voyage retained one source-supported Oriental Trading listing, **4 Ft. x 44-inch Jumbo Inflatable Classic Yellow Vinyl Duck**, with a source-listed price of **$19.99**. Location and availability remained null. Coverage was correctly marked partial; this is a dated source snapshot, not independent stock or price verification. NYTE returned `deepseek/deepseek-v4.1-flash-1017`, with a verified `tls-exporter` gateway binding. The expected VPN exit was confirmed and worker deletion completed.
 
 Database inspection found one preparation metadata row, a completed private-search admission placeholder with empty listings, zero source-evidence rows and zero generation rows for the temporary verification user. The temporary user and its credential file were removed after verification. Final lint, TypeScript and the isolated production build passed; no unit-test files were introduced.
+
+
+## Live voyage bridge and activity stream
+
+The browser opts into `application/x-ndjson` on private preparation/search requests. Authentication, input validation, and admission still happen before the stream opens. Existing API clients that do not request NDJSON retain the JSON response contract. Streamed terminal failures are represented by a `result` event with its status; a transport-level 200 does not mean the voyage succeeded.
+
+The bridge shows actual worker startup, VPN verification, Context call starts/completions/HTTP statuses, provider queue events, deletion attempts, NYTE gateway verification and inference, and returned source/match counts. Eight-second heartbeats distinguish an active connection from a stalled connection. There is no invented percentage or ETA. The boat movement is explicitly decorative. Reduced-motion settings disable animation.
+
+Activity events are built from an explicit allowlist and omit briefs, query text, source URLs, source text and credentials. Events and results are held in page memory, not a saved log. Clearing, leaving, or expiry removes the feed; stopping requests cancellation and still permits server cleanup. An interrupted stream without a terminal result is shown as unconfirmed, never successful.
+
+### Streaming verification — November 19, 2026
+
+Protected preview `dpl_2VrRBD793PhJJuxKWrmtZhbrk7o7` completed real NDJSON preparation and discovery. Preparation delivered its first event after 1.53 seconds and completed in 4.1 seconds. Search delivered its first event after 1.76 seconds and completed in 102.4 seconds, with 39 events including 13 heartbeats. The terminal result contained two supported matches, partial coverage, DeepSeek Flash, a verified VPN exit and completed sandbox deletion. All emitted activity/heartbeat events were checked for the sample private name/budget and prohibited content keys; no activity-content leakage was found. These timings include the verification CLI, not only server execution.

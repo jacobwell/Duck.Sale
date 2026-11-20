@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { PrivateVoyage } from "@/components/private-voyage";
+import type { PrivateActivity, PrivateEvent } from "@/lib/private-events";
 import { Duck } from "@/components/duck";
 import { SecretVoyageArt, PrivacyMark } from "@/components/private-art";
 import { browserDb } from "@/lib/supabase";
@@ -42,10 +44,22 @@ export function PrivateWorkspace() {
     [prepared, setPrepared] = useState<Reply | null>(null),
     [reply, setReply] = useState<Reply | null>(null),
     [notice, setNotice] = useState("");
+  const [activities, setActivities] = useState<PrivateActivity[]>([]);
+  const [voyageMode, setVoyageMode] = useState<"prepare" | "search">("search");
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [finishedAt, setFinishedAt] = useState<number | null>(null);
+  const [pulseAt, setPulseAt] = useState<number | null>(null);
+  const [voyageFailed, setVoyageFailed] = useState(false);
+  const tracker = useRef<HTMLDivElement | null>(null);
   const abort = useRef<AbortController | null>(null);
   function scuttle() {
     abort.current?.abort();
     abort.current = null;
+    setActivities([]);
+    setStartedAt(null);
+    setFinishedAt(null);
+    setPulseAt(null);
+    setVoyageFailed(false);
     setBrief("");
     setQuery("");
     setApproved(false);
@@ -68,6 +82,11 @@ export function PrivateWorkspace() {
       setPrepared(null);
       setPreparing(false);
       setNotice("");
+      setActivities([]);
+      setStartedAt(null);
+      setFinishedAt(null);
+      setPulseAt(null);
+      setVoyageFailed(false);
       setBrief("");
       setQuery("");
       setReply(null);
@@ -91,6 +110,18 @@ export function PrivateWorkspace() {
     if (abort.current || (action === "search" && !approved)) return;
     const controller = new AbortController();
     abort.current = controller;
+    setActivities([]);
+    setStartedAt(Date.now());
+    setFinishedAt(null);
+    setPulseAt(null);
+    setVoyageFailed(false);
+    setVoyageMode(action);
+    tracker.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
     setBusy(true);
     setPreparing(action === "prepare");
     setReply(null);
@@ -107,6 +138,7 @@ export function PrivateWorkspace() {
       const session = await browserDb()?.auth.getSession();
       if (controller.signal.aborted) return;
       if (!session?.data.session) {
+        setVoyageFailed(true);
         setNotice("Sign in on the main page, then return to Private Mode.");
         return;
       }
@@ -117,6 +149,7 @@ export function PrivateWorkspace() {
           headers: {
             Authorization: `Bearer ${session.data.session.access_token}`,
             "Content-Type": "application/json",
+            Accept: "application/x-ndjson",
           },
           body: JSON.stringify(
             action === "prepare"
@@ -127,10 +160,61 @@ export function PrivateWorkspace() {
           cache: "no-store",
         },
       );
-      const data = await r.json();
+      let data: Reply & { publicQuery?: string };
+      let ok = r.ok;
+      if (
+        r.headers.get("content-type")?.includes("application/x-ndjson") &&
+        r.body
+      ) {
+        const reader = r.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "",
+          resultSeen = false;
+        let finalData: (Reply & { publicQuery?: string }) | undefined;
+        const consume = (line: string) => {
+          if (!line.trim() || controller.signal.aborted) return;
+          const event = JSON.parse(line) as PrivateEvent;
+          setPulseAt(Date.now());
+          if (event.type === "activity")
+            setActivities((previous) => {
+              const old = previous.find((a) => a.id === event.id);
+              return [
+                ...previous.filter((a) => a.id !== event.id),
+                { ...event, startedAt: old?.startedAt || event.startedAt },
+              ].slice(-100);
+            });
+          if (event.type === "result") {
+            finalData = event.body;
+            ok = event.status >= 200 && event.status < 300;
+            resultSeen = true;
+          }
+        };
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            if (buffer.length > 1_000_000)
+              throw new Error("Stream exceeded limit");
+            let newline;
+            while ((newline = buffer.indexOf("\n")) >= 0) {
+              consume(buffer.slice(0, newline));
+              buffer = buffer.slice(newline + 1);
+            }
+          }
+          buffer += decoder.decode();
+          if (buffer.trim()) consume(buffer);
+        } finally {
+          reader.releaseLock();
+        }
+        if (!resultSeen || !finalData)
+          throw new Error("Stream ended before result");
+        data = finalData;
+      } else data = await r.json();
       if (controller.signal.aborted) return;
+      setVoyageFailed(!ok);
       if (action === "prepare") {
-        if (r.ok) {
+        if (ok && data.publicQuery) {
           setQuery(data.publicQuery);
           setPrepared(data);
           setNotice(
@@ -140,22 +224,25 @@ export function PrivateWorkspace() {
       } else {
         setReply(data);
         setNotice(
-          r.ok
+          ok
             ? "Voyage returned. Inspect your privacy receipt below."
             : "The voyage stopped safely.",
         );
       }
     } catch {
-      if (!controller.signal.aborted)
+      if (!controller.signal.aborted) {
+        setVoyageFailed(true);
         setNotice(
           action === "prepare"
             ? "Preparation connection ended. Nothing was sent to discovery. You can retry or write your own public query."
             : "Connection ended. Results were not saved. Worker deletion may still be pending.",
         );
+      }
     } finally {
       if (abort.current === controller) {
         abort.current = null;
         setBusy(false);
+        setFinishedAt(Date.now());
         setPreparing(false);
       }
     }
@@ -237,6 +324,43 @@ export function PrivateWorkspace() {
         <span>YOUR DISCREET LITTLE SEARCH PARTY</span>
         <span>Public sources. Private preferences.</span>
       </div>
+      <div ref={tracker} className="private-tracker-anchor">
+        {startedAt ? (
+          <PrivateVoyage
+            activities={activities}
+            busy={busy}
+            preparing={voyageMode === "prepare"}
+            startedAt={startedAt}
+            finishedAt={finishedAt}
+            pulseAt={pulseAt}
+            failed={voyageFailed}
+            onCancel={scuttle}
+            model={voyageMode === "prepare" ? prepared?.model : reply?.model}
+          />
+        ) : (
+          <div className="pv-standby">
+            <span aria-hidden="true">◈</span>
+            <div>
+              <b>Captain Incognito’s live voyage bridge</b>
+              <p>
+                Launch a draft or a search to follow the duck, inspect real API
+                calls, and watch the privacy checks.
+              </p>
+            </div>
+            <small>RADIO ON STANDBY</small>
+          </div>
+        )}
+        {startedAt && (
+          <p className="pv-action-notice" role="status">
+            {notice}
+          </p>
+        )}
+      </div>
+      {!busy && prepared && voyageMode === "prepare" && (
+        <a className="pv-review-link" href="#public-query">
+          Review your draft and approve it below ↓
+        </a>
+      )}
       <div className="secret-grid">
         <section className="secret-panel secret-form">
           <div className="secret-panel-heading">

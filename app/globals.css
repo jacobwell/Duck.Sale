@@ -3674,3 +3674,72 @@ main {
 .secret-facts dt { font-size: 12px; text-transform: uppercase; opacity: .7; }
 .secret-facts dd { margin: 6px 0; overflow-wrap: anywhere; }
 @media (max-width: 640px) { .secret-facts { grid-template-columns: 1fr; gap: 6px; } }
+
+/* Private Mode: a live, memory-only bridge and radio. */
+.private-tracker-anchor { scroll-margin-top: 24px; margin-bottom: 32px; }
+.private-voyage { background: #153b35; border: 1px solid #638474; border-radius: 20px; overflow: hidden; color: #f1eed7; }
+.pv-heading { padding: 26px 30px 12px; display:flex; justify-content:space-between; align-items:center; gap:20px; }
+.pv-eyebrow { color:#b8ceb9; font-size:10px; letter-spacing:2px; font-weight:700; }
+.pv-heading h2 { font-size:clamp(22px,3vw,34px); line-height:1.15; margin:10px 0; letter-spacing:-1px; }
+.pv-live { font-size:9px; letter-spacing:1px; border:1px solid #698b78; border-radius:30px; padding:8px 12px; white-space:nowrap; }
+.pv-live.active { background:#e9ce70; color:#153b35; }
+.pv-live.active:before { content:""; display:inline-block; width:6px; height:6px; border-radius:50%; background:currentColor; margin-right:7px; animation:pv-pulse 2s ease-in-out infinite; }
+.pv-sea { position:relative; background:#153b35; }
+.pv-sea svg { width:100%; height:auto; display:block; max-height:245px; }
+.pv-sea p { margin:0; padding:0 30px 12px; font-size:10px; color:#b8cdbb; }
+.is-sailing .pv-boat { animation:pv-bob 3s ease-in-out infinite; }
+.is-sailing .pv-wake { animation:pv-wake 8s linear infinite; }
+.is-sailing .pv-wave { animation:pv-bob 5s ease-in-out infinite reverse; }
+.pv-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); background:#e9e8cf; color:#214438; padding:20px 30px; gap:20px; }
+.pv-stats div { border-right:1px solid #bdc7ab; }
+.pv-stats div:last-child { border:0; }
+.pv-stats span { display:block; font-size:10px; text-transform:uppercase; letter-spacing:1px; }
+.pv-stats strong { display:block; margin-top:4px; font-size:30px; font-variant-numeric:tabular-nums; letter-spacing:-1px; }
+.pv-stages { display:flex; gap:12px; list-style:none; padding:24px 30px 12px; margin:0; }
+.pv-stages li { flex:1; color:#a8bbae; border-top:2px solid #46675b; padding-top:12px; }
+.pv-stages li.complete { border-color:#c8dbab; color:#f1eed7; }
+.pv-stages li.running { border-color:#edce64; color:#edce64; }
+.pv-stages li.failed { border-color:#edab92; color:#edab92; }
+.pv-stages b { margin-right:6px; }
+.pv-stages span { font-size:12px; font-weight:650; }
+.pv-stages small { display:block; font-size:10px; margin-top:5px; }
+.pv-bottom { padding:4px 30px 20px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.pv-bottom p { font-size:12px; line-height:1.6; color:#c6d5c5; }
+.pv-bottom button,.pv-expand { border:1px solid #6e8f79; background:transparent; color:#f1eed7; padding:9px 14px; border-radius:7px; cursor:pointer; font-size:12px; white-space:nowrap; }
+.pv-seals { display:flex; gap:10px; flex-wrap:wrap; padding:0 30px 24px; }
+.pv-seals span { padding:7px 10px; border:1px solid #547462; border-radius:6px; font-size:11px; color:#b2c4b3; }
+.pv-seals .verified { background:#304f3f; color:#dce8b9; }
+.pv-radio { padding:24px 30px; background:#102e29; }
+.pv-radio-title { display:flex; justify-content:space-between; gap:16px; align-items:center; }
+.pv-radio-title h3 { font-size:22px; margin:7px 0; letter-spacing:-.5px; }
+.pv-radio-title>span { font-size:10px; color:#b7c7b7; font-variant-numeric:tabular-nums; }
+.pv-radio-note { color:#aebfb2; font-size:11px; margin:6px 0 18px; line-height:1.6; }
+.pv-radio ul { list-style:none; padding:0; margin:0; }
+.pv-radio li { display:flex; align-items:center; gap:12px; padding:12px 0; border-top:1px solid #355347; }
+.pv-call-icon { display:grid; place-items:center; width:28px; height:28px; border:1px solid #4d6b58; border-radius:50%; color:#e6c766; flex-shrink:0; }
+.pv-call-icon.complete { color:#c4dbaf; }.pv-call-icon.failed { color:#e8a98c; }
+.pv-radio li>div { flex:1; min-width:0; }
+.pv-radio li b { display:block; font-size:12px; }
+.pv-radio li div span { display:block; font-size:11px; color:#b5c5b6; margin-top:4px; }
+.pv-radio li>small { font-size:11px; text-align:right; font-variant-numeric:tabular-nums; }
+.pv-radio li em { display:block; font-size:10px; color:#a8beac; font-style:normal; margin-top:4px; }
+.pv-empty { border:1px dashed #4c6c5c; border-radius:8px; padding:24px; text-align:center; color:#b9cbb8; font-size:13px; }
+.pv-expand { margin-top:14px; }.pv-action-notice { font-size:13px; line-height:1.6; color:#e9ecd5; padding:0 8px; }
+@keyframes pv-bob { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-6px) rotate(2deg); } }
+@keyframes pv-wake { to { stroke-dashoffset:-150; } }
+@keyframes pv-pulse { 50% { opacity:.35; } }
+@media(max-width:700px) {
+ .pv-heading { padding:20px 18px 8px; align-items:flex-start; flex-direction:column; gap:5px; }
+ .pv-sea p { padding-left:18px; padding-right:18px; }
+ .pv-stats { padding:18px; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); }.pv-stats div:nth-child(2) { border:0; }
+ .pv-stages { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); padding:20px 18px 8px; }
+ .pv-bottom { padding:4px 18px 18px; align-items:flex-start; flex-direction:column; gap:8px; }
+ .pv-seals { padding:0 18px 20px; }.pv-radio { padding:20px 18px; }.pv-radio-title { align-items:flex-start; flex-direction:column; gap:2px; }
+ .pv-stages span { font-size:11px; }
+}
+@media(prefers-reduced-motion:reduce) { .private-voyage *, .private-voyage *:before { animation:none!important; transition:none!important; } }
+.pv-model { margin:0; padding:0 30px 22px; color:#b8cdbb; font-size:11px; overflow-wrap:anywhere; }
+.pv-standby { display:flex; align-items:center; gap:18px; border:1px solid #6a8975; border-radius:14px; padding:22px 26px; color:#f1eed7; background:#153b35; }
+.pv-standby>span { font-size:30px; color:#e9ce70; }.pv-standby>div { flex:1; }.pv-standby b { font-size:18px; }.pv-standby p { font-size:12px; color:#bdcdbb; margin:7px 0 0; line-height:1.6; }.pv-standby small { font-size:9px; letter-spacing:1px; color:#d2dabb; }
+.pv-review-link { display:block; margin:-12px 0 28px; color:#eee3ac; font-weight:700; text-decoration:underline; }
+@media(max-width:700px) { .pv-standby { padding:18px; align-items:flex-start; }.pv-standby small { display:none; }.pv-model { padding:0 18px 20px; } }

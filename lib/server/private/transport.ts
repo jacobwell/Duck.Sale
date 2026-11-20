@@ -7,8 +7,13 @@ export async function confidentialRequest(
   body: string,
   apiKey: string,
   signal: AbortSignal,
+  progress?: (
+    phase: "attesting" | "verified" | "request" | "response",
+    status?: number,
+  ) => void,
 ) {
   signal.throwIfAborted();
+  progress?.("attesting");
   const policy = await policyFromTrustRelease({
     allowDebug: false,
     fetchImpl: (input, init) =>
@@ -40,6 +45,8 @@ export async function confidentialRequest(
       session.attestation.expiresAt * 1000 <= Date.now()
     )
       throw new Error("Attested connection expired");
+    progress?.("verified");
+    progress?.("request");
     const response = await new Promise<{ status: number; body: string }>(
       (resolve, reject) => {
         const req = request(
@@ -82,6 +89,7 @@ export async function confidentialRequest(
         req.end(body);
       },
     );
+    progress?.("response", response.status);
     return {
       ...response,
       attestation: {

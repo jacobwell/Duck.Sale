@@ -134,7 +134,7 @@ Imagine buying a surprise giant duck. The internet needs to know **“giant infl
 1. **Start with your private brief.** NYTE can propose a minimal public query while omitting budgets, names, and personal reasons. The app handles the brief in server memory; preparation makes no Boat or Context calls.
 2. **Review, edit, and approve the public query.** AI can miss sensitive details. Only the exact terms you approve go to Boat/Context when you click **Send the secret duck**. You can also skip preparation and write the query yourself.
 3. **The worker uses a VPN.** Its exit is checked before discovery. NYTE then extracts source-backed prices, locations, and availability and ranks results against your original private brief. Unsupported facts remain unknown. If confidential inference or the required VPN is unavailable, the request stops without an ordinary fallback.
-4. **Inspect the receipts.** Query preparation reports its gateway verification and confirms discovery has not started. The final voyage reports inference verification, VPN verification, worker cleanup, and content-storage behavior.
+4. **Follow the live voyage bridge.** Watch the animated boat, actual stage changes, elapsed time, source counts, and a privacy-safe API radio with HTTP statuses and durations. Heartbeats keep the connection visible while providers work. Query preparation and the final voyage include verification receipts; the activity feed stays only in page memory.
 
 **What is not saved:** the private brief, proposed query, approved query, retrieved content, and results are not written to Duck.Sale’s search history. **What remains:** account/timing metadata for admission and rate limits. The browser clears page content on departure or after 15 minutes.
 

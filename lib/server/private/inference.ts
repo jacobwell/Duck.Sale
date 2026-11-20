@@ -39,6 +39,7 @@ export async function privateRank(
   brief: string,
   evidence: Evidence,
   signal: AbortSignal,
+  progress?: Parameters<typeof confidentialRequest>[3],
 ) {
   const response = await confidentialRequest(
     JSON.stringify({
@@ -68,6 +69,7 @@ export async function privateRank(
     }),
     process.env.TRUSTEDROUTER_API_KEY!,
     AbortSignal.any([signal, AbortSignal.timeout(85000)]),
+    progress,
   );
   if (response.status !== 200)
     throw new Error(
@@ -122,7 +124,11 @@ const preparationSchema = z.object({
   publicQuery: z.string().trim().min(5).max(400),
 });
 
-export async function preparePrivateQuery(brief: string, signal: AbortSignal) {
+export async function preparePrivateQuery(
+  brief: string,
+  signal: AbortSignal,
+  progress?: Parameters<typeof confidentialRequest>[3],
+) {
   const response = await confidentialRequest(
     JSON.stringify({
       model: "nyte/confidential",
@@ -141,6 +147,7 @@ export async function preparePrivateQuery(brief: string, signal: AbortSignal) {
     }),
     process.env.TRUSTEDROUTER_API_KEY!,
     AbortSignal.any([signal, AbortSignal.timeout(85000)]),
+    progress,
   );
   if (response.status !== 200)
     throw new Error("Confidential preparation unavailable.");
