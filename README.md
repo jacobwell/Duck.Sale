@@ -1,4 +1,4 @@
-# Boatduck · aka Craigsboat
+# Duck.Sale
 
 **Find your next whatever.** A small fleet of agents searches the web for specific things: boats, GPUs and AI computers, Pokémon Elite Trainer Boxes, and giant rubber ducks—or any custom request.
 
@@ -26,7 +26,7 @@ Credentials belong in ignored `.env.local`, never source files. See `.env.exampl
 
 | Variable                        | Purpose                                                            |
 | ------------------------------- | ------------------------------------------------------------------ |
-| `BOAT_API_KEY`                  | Create, execute and stop Boatduck sandboxes                        |
+| `BOAT_API_KEY`                  | Create, execute and stop Duck.Sale sandboxes                        |
 | `CONTEXT_DEV_API_KEY`           | Search/scrape from inside each worker                              |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL                                               |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public, RLS-protected Supabase client                              |
@@ -34,7 +34,7 @@ Credentials belong in ignored `.env.local`, never source files. See `.env.exampl
 | `VERCEL_OIDC_TOKEN`             | Local Gateway authentication, pulled from Vercel; expires          |
 | `AI_GATEWAY_API_KEY`            | Optional alternative to Vercel OIDC                                |
 | `AI_MODEL`                      | Optional model override; default verified from the Gateway catalog |
-| `BOATDUCK_VISION`               | `true` to analyze one source image per worker; default `false`     |
+| `DUCK_SALE_VISION`               | `true` to analyze one source image per worker; default `false`     |
 
 `vercel env pull` replaces its destination. Pull to `.env.vercel.local` and deliberately merge with `.env.local` to preserve locally supplied Boat/Context keys. Never print values.
 
@@ -50,7 +50,7 @@ The migration runner uses the supplied Supabase public root CA with certificate 
 
 Tables: `search_runs`, `source_evidence`, `generations`, `saved_listings`. All have RLS; the authenticated browser can only read its own searches/evidence/generations and manage its own saved items. Paid work is admitted by a server-only SQL function with transactional limits: five searches per user per hour, one active search per user, and 30 searches across the fleet per hour.
 
-Supabase Auth's Site URL is configured for `https://boatduck.vercel.app`, with that domain and `http://localhost:3000/**` allowed for redirects. Email authentication is enabled. For public signups beyond Supabase's default email restrictions, configure a mail provider in Supabase Auth. The app never sends outreach; email links are only requested by users signing in.
+Supabase Auth's Site URL is configured for `https://duck.sale`, with that domain and `http://localhost:3000/**` allowed for redirects. Email authentication is enabled. For public signups beyond Supabase's default email restrictions, configure a mail provider in Supabase Auth. The app never sends outreach; email links are only requested by users signing in.
 
 ## Lifecycle and limits
 
@@ -82,7 +82,7 @@ node --conditions=react-server --env-file=.env.local --import tsx scripts/live-c
 
 ## Deployment
 
-Project: `jacobwells-projects/boatduck`. The Supabase resource is `boatduck-db`, installed through the existing Vercel Supabase integration. Check its billing in the Vercel/Supabase dashboard; Marketplace lists the Pro offering from $25/month.
+Project: `jacobwells-projects/duck-sale`. The Supabase resource is `boatduck-db`, installed through the existing Vercel Supabase integration. Check its billing in the Vercel/Supabase dashboard; Marketplace lists the Pro offering from $25/month.
 
 Use `vercel deploy` for a preview and verify before promoting. API keys must be set on the matching Vercel environment. Gateway uses project OIDC on Vercel.
 
@@ -96,4 +96,8 @@ Project configuration is in `.codex/config.toml`, using `https://mcp.context.dev
 
 AI Gateway normalizes listing locations in a recorded batch per worker (for example, “Alameda CA, California” becomes Alameda / California / US). Open-Meteo / GeoNames then supplies coordinates for a matching city, region and country. When multiple cities share that name and region, AI’s approximate city coordinates can select a single geocoder candidate within 25 km; model coordinates are never displayed directly. Successful resolutions are cached for up to 24 hours; errors and misses are not cached. Country-only, shipping-only and unresolved ambiguous locations remain unplaced. Coordinates are approximate city centers, never seller addresses. International cities retain coordinates and a maps link, but are marked outside the US map. The geocoder uses Open-Meteo’s free noncommercial endpoint for this hackathon. Commercial use requires an appropriate license/API key (`OPEN_METEO_API_KEY`). Recorded demo sources are in `lib/recorded-boats.json`; their prices and photos are snapshots, not claims of current inventory.
 
-Boat workers call the public `/api/context-permit` endpoint using short-lived, run-scoped signed tokens. The Supabase service key stays on the app server. The production permit origin defaults to `https://boatduck.vercel.app`; set `BOATDUCK_APP_URL` to a publicly reachable deployment of this app when using a different installation. Apply migrations `202611180004_context_throttle.sql` and `202611180005_context_fifo.sql` before deploying the throttled workers.
+Boat workers call the public `/api/context-permit` endpoint using short-lived, run-scoped signed tokens. The Supabase service key stays on the app server. The production permit origin defaults to `https://duck.sale`; set `DUCK_SALE_APP_URL` to a publicly reachable deployment of this app when using a different installation. Apply migrations `202611180004_context_throttle.sql` and `202611180005_context_fifo.sql` before deploying the throttled workers.
+
+## Brand and compatibility
+
+The product is Duck.Sale and its GitHub repository is `jacobwell/Duck.Sale`. The existing `boatduck-db` Supabase resource, migration ledger, illustration bucket, worker protocol filenames, and signed-token namespace retain their original identifiers to preserve existing data and in-flight work. Legacy `BOATDUCK_*` environment variables remain supported as fallbacks for `DUCK_SALE_*`. Historical verification receipts and recorded demo footage describe the original release.

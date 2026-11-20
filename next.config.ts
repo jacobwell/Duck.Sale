@@ -1,10 +1,22 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
   // Keep production compilation separate from the user's running dev server.
-  distDir: process.env.BOATDUCK_BUILD_DIR || ".next",
+  distDir:
+    process.env.DUCK_SALE_BUILD_DIR ||
+    process.env.BOATDUCK_BUILD_DIR ||
+    ".next",
   serverExternalPackages: ["@boatdev/sdk", "@lore-hex/trusted-router"],
   images: {
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/demo/boatduck-:asset",
+        destination: "/demo/duck-sale-:asset",
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     return [

@@ -117,7 +117,7 @@ export function PrivateWorkspace() {
   return (
     <main className="secret-duck">
       <header>
-        <Link href="/">← Boatduck</Link>
+        <Link href="/">← Duck.Sale</Link>
         <span>PRIVATE MODE · EARLY VOYAGE</span>
         <button onClick={scuttle}>Scuttle this voyage 🫧</button>
       </header>
@@ -177,7 +177,7 @@ export function PrivateWorkspace() {
             placeholder="My actual budget and private buying requirements…"
           />
           <p>
-            The hosted Boatduck server receives this brief in memory and sends
+            The hosted Duck.Sale server receives this brief in memory and sends
             it to NYTE with confidential routing required. Boat and Context
             receive only the approved query. This is not browser-to-enclave
             encryption.
@@ -221,7 +221,7 @@ export function PrivateWorkspace() {
           <h3>What we keep</h3>
           <p>
             Account and timing metadata for rate limiting. No brief, approved
-            query, source content, or AI result is written to Boatduck’s search
+            query, source content, or AI result is written to Duck.Sale’s search
             history.
           </p>
           <h3>What can still be seen</h3>
@@ -283,7 +283,7 @@ export function PrivateWorkspace() {
                 .
               </p>
               <p>
-                No search content saved by Boatduck. Admission metadata
+                No search content saved by Duck.Sale. Admission metadata
                 retained. Third-party erasure not verified.
               </p>
               <p>{reply.routing}</p>

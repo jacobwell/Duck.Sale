@@ -13,7 +13,11 @@ export const vpnSchema = z.object({
 export function privateVpn() {
   try {
     return vpnSchema.parse(
-      JSON.parse(process.env.BOATDUCK_PRIVATE_VPN_JSON || "{}"),
+      JSON.parse(
+        process.env.DUCK_SALE_PRIVATE_VPN_JSON ||
+          process.env.BOATDUCK_PRIVATE_VPN_JSON ||
+          "{}",
+      ),
     );
   } catch {
     return null;

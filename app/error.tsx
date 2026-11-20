@@ -11,7 +11,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
       <button className="primary" onClick={reset}>
         Try again
       </button>
-      <Link href="/">Back to Boatduck</Link>
+      <Link href="/">Back to Duck.Sale</Link>
     </main>
   );
 }

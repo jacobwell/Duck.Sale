@@ -6,7 +6,7 @@ export default function Hackathon() {
     <main className="hackathon-page">
       <Link href="/" className="brand">
         <Duck />
-        boatduck
+        Duck.Sale
       </Link>
       <div className="eyebrow">
         BOAT HACKATHON · SAN FRANCISCO · NOVEMBER 2026
@@ -17,7 +17,7 @@ export default function Hackathon() {
         Ready for the whole world.
       </h1>
       <p>
-        Boatduck sends a small fleet of Boat.dev sandboxes to explore the web
+        Duck.Sale sends a small fleet of Boat.dev sandboxes to explore the web
         through Context.dev. Vercel AI Gateway makes sense of the evidence.
         Supabase keeps your discoveries together.
       </p>

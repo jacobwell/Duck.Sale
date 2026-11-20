@@ -64,13 +64,13 @@ export async function discover(
     signal.throwIfAborted();
     await update({ ...worker, status: "starting" });
     const created = await boat.create({
-      name: `boatduck-${runId.slice(0, 8)}-${worker.id}`,
+      name: `duck-sale-${runId.slice(0, 8)}-${worker.id}`,
       type: "small",
       ttlSeconds: 240,
       noEnv: true,
       snapshots: false,
       monitoring: false,
-      labels: { app: "boatduck", run: runId },
+      labels: { app: "duck-sale", run: runId },
       env: { CONTEXT_DEV_API_KEY: process.env.CONTEXT_DEV_API_KEY! },
       files: [
         ...(vpn
@@ -85,7 +85,7 @@ export async function discover(
           content: JSON.stringify({
             query: worker.query,
             excludeUrls: worker.excludeUrls || [],
-            permitUrl: `${process.env.BOATDUCK_APP_URL || "https://boatduck.vercel.app"}/api/context-permit`,
+            permitUrl: `${process.env.DUCK_SALE_APP_URL || process.env.BOATDUCK_APP_URL || "https://duck.sale"}/api/context-permit`,
             permitToken: issueContextPermit(runId, worker.id),
           }),
         },
@@ -198,7 +198,7 @@ export async function discover(
       )
     )
       throw error;
-    console.error("Boatduck sandbox phase failed", {
+    console.error("Duck.Sale sandbox phase failed", {
       phase,
       category: error instanceof Error ? error.name : "UnknownError",
       status: status.trim() || null,

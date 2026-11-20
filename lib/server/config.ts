@@ -29,6 +29,7 @@ export function appConfig(): AppConfig {
   return {
     ready: services.every((s) => s.configured),
     services,
-    vision: process.env.BOATDUCK_VISION === "true",
+    vision:
+      (process.env.DUCK_SALE_VISION ?? process.env.BOATDUCK_VISION) === "true",
   };
 }

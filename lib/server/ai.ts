@@ -58,7 +58,7 @@ async function generate<T extends z.ZodType>(
     for (const [key, value] of Object.entries(process.env))
       if (/KEY|TOKEN|SECRET|PASSWORD/.test(key) && value)
         diagnostic = diagnostic.replaceAll(value, "[redacted]");
-    console.error("Boatduck generation failed", {
+    console.error("Duck.Sale generation failed", {
       id,
       kind,
       category,
@@ -200,7 +200,9 @@ export async function extractListings(
   ];
   // URL-only source images remain links. Vision downloads go through Context's
   // browser service, never arbitrary fetch from the Vercel network.
-  if (process.env.BOATDUCK_VISION === "true") {
+  if (
+    (process.env.DUCK_SALE_VISION ?? process.env.BOATDUCK_VISION) === "true"
+  ) {
     const first = evidence.pages
       .flatMap((p) => p.images)
       .find((i) => httpUrl(i.url));

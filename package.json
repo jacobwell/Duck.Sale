@@ -1,11 +1,11 @@
 {
-  "name": "boatduck",
+  "name": "duck-sale",
   "version": "1.0.0",
   "description": "Find the thing. Send the ducks. Parallel listing discovery with Boat.dev and Context.dev.",
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "build:check": "BOATDUCK_BUILD_DIR=.next-build next build",
+    "build:check": "DUCK_SALE_BUILD_DIR=.next-build next build",
     "start": "next start --port 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"

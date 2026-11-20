@@ -21,7 +21,7 @@ Source: supplied Teamily group announcement, checked alongside https://boathacka
 
 ## 90-second demo
 
-1. “There is no single marketplace for finding anything. Boatduck sends a small fleet out to look.”
+1. “There is no single marketplace for finding anything. Duck.Sale sends a small fleet out to look.”
 2. Enter a boat request with location and budget.
 3. Show three real Boat sandbox IDs and Context discovery progress.
 4. Show normalized prices, source images, availability evidence and unknown fields.

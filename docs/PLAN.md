@@ -1,4 +1,4 @@
-# Boatduck / Craigsboat — build plan
+# Duck.Sale — build plan
 
 ## Product
 
@@ -7,7 +7,7 @@ Find the thing, anywhere. Lead with boats, GPUs/AI computers, Pokémon Elite Tra
 ## Implementation
 
 1. Next.js App Router and TypeScript. Responsive nautical workspace: search brief, quick examples, worker activity, listing cards, saved items and comparison.
-2. Boat.dev: one short-lived sandbox per search angle, three concurrent workers. Only create Boatduck sandboxes; stop them in finally and set a short TTL as a backstop.
+2. Boat.dev: one short-lived sandbox per search angle, three concurrent workers. Only create Duck.Sale sandboxes; stop them in finally and set a short TTL as a backstop.
 3. Context.dev inside each worker: discover URLs, scrape page text and images, preserve page evidence and fetch errors. No invented listings or fallback to sample data during live searches.
 4. Vercel AI Gateway: structured query planning and listing extraction; optional source-image analysis and labeled photorealistic fallback illustrations. Validate outputs and accept only URLs/images in retrieved evidence. Unknown price/status stays unknown.
 5. Supabase Auth and Postgres: private runs, worker events, generations and usage, result JSON, saved listings. RLS on every table. Live API requires authentication and a database-backed admission limit.
@@ -27,7 +27,7 @@ Find the thing, anywhere. Lead with boats, GPUs/AI computers, Pokémon Elite Tra
 
 ### Positioning
 
-Boatduck is a cross-site discovery and decision workspace for hard-to-search wants. Boat marketplaces such as [Boat Trader](https://www.boattrader.com/research/tips-on-virtual-boat-shopping/) and [YachtWorld](https://www.yachtworld.com/research/search-alerts/) already provide category filters and saved-search alerts. General shopping tools such as [Google Shopping](https://support.google.com/googleshopping/answer/10675605) emphasize merchant comparison and price insight. Boatduck should differentiate through one natural-language brief across sources and categories, visible source receipts, and an entertaining multi-agent voyage. It must describe coverage as partial when sources fail and must not imply marketplace-wide inventory or verified seller claims.
+Duck.Sale is a cross-site discovery and decision workspace for hard-to-search wants. Boat marketplaces such as [Boat Trader](https://www.boattrader.com/research/tips-on-virtual-boat-shopping/) and [YachtWorld](https://www.yachtworld.com/research/search-alerts/) already provide category filters and saved-search alerts. General shopping tools such as [Google Shopping](https://support.google.com/googleshopping/answer/10675605) emphasize merchant comparison and price insight. Duck.Sale should differentiate through one natural-language brief across sources and categories, visible source receipts, and an entertaining multi-agent voyage. It must describe coverage as partial when sources fail and must not imply marketplace-wide inventory or verified seller claims.
 
 ### Development scope and sequence
 
@@ -62,10 +62,10 @@ Boatduck is a cross-site discovery and decision workspace for hard-to-search wan
 
 ### Competitive lens
 
-| Alternative | Strength users already get | Boatduck response |
+| Alternative | Strength users already get | Duck.Sale response |
 |---|---|---|
 | Boat Trader / YachtWorld | Boat-specific filters and saved-search notifications | Search across several public sources, preserve listing evidence, explain fit and gaps, and show the search process |
-| Google Shopping / retailer search | Broad product discovery, merchant comparison, and price insights | Support unusual, used, local, and category-mixed requests; do not claim price history until Boatduck has enough repeated observations |
+| Google Shopping / retailer search | Broad product discovery, merchant comparison, and price insights | Support unusual, used, local, and category-mixed requests; do not claim price history until Duck.Sale has enough repeated observations |
 | Manual tabs / generic AI chat | Flexible research and summaries | Return addressable finds with original links/photos, retrieval receipts, uncertainty, filters, and a repeatable follow-up voyage |
 
 The moat for the hackathon is the demonstrated end-to-end search workflow and its evidence trail, not exclusive inventory, exhaustive coverage, or always-current seller status.
@@ -78,7 +78,7 @@ The moat for the hackathon is the demonstrated end-to-end search workflow and it
 4. **Refine:** save, compare up to three, hide, request similar results, or flag a mismatch.
 5. **Continue:** send another duck with the refinement note. Preserve earlier finds, avoid repeating known URLs, and show the new voyage as linked history.
 6. **Return:** reopen a saved run or saved brief, manually re-run it, then review changed fields against the captured source evidence.
-7. **Act:** open the seller/source page to confirm availability and details; Boatduck does not represent that a seller has independently verified the offer.
+7. **Act:** open the seller/source page to confirm availability and details; Duck.Sale does not represent that a seller has independently verified the offer.
 
 ### Current implementation checkpoint
 

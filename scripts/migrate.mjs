@@ -4,7 +4,7 @@ const connectionString =
   process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL;
 if (!connectionString)
   throw new Error(
-    "POSTGRES_URL_NON_POOLING is missing. Pull the Boatduck Vercel environment first.",
+    "POSTGRES_URL_NON_POOLING is missing. Pull the Duck.Sale Vercel environment first.",
   );
 const url = new URL(connectionString);
 url.searchParams.delete("sslmode");
@@ -47,8 +47,8 @@ try {
         "insert into public.boatduck_migrations(name) values($1)",
         [name],
       );
-      console.log("Applied Boatduck schema and RLS policies.");
-    } else console.log("Boatduck migration already applied.");
+      console.log("Applied Duck.Sale schema and RLS policies.");
+    } else console.log("Duck.Sale migration already applied.");
   }
   await client.query("commit");
 } catch (e) {

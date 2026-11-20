@@ -712,18 +712,23 @@ export function Workspace({ initialId }: { initialId?: string }) {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <Link href="/" className="brand" aria-label="Boatduck home">
+        <Link href="/" className="brand" aria-label="Duck.Sale home">
           <span className="brand-mark">
             <Duck size={33} />
           </span>
-          boatduck<span className="brand-dot">®</span>
+          Duck.Sale<span className="brand-dot">®</span>
         </Link>
         <button className="new-search" onClick={reset} disabled={busy}>
           <Plus size={18} /> New search <span>↗</span>
         </button>
         <div className="nav-label">YOUR LOOKOUT</div>
         <nav aria-label="Main navigation">
-          <Link href="/private" style={{padding: "12px 16px", display: "block"}}>🕵️ Private Mode</Link>
+          <Link
+            href="/private"
+            style={{ padding: "12px 16px", display: "block" }}
+          >
+            🕵️ Private Mode
+          </Link>
           <button
             className={view === "discover" ? "active" : ""}
             onClick={() => setView("discover")}
@@ -1532,19 +1537,19 @@ export function Workspace({ initialId }: { initialId?: string }) {
             <span>
               <Duck size={17} /> No judgment. Just ducks.
             </span>
-            <nav className="demo-links" aria-label="Boatduck demo downloads">
+            <nav className="demo-links" aria-label="Duck.Sale demo downloads">
               <a
-                href="/demo/boatduck-demo.mp4"
+                href="/demo/duck-sale-demo.mp4"
                 target="_blank"
                 rel="noreferrer"
               >
                 Watch demo · 3 min
               </a>
-              <a href="/demo/boatduck-deck.pptx" download>
+              <a href="/demo/duck-sale-deck.pptx" download>
                 Download deck
               </a>
               <a
-                href="/demo/boatduck-voyage.gif"
+                href="/demo/duck-sale-voyage.gif"
                 target="_blank"
                 rel="noreferrer"
               >

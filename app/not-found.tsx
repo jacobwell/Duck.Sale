@@ -5,7 +5,7 @@ export default function NotFound() {
       <h1>Nothing at these coordinates.</h1>
       <p>This page could not be found.</p>
       <Link className="primary" href="/">
-        Back to Boatduck
+        Back to Duck.Sale
       </Link>
     </main>
   );

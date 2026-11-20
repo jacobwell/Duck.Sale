@@ -171,7 +171,7 @@ export async function executeSearch(
               status: "failed",
               finishedAt: new Date().toISOString(),
             });
-          console.error("Boatduck worker failed", {
+          console.error("Duck.Sale worker failed", {
             worker: initial.id,
             category: error instanceof Error ? error.name : "UnknownError",
           });
