@@ -33,8 +33,8 @@ export function PrivateVoyage({
   }, [busy]);
   const elapsed = startedAt ? seconds((finishedAt || now) - startedAt) : "—";
   const running = activities.filter((a) => a.status === "running").at(-1);
-  const lastChange = activities.at(-1)?.at;
-  const slow = busy && lastChange && now - Date.parse(lastChange) > 30000;
+  const lastChange = activities.at(-1)?.receivedAt;
+  const slow = busy && lastChange && now - lastChange > 30000;
   const stale = busy && pulseAt && now - pulseAt > 20000;
   const sources = activities.find((a) => a.id === "sources")?.count;
   const finds = activities.find((a) => a.id === "results")?.count;
@@ -303,7 +303,7 @@ export function PrivateVoyage({
                           Date.parse(a.finishedAt) - Date.parse(a.startedAt),
                         )
                       : busy
-                        ? seconds(now - Date.parse(a.startedAt))
+                        ? seconds(now - (a.localStartedAt ?? now))
                         : "unconfirmed"}
                     <em>
                       {a.status === "running" && !busy

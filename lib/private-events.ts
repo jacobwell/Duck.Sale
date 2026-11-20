@@ -6,6 +6,9 @@ export type PrivateActivity = {
   status: "running" | "complete" | "failed";
   at: string;
   startedAt: string;
+  /** Browser receipt times; never supplied by the server. */
+  receivedAt?: number;
+  localStartedAt?: number;
   finishedAt?: string;
   httpStatus?: number;
   count?: number;

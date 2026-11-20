@@ -186,7 +186,12 @@ export function PrivateWorkspace() {
               const old = previous.find((a) => a.id === event.id);
               return [
                 ...previous.filter((a) => a.id !== event.id),
-                { ...event, startedAt: old?.startedAt || event.startedAt },
+                {
+                  ...event,
+                  startedAt: old?.startedAt || event.startedAt,
+                  receivedAt: Date.now(),
+                  localStartedAt: old?.localStartedAt || Date.now(),
+                },
               ].slice(-100);
             });
           if (event.type === "result") {
@@ -271,8 +276,7 @@ export function PrivateWorkspace() {
             <span /> LOOSE BEAKS SINK SHIPS
           </p>
           <h1>
-            Your business.{" "}
-            <br />
+            Your business. <br />
             Our very <em>quiet</em> ducks.
           </h1>
           <p className="secret-intro">
