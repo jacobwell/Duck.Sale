@@ -49,7 +49,13 @@ export async function executeSearch(
     );
     // Each snapshot is complete, so one failed write must not reject every later
     // one: the next snapshot (or the final save below) catches storage up.
-    writes = writes.then(() => saveRun(id, snapshot)).catch(() => {});
+    writes = writes
+      .then(() => saveRun(id, snapshot))
+      .catch((error) => {
+        console.error("Duck.Sale progress write failed", {
+          category: error instanceof Error ? error.name : "UnknownError",
+        });
+      });
     return writes;
   }
   async function update(worker: WorkerState) {
