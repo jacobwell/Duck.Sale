@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Duck } from "@/components/duck";
+import { SecretVoyageArt, PrivacyMark } from "@/components/private-art";
 import { browserDb } from "@/lib/supabase";
 type Status = {
   ready: boolean;
@@ -117,25 +119,89 @@ export function PrivateWorkspace() {
   return (
     <main className="secret-duck">
       <header>
-        <Link href="/">← Duck.Sale</Link>
-        <span>PRIVATE MODE · EARLY VOYAGE</span>
-        <button onClick={scuttle}>Scuttle this voyage 🫧</button>
+        <Link href="/" className="secret-brand">
+          <Duck size={30} /> Duck.Sale<span> / </span>
+          <small>after hours</small>
+        </Link>
+        <span className="secret-nav-note">PRIVATE MODE · EARLY VOYAGE</span>
+        <button onClick={scuttle}>
+          Clear this voyage <span aria-hidden="true">↗</span>
+        </button>
       </header>
       <section className="secret-hero">
-        <span className="secret-mascot" aria-hidden>
-          🦆 🕶️
-        </span>
-        <p>LOOSE BEAKS SINK SHIPS</p>
-        <h1>
-          Your business.
-          <br />
-          Our very quiet ducks.
-        </h1>
-        <p>Public discovery. Private preferences. No saved search content.</p>
+        <div className="secret-hero-copy">
+          <p className="secret-eyebrow">
+            <span /> LOOSE BEAKS SINK SHIPS
+          </p>
+          <h1>
+            Your business.
+            <br />
+            Our very <em>quiet</em> ducks.
+          </h1>
+          <p className="secret-intro">
+            Same questionable purchases. A little more discretion.
+          </p>
+          <p className="secret-hero-detail">
+            You approve what goes to search. Your private preferences take the
+            confidential route.
+          </p>
+          <div className="secret-partners">
+            <span>BOAT.DEV</span>
+            <b>×</b>
+            <span>CONTEXT.DEV</span>
+            <b>×</b>
+            <span>NY TOKEN EXCHANGE</span>
+          </div>
+        </div>
+        <div className="secret-illustration">
+          <SecretVoyageArt />
+          <p>
+            CAPTAIN INCOGNITO <span>Unlicensed. Now in sunglasses.</span>
+          </p>
+        </div>
       </section>
+      <section
+        className="secret-route"
+        aria-label="How Private Mode handles your search"
+      >
+        <div>
+          <PrivacyMark kind="query" />
+          <div>
+            <span>01 / ABOVE DECK</span>
+            <h2>A query you approve</h2>
+            <p>Boat + Context discover public sources.</p>
+          </div>
+        </div>
+        <div>
+          <PrivacyMark kind="brief" />
+          <div>
+            <span>02 / BELOW DECK</span>
+            <h2>Your reasons stay separate</h2>
+            <p>NYTE / TrustedRouter confidential inference.</p>
+          </div>
+        </div>
+        <div>
+          <PrivacyMark kind="wake" />
+          <div>
+            <span>03 / NO SAVED SEARCH</span>
+            <h2>A temporary voyage</h2>
+            <p>VPN worker traffic. Search content not saved.</p>
+          </div>
+        </div>
+      </section>
+      <div className="secret-section-label">
+        <span>YOUR DISCREET LITTLE SEARCH PARTY</span>
+        <span>Public sources. Private preferences.</span>
+      </div>
       <div className="secret-grid">
-        <section className="secret-panel">
-          <h2>1. What can leave the boat?</h2>
+        <section className="secret-panel secret-form">
+          <div className="secret-panel-heading">
+            <PrivacyMark kind="query" />
+            <div>
+              <span>THE PUBLIC PART</span>
+              <h2>What can leave the boat?</h2>
+            </div>
+          </div>
           <p>
             Only type terms you approve sharing with Boat and Context. Keep
             names, exact addresses, budgets and secrets out.
@@ -163,7 +229,13 @@ export function PrivateWorkspace() {
             />{" "}
             I approve sending exactly this query to discovery providers.
           </label>
-          <h2>2. Keep the details below deck</h2>
+          <div className="secret-panel-heading secret-below">
+            <PrivacyMark kind="brief" />
+            <div>
+              <span>THE PRIVATE PART</span>
+              <h2>Keep the details below deck</h2>
+            </div>
+          </div>
           <label htmlFor="private-brief">Private ranking brief</label>
           <textarea
             id="private-brief"
@@ -203,12 +275,21 @@ export function PrivateWorkspace() {
             {notice}
           </p>
         </section>
-        <aside className="secret-panel">
-          <h2>The privacy manifest</h2>
+        <aside className="secret-panel secret-manifest">
+          <div className="secret-panel-heading">
+            <PrivacyMark kind="wake" />
+            <div>
+              <span>CHECK THE MANIFEST</span>
+              <h2>Discreet. Not invisible.</h2>
+            </div>
+          </div>
           <ul>
             {config?.services.map((s) => (
               <li key={s.name}>
-                {s.configured ? "✓ Configured" : "○ Missing"} · {s.name}
+                <span className={s.configured ? "secret-configured" : ""}>
+                  {s.configured ? "✓ Configured" : "○ Missing"}
+                </span>
+                <span>{s.name}</span>
               </li>
             ))}
           </ul>

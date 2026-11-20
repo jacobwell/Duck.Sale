@@ -1,6 +1,6 @@
 import { PrivateWorkspace } from "@/components/private-workspace";
 export const metadata = {
-  title: "Secret Duck — Private Mode",
+  title: "Duck.Sale — Private Mode",
   robots: { index: false, follow: false },
 };
 export default function PrivatePage() {
