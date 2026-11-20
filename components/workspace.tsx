@@ -149,6 +149,9 @@ export function Workspace({ initialId }: { initialId?: string }) {
     return () => window.clearTimeout(timer);
   }, [demoStep, demoPaused]);
   const [generating, setGenerating] = useState<string[]>([]);
+  const [feedbackTarget, setFeedbackTarget] = useState<Listing | null>(null);
+  const [feedbackNote, setFeedbackNote] = useState("");
+  const [hiddenListings, setHiddenListings] = useState<string[]>([]);
   const [categoryId, setCategoryId] = useState<CategoryId>("boats");
   const [categoryOption, setCategoryOption] = useState(0);
   const [condition, setCondition] = useState("Any condition");
@@ -231,7 +234,28 @@ export function Workspace({ initialId }: { initialId?: string }) {
       const { data } = db.auth.onAuthStateChange((_e, s) => {
         setSession(s);
         if (s) setTimeout(() => void hydrate(s), 0);
-        else setSaved([]);
+        else {
+          requestRef.current?.abort();
+          requestRef.current = null;
+          requestedRunId.current = undefined;
+          loadedFormId.current = undefined;
+          setBusy(false);
+          setRun(null);
+          setSaved([]);
+          setHistory([]);
+          setDetail(null);
+          setSelected([]);
+          setHiddenListings([]);
+          setFeedbackTarget(null);
+          setNotice("");
+          setQuery("");
+          setLocation("Anywhere");
+          setBudget("");
+          setIntent("buy");
+          setView("discover");
+          setDemoStep(null);
+          window.history.replaceState(null, "", "/");
+        }
       });
       return () => data.subscription.unsubscribe();
     }
@@ -290,6 +314,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
   const activeListings = view === "saved" ? allSaved : run?.listings || [];
   let listings = activeListings.filter(
     (l) =>
+      !hiddenListings.includes(l.id) &&
       (sourceFilter === "all" || l.source === sourceFilter) &&
       (statusFilter === "all" || l.status === statusFilter) &&
       (!priceFilter || l.price !== null),
@@ -306,6 +331,16 @@ export function Workspace({ initialId }: { initialId?: string }) {
     (l, i, arr) =>
       selected.includes(l.id) && arr.findIndex((x) => x.id === l.id) === i,
   );
+  const comparisonAttributes = Array.from(
+    new Set(comparison.flatMap((l) => l.attributes?.map((a) => a.name) || [])),
+  );
+  const historyGroups = history.reduce((groups, item) => {
+    const root = item.root_run_id || item.id;
+    const group = groups.get(root) || [];
+    group.push(item);
+    groups.set(root, group);
+    return groups;
+  }, new Map<string, SearchRun[]>());
   async function generateIllustration(listing: Listing) {
     if (!session) {
       setModal("auth");
@@ -395,6 +430,8 @@ export function Workspace({ initialId }: { initialId?: string }) {
     setDemoStep(null);
     setRun(null);
     setQuery("");
+    setHiddenListings([]);
+    setFeedbackTarget(null);
     setSelected([]);
     setNotice("");
     setSourceFilter("all");
@@ -545,6 +582,111 @@ export function Workspace({ initialId }: { initialId?: string }) {
       requestRef.current = null;
     }
   }
+  async function continueVoyage(note = "") {
+    if (!run || busy || !session || run.sample || run.status === "running")
+      return;
+    const parent = run;
+    setBusy(true);
+    setNotice(
+      "The ducks are heading back out, keeping the finds already aboard.",
+    );
+    const controller = new AbortController();
+    requestRef.current = controller;
+    let current: SearchRun = {
+      ...parent,
+      id: "pending",
+      parent_run_id: parent.id,
+      status: "running",
+      workers: [],
+      listings: parent.listings,
+    };
+    let finished = false;
+    const apply = (event: SearchEvent) => {
+      if (event.type === "run") {
+        current = { ...current, id: event.id };
+        requestedRunId.current = event.id;
+        window.history.replaceState(null, "", `/search/${event.id}`);
+      }
+      if (event.type === "worker")
+        current = {
+          ...current,
+          workers: [
+            ...current.workers.filter((w) => w.id !== event.worker.id),
+            event.worker,
+          ],
+        };
+      if (event.type === "results")
+        current = {
+          ...current,
+          listings: [
+            ...current.listings,
+            ...event.listings.filter(
+              (l) => !current.listings.some((x) => x.sourceUrl === l.sourceUrl),
+            ),
+          ],
+        };
+      if (event.type === "complete") {
+        current = {
+          ...event.run,
+          listings: [
+            ...parent.listings,
+            ...event.run.listings.filter(
+              (l) => !parent.listings.some((x) => x.sourceUrl === l.sourceUrl),
+            ),
+          ],
+        };
+        finished = true;
+      }
+      if (event.type === "error") {
+        finished = true;
+        current = { ...current, status: "partial" };
+        setNotice(event.message);
+      }
+      setRun({ ...current });
+    };
+    try {
+      const token = (await browserDb()!.auth.getSession()).data.session
+        ?.access_token;
+      const response = await fetch("/api/search/continue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ parentId: parent.id, note }),
+        signal: controller.signal,
+      });
+      if (!response.ok)
+        throw new Error(
+          (await response.json()).error || "Could not continue this voyage.",
+        );
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No voyage stream received.");
+      const decoder = new TextDecoder();
+      let buffer = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) if (line.trim()) apply(JSON.parse(line));
+      }
+      if (buffer.trim()) apply(JSON.parse(buffer));
+      if (!finished)
+        throw new Error(
+          "Connection interrupted. This voyage is saved in search history.",
+        );
+      if (session) await hydrate(session);
+    } catch (error) {
+      setNotice(
+        error instanceof Error ? error.message : "Continuation failed.",
+      );
+    } finally {
+      setBusy(false);
+      requestRef.current = null;
+    }
+  }
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     const db = browserDb();
@@ -581,6 +723,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
         </button>
         <div className="nav-label">YOUR LOOKOUT</div>
         <nav aria-label="Main navigation">
+          <Link href="/private" style={{padding: "12px 16px", display: "block"}}>🕵️ Private Mode</Link>
           <button
             className={view === "discover" ? "active" : ""}
             onClick={() => setView("discover")}
@@ -926,7 +1069,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
                             : w.status === "starting"
                               ? "Launching a Boat sandbox…"
                               : w.status === "searching"
-                                ? "Searching and reading sources…"
+                                ? w.message || "Searching and reading sources…"
                                 : w.status === "extracting"
                                   ? "Making sense of the evidence…"
                                   : "Waiting to launch"}
@@ -966,25 +1109,42 @@ export function Workspace({ initialId }: { initialId?: string }) {
                   </button>
                 </div>
               ) : history.length ? (
-                history.map((h) => (
-                  <Link
-                    className="history-row"
-                    href={`/search/${h.id}`}
-                    key={h.id}
-                  >
-                    <span className="history-icon">
-                      <Compass size={20} />
-                    </span>
-                    <div>
-                      <strong>{h.query}</strong>
-                      <p>
-                        {h.location} · {h.listings.length} finds ·{" "}
-                        {new Date(h.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <span className="pill">{h.status}</span>
-                    <ArrowUpRight size={18} />
-                  </Link>
+                Array.from(historyGroups.entries()).map(([rootId, voyages]) => (
+                  <div className="voyage-history-group" key={rootId}>
+                    {voyages.length > 1 && (
+                      <div className="eyebrow">
+                        LINKED VOYAGE · {voyages.length} SEARCHES
+                      </div>
+                    )}
+                    {[...voyages]
+                      .sort(
+                        (a, b) =>
+                          (a.voyage_number || 1) - (b.voyage_number || 1),
+                      )
+                      .map((h) => (
+                        <Link
+                          className="history-row"
+                          href={`/search/${h.id}`}
+                          key={h.id}
+                        >
+                          <span className="history-icon">
+                            <Compass size={20} />
+                          </span>
+                          <div>
+                            <strong>{h.query}</strong>
+                            <p>
+                              {h.voyage_number && h.voyage_number > 1
+                                ? `Voyage ${h.voyage_number} · `
+                                : ""}
+                              {h.location} · {h.listings.length} finds ·{" "}
+                              {new Date(h.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <span className="pill">{h.status}</span>
+                          <ArrowUpRight size={18} />
+                        </Link>
+                      ))}
+                  </div>
                 ))
               ) : (
                 <div className="empty">
@@ -999,6 +1159,24 @@ export function Workspace({ initialId }: { initialId?: string }) {
             </section>
           ) : run || view === "saved" ? (
             <section className="results">
+              {run &&
+                view === "discover" &&
+                run.status !== "running" &&
+                !run.sample && (
+                  <div className="notice">
+                    <span>
+                      Keep these {run.listings.length} finds aboard and send
+                      another duck for fresh leads.
+                    </span>
+                    <button
+                      className="primary"
+                      disabled={busy}
+                      onClick={() => void continueVoyage()}
+                    >
+                      Send another duck ↗
+                    </button>
+                  </div>
+                )}
               <div className="section-heading">
                 <div>
                   <div className="eyebrow">
@@ -1194,10 +1372,78 @@ export function Workspace({ initialId }: { initialId?: string }) {
                           )}
                         </button>
                       </div>
+                      {!l.sample && view === "discover" && (
+                        <div className="listing-feedback">
+                          <button
+                            onClick={() => {
+                              setHiddenListings((items) => [...items, l.id]);
+                              setNotice(
+                                `Hidden ${l.title}. You can restore hidden finds below.`,
+                              );
+                            }}
+                          >
+                            Hide this
+                          </button>
+                          <button
+                            onClick={() => {
+                              setFeedbackTarget(l);
+                              setFeedbackNote(
+                                `Find more like ${l.title}${l.location ? ` near ${l.location}` : ""}.`,
+                              );
+                            }}
+                          >
+                            More like this
+                          </button>
+                          <button
+                            onClick={() => {
+                              setHiddenListings((items) => [...items, l.id]);
+                              setFeedbackTarget(l);
+                              setFeedbackNote(
+                                `Wrong category: exclude results like ${l.title}.`,
+                              );
+                            }}
+                          >
+                            Wrong category
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </article>
                 ))}
               </div>
+              {hiddenListings.length > 0 && (
+                <button
+                  className="secondary"
+                  onClick={() => setHiddenListings([])}
+                >
+                  Show {hiddenListings.length} hidden finds
+                </button>
+              )}
+              {feedbackTarget && (
+                <div className="notice">
+                  <label>
+                    Steer the next voyage{" "}
+                    <input
+                      value={feedbackNote}
+                      onChange={(event) => setFeedbackNote(event.target.value)}
+                      maxLength={500}
+                    />
+                  </label>
+                  <button
+                    className="primary"
+                    disabled={busy}
+                    onClick={() => {
+                      void continueVoyage(feedbackNote);
+                      setFeedbackTarget(null);
+                    }}
+                  >
+                    Send ducks with notes
+                  </button>
+                  <button onClick={() => setFeedbackTarget(null)}>
+                    Cancel
+                  </button>
+                </div>
+              )}
               {!listings.length && (
                 <div className="empty">
                   <Search size={34} />
@@ -1487,6 +1733,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
                   "Status",
                   "Why it fits",
                   "Watch-outs",
+                  ...comparisonAttributes.map((name) => `Item detail: ${name}`),
                   "Source",
                 ].map((field) => (
                   <tr key={field}>
@@ -1503,6 +1750,20 @@ export function Workspace({ initialId }: { initialId?: string }) {
                           l.matchReason
                         ) : field === "Watch-outs" ? (
                           l.caveats.join(" ") || "No additional notes"
+                        ) : field.startsWith("Item detail: ") ? (
+                          (() => {
+                            const attribute = l.attributes?.find(
+                              (item) => item.name === field.slice(13),
+                            );
+                            return attribute ? (
+                              <details>
+                                <summary>{attribute.value}</summary>
+                                <blockquote>{attribute.evidence}</blockquote>
+                              </details>
+                            ) : (
+                              "Not stated"
+                            );
+                          })()
                         ) : (
                           <a
                             href={l.sourceUrl}
@@ -1559,6 +1820,11 @@ export function Workspace({ initialId }: { initialId?: string }) {
             </strong>
             <p>{detail.matchReason}</p>
             <strong>Source evidence</strong>
+            <p>
+              <a href={detail.sourceUrl} target="_blank" rel="noreferrer">
+                {new URL(detail.sourceUrl).hostname} ↗
+              </a>
+            </p>
             <blockquote>
               {detail.evidence || "No exact excerpt available."}
             </blockquote>
@@ -1569,6 +1835,31 @@ export function Workspace({ initialId }: { initialId?: string }) {
                   ? "Fictional sample · not verified"
                   : `Retrieved ${new Date(detail.retrievedAt).toLocaleString()} · ${detail.confidence} extraction confidence`}
             </small>
+            {detail.priceEvidence && (
+              <>
+                <strong>Price evidence</strong>
+                <blockquote>{detail.priceEvidence}</blockquote>
+              </>
+            )}
+            {detail.statusEvidence && (
+              <>
+                <strong>Availability evidence</strong>
+                <blockquote>{detail.statusEvidence}</blockquote>
+              </>
+            )}
+            {detail.attributes?.length ? (
+              <>
+                <strong>Item details from the source</strong>
+                <ul className="caveats">
+                  {detail.attributes.map((attribute, index) => (
+                    <li key={`${attribute.name}-${index}`}>
+                      <b>{attribute.name}:</b> {attribute.value}
+                      <blockquote>{attribute.evidence}</blockquote>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </div>
           {detail.caveats.length > 0 && (
             <ul className="caveats">

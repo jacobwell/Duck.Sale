@@ -16,6 +16,7 @@
   "type": "module",
   "dependencies": {
     "@boatdev/sdk": "^1.13.0",
+    "@lore-hex/trusted-router": "^0.10.1",
     "@supabase/supabase-js": "^2.119.0",
     "@vercel/oidc": "^4.0.9",
     "ai": "^7.0.176",

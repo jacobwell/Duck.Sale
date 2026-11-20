@@ -3,7 +3,9 @@ export const workerSource = String.raw`
 import { readFile } from 'node:fs/promises';
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
-const { query, permitUrl, permitToken } = JSON.parse(await readFile('/home/user/boatduck-input.json', 'utf8'));
+const { query, permitUrl, permitToken, excludeUrls=[] } = JSON.parse(await readFile('/home/user/boatduck-input.json', 'utf8'));
+const canonical=u=>{try{const x=new URL(u);x.hash='';for(const k of [...x.searchParams.keys()])if(k.startsWith('utm_')||k==='fbclid')x.searchParams.delete(k);return x.toString().replace(/\/$/,'')}catch{return u}};
+const excluded=new Set(excludeUrls.map(canonical));
 function privateIP(ip) {
   if (ip.includes(':')) return !/^[23][0-9a-f]{3}:/i.test(ip);
   const [a,b] = ip.split('.').map(Number);
@@ -95,7 +97,7 @@ function snapshot(forcePartial=false) {
 try {
   const search = await context('search',{query,numResults:8,descriptionMaxCharacters:1200,timeoutOpts:{milliseconds:30000,behavior:'return-partial'}});
   searchPartial=!!search.partial;
-  const results=(search.results||[]).sort((a,b)=>Number(itemPath.test(b.url))-Number(itemPath.test(a.url))).slice(0,3);
+  const results=(search.results||[]).filter(r=>!excluded.has(canonical(r.url))).sort((a,b)=>Number(itemPath.test(b.url))-Number(itemPath.test(a.url))).slice(0,3);
   // Preserve real search snippets before slower page reads begin.
   for(const r of results) if(await safeUrl(r.url))pages.push({url:r.url,title:r.title||'',description:r.description||'',markdown:'',images:[],retrievedAt:new Date().toISOString(),error:'Page not yet inspected'});
   snapshot();
@@ -110,7 +112,7 @@ try {
     if(itemPath.test(p.url))continue;
     for(const m of p.markdown.matchAll(/\[([^\]]{3,180})\]\((https?:\/\/[^\s)]+)\)/g)) {
       const url=m[2];
-      if(itemPath.test(url) && !pages.some(p=>p.url===url) && !links.some(p=>p.url===url)) links.push({url,title:m[1]});
+      if(itemPath.test(url) && !excluded.has(canonical(url)) && !pages.some(p=>p.url===url) && !links.some(p=>p.url===url)) links.push({url,title:m[1]});
       if(links.length>=2)break;
     }
     if(links.length>=2)break;

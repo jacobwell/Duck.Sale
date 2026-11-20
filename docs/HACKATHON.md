@@ -17,7 +17,7 @@ Source: supplied Teamily group announcement, checked alongside https://boathacka
 - Context.dev: web search, page extraction and source images from inside each sandbox.
 - Vercel: Next.js hosting and AI Gateway for planning and extraction.
 - Supabase: authenticated, private search records and generation history.
-- NY Token Exchange / LetsEncrypt.AI / TrustedRouter private-AI prize: NOT YET QUALIFIED. The pasted announcement specifies users using encrypted AI tokens. Do not describe standard Gateway inference or private database storage as encrypted inference. Verify current sponsor instructions and implement/validate their encrypted token path before claiming this prize.
+- NY Token Exchange / LetsEncrypt.AI / TrustedRouter private-AI prize: Private Mode now uses the NYTE confidential-only endpoint with required confidential routing and a fresh, TLS-exporter-bound gateway attestation. A real private search passed on preview with no content stored in app search tables. Sponsor eligibility and judging remain subject to organizer verification; ordinary Gateway searches are not confidential inference. See PRIVATE-MODE.md and its receipts.
 
 ## 90-second demo
 

@@ -6,6 +6,8 @@ import {
   streamCommand,
 } from "@boatdev/sdk";
 import { z } from "zod";
+import { privateVpn } from "./private/config";
+import { vpnSource } from "./private/vpn-source";
 import { workerSource } from "./worker-source";
 import { issueContextPermit } from "./context-permit";
 import type { WorkerState, ApiCall } from "@/lib/types";
@@ -31,6 +33,10 @@ export async function discover(
   worker: WorkerState,
   update: (w: WorkerState) => Promise<void>,
   signal: AbortSignal,
+  privacy?: {
+    onVpn: (exitIp: string) => void;
+    onCleanup: (deleted: boolean) => void;
+  },
 ): Promise<Evidence> {
   const boat = new BoatApi(
     new Configuration({
@@ -48,8 +54,12 @@ export async function discover(
         }),
     }),
   );
+  const vpn = privacy ? privateVpn() : null;
+  if (privacy && !vpn) throw new Error("Private VPN is not configured.");
+  let vpnVerified = false;
   let sandboxId: string | undefined;
   let evidence: Evidence | undefined;
+  let phase: "create" | "startup" | "command" = "create";
   try {
     signal.throwIfAborted();
     await update({ ...worker, status: "starting" });
@@ -63,11 +73,18 @@ export async function discover(
       labels: { app: "boatduck", run: runId },
       env: { CONTEXT_DEV_API_KEY: process.env.CONTEXT_DEV_API_KEY! },
       files: [
+        ...(vpn
+          ? [
+              { path: "boatduck-vpn.json", content: JSON.stringify(vpn) },
+              { path: "boatduck-vpn.mjs", content: vpnSource },
+            ]
+          : []),
         { path: "boatduck-worker.mjs", content: workerSource },
         {
           path: "boatduck-input.json",
           content: JSON.stringify({
             query: worker.query,
+            excludeUrls: worker.excludeUrls || [],
             permitUrl: `${process.env.BOATDUCK_APP_URL || "https://boatduck.vercel.app"}/api/context-permit`,
             permitToken: issueContextPermit(runId, worker.id),
           }),
@@ -77,12 +94,14 @@ export async function discover(
     sandboxId = created.sandbox.id;
     worker = { ...worker, sandboxId, status: "starting" };
     await update(worker);
+    phase = "startup";
     await waitUntilReady(boat, sandboxId, {
       timeoutMs: 60000,
       intervalMs: 1500,
     });
     signal.throwIfAborted();
     await update({ ...worker, status: "searching" });
+    phase = "command";
     let buffer = "",
       stderr = "",
       exited = false;
@@ -99,7 +118,17 @@ export async function discover(
     });
     async function consume(line: string) {
       const data = JSON.parse(line);
-      if (data.type === "api") {
+      if (
+        data.type === "vpn" &&
+        privacy &&
+        data.verified === true &&
+        data.exitIp === vpn?.expectedExitIp
+      ) {
+        vpnVerified = true;
+        privacy.onVpn(data.exitIp);
+      } else if (data.type === "api") {
+        if (privacy && !vpnVerified)
+          throw new Error("VPN verification missing.");
         const call = callSchema.parse(data.call) as ApiCall;
         const previous = worker.calls!.find((c) => c.id === call.id);
         const merged = { ...previous, ...call };
@@ -108,9 +137,11 @@ export async function discover(
           merged,
         ].slice(-40);
         await update({ ...worker });
-      } else if (data.type === "evidence")
+      } else if (data.type === "evidence") {
+        if (privacy && !vpnVerified)
+          throw new Error("VPN verification missing.");
         evidence = evidenceSchema.parse(data);
-      else if (data.type === "throttle" && typeof data.message === "string") {
+      } else if (data.type === "throttle" && typeof data.message === "string") {
         worker = { ...worker, message: data.message.slice(0, 200) };
         await update(worker);
       }
@@ -118,7 +149,9 @@ export async function discover(
     for await (const frame of streamCommand(
       boat,
       sandboxId,
-      "node /home/user/boatduck-worker.mjs",
+      privacy
+        ? "node /home/user/boatduck-vpn.mjs"
+        : "node /home/user/boatduck-worker.mjs",
       { timeoutSeconds: 135, signal },
     )) {
       if (frame.type === "stdout") {
@@ -146,18 +179,68 @@ export async function discover(
         throw new Error("Boat command stream failed.");
     }
     if (buffer.trim()) await consume(buffer);
-    if (!exited || !evidence)
+    if (!exited || !evidence || (privacy && !vpnVerified))
       throw new Error("Worker stream ended before returning evidence.");
     return evidence;
   } catch (error) {
     if (evidence?.pages.length) return { ...evidence, partial: true };
-    throw error;
+    const status =
+      typeof error === "object" &&
+      error &&
+      "status" in error &&
+      typeof error.status === "number"
+        ? ` HTTP ${error.status}`
+        : "";
+    if (
+      error instanceof Error &&
+      /^(Context (?:search|scrape) returned HTTP \d+|Context queue exceeded|Context request time budget|Context request queue unavailable)/.test(
+        error.message,
+      )
+    )
+      throw error;
+    console.error("Boatduck sandbox phase failed", {
+      phase,
+      category: error instanceof Error ? error.name : "UnknownError",
+      status: status.trim() || null,
+      sandboxState:
+        error instanceof Error
+          ? error.message.match(
+              /Sandbox entered terminal state (archived|archiving|error)/,
+            )?.[1] || null
+          : null,
+    });
+    const terminalState =
+      error instanceof Error
+        ? error.message.match(
+            /Sandbox entered terminal state (archived|archiving|error)/,
+          )?.[1]
+        : null;
+    throw new Error(
+      `Boat sandbox ${phase} failed${status}${terminalState ? ` (state: ${terminalState})` : ""}`,
+    );
   } finally {
     if (sandboxId) {
       try {
-        await boat.stop({ sandboxId });
+        if (privacy) {
+          let deletion = await boat.deleteSandbox({
+            sandboxId,
+            xAsciiConfirmDelete: sandboxId,
+          });
+          const deadline = Date.now() + 12000;
+          while (
+            deletion.operation.status !== "completed" &&
+            Date.now() < deadline
+          ) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            deletion = await boat.getDeletionOperation({
+              operationId: deletion.operation.id,
+            });
+          }
+          privacy.onCleanup(deletion.operation.status === "completed");
+        } else await boat.stop({ sandboxId });
         worker.cleanup = "stopped";
       } catch {
+        privacy?.onCleanup(false);
         worker.cleanup = "ttl-fallback";
       }
       // Preserve the phase; caller owns the completion status.

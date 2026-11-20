@@ -21,6 +21,16 @@ export const listingSchema = z.object({
   evidence: z.string().max(600),
   priceEvidence: z.string().max(300).nullable(),
   statusEvidence: z.string().max(300).nullable(),
+  attributes: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(50),
+        value: z.string().trim().min(1).max(120),
+        evidence: z.string().trim().min(1).max(240),
+      }),
+    )
+    .max(8)
+    .optional(),
   confidence: z.enum(["high", "medium", "low"]),
   matchReason: z.string().max(300),
 });
@@ -63,6 +73,15 @@ export type WorkerState = {
   message?: string;
   cleanup?: "stopped" | "ttl-fallback";
   calls?: ApiCall[];
+  progress?: {
+    discovered: number;
+    inspected: number;
+    queued: number;
+    skipped: number;
+    queuePosition?: number;
+    cooldownUntil?: string;
+  };
+  excludeUrls?: string[];
 };
 export type SearchRun = {
   id: string;
@@ -77,6 +96,9 @@ export type SearchRun = {
   warning?: string;
   sample?: boolean;
   recorded?: boolean;
+  parent_run_id?: string | null;
+  root_run_id?: string | null;
+  voyage_number?: number;
 };
 export type SearchEvent =
   | { type: "run"; id: string }

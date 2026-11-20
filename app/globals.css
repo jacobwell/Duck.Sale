@@ -1066,6 +1066,13 @@ main {
   padding: 40px 0;
   min-height: 65vh;
 }
+.voyage-history-group + .voyage-history-group {
+  margin-top: 28px;
+}
+.voyage-history-group > .eyebrow {
+  margin: 0 0 10px 4px;
+  color: #82946d;
+}
 .history-row {
   display: flex;
   align-items: center;
@@ -3191,3 +3198,7 @@ main {
     transition: none;
   }
 }
+
+/* Private voyages have their own session-only surface. */
+.secret-duck{min-height:100vh;background:#102a2a;color:#eaf5df;padding:28px max(24px,calc((100vw - 1200px)/2));font-family:Arial,sans-serif}
+.secret-duck header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.secret-duck a{color:#d6f39b}.secret-duck button{border:1px solid #90ae89;background:transparent;color:inherit;border-radius:10px;padding:12px 18px;cursor:pointer}.secret-duck button:disabled{opacity:.5;cursor:not-allowed}.secret-hero{padding:60px 0 34px}.secret-hero h1{font-size:clamp(38px,6vw,76px);line-height:1.03;letter-spacing:-3px;margin:16px 0}.secret-mascot{float:right;font-size:60px}.secret-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}.secret-panel{border:1px solid #45625a;border-radius:20px;padding:28px;margin-bottom:24px;background:#193733}.secret-panel h2{font-size:24px;margin:0 0 18px}.secret-panel h3{margin:25px 0 12px}.secret-panel p{line-height:1.6;color:#c2d1c5}.secret-panel label{display:block;margin:18px 0 10px}.secret-panel input:not([type=checkbox]),.secret-panel textarea{width:100%;background:#0f2825;color:#f3f7ec;border:1px solid #658376;border-radius:10px;padding:14px;font:inherit;box-sizing:border-box}.secret-panel input[type=checkbox]{margin-right:10px}.secret-check{line-height:1.6}.secret-panel .secret-launch{background:#d6f39b;color:#17342a;font-weight:bold;width:100%;margin-top:20px}.secret-panel li{margin:12px 0;list-style:none}.secret-panel ul{padding:0}.secret-result{padding:20px 0;border-bottom:1px solid #45625a}.secret-result blockquote{border-left:3px solid #d6f39b;padding-left:18px;color:#c2d1c5}.secret-duck :focus-visible{outline:3px solid #d6f39b;outline-offset:4px}@media(max-width:750px){.secret-grid{grid-template-columns:1fr}.secret-mascot{float:none}.secret-panel{padding:20px}.secret-hero{padding-top:30px}}

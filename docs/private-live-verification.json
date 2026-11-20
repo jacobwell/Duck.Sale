@@ -1,0 +1,25 @@
+{
+  "target": "https://boatduck-f85kdfmkg-jacobwells-projects.vercel.app",
+  "checkedAt": "2026-11-20T02:59:54.392Z",
+  "status": 200,
+  "resultCount": 1,
+  "partial": true,
+  "receipt": {
+    "publicQuery": "Catalina 30 sailboat for sale California",
+    "vpnExit": "185.156.46.142",
+    "sandboxDeleted": true,
+    "contentSaved": false,
+    "admissionMetadataRetained": true,
+    "thirdPartyDeletionVerified": false
+  },
+  "attestation": {
+    "binding": "tls-exporter",
+    "imageDigest": "sha256:dbdb498254f396bc95bf97f960aa73885ea38865661b933d845a06c547dd19fb",
+    "expiresAt": 1795147295
+  },
+  "admissionOnly": true,
+  "sourceRows": 0,
+  "generationRows": 0,
+  "passed": true,
+  "temporaryUserRemoved": true
+}

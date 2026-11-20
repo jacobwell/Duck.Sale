@@ -1,0 +1,761 @@
+{
+  "checkedAt": "2026-11-19T00:09:13.058Z",
+  "target": "https://boatduck-qa3t9s4na-jacobwells-projects.vercel.app",
+  "passed": true,
+  "parent": {
+    "status": "partial",
+    "finds": 1,
+    "warning": "Some sources could only be read partially or reached the provider cooldown/time limit. Available findings were preserved.",
+    "workers": [
+      {
+        "id": "1",
+        "status": "complete",
+        "message": "Source search returned partial results.",
+        "sandboxId": "bx_svmysssm",
+        "cleanup": "stopped",
+        "calls": [
+          {
+            "service": "Context.dev",
+            "operation": "search",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "status": "complete",
+            "statusCode": null
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "normalize listing locations",
+            "status": "complete",
+            "statusCode": null
+          },
+          {
+            "service": "Geocoder",
+            "operation": "city → coordinates",
+            "status": "complete",
+            "statusCode": 200
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "status": "complete",
+        "message": "Source search returned partial results.",
+        "sandboxId": "bx_q954edsu",
+        "cleanup": "stopped",
+        "calls": [
+          {
+            "service": "Context.dev",
+            "operation": "search",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "failed",
+            "statusCode": null
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "status": "complete",
+            "statusCode": null
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "status": "complete",
+        "message": "Source search returned partial results.",
+        "sandboxId": "bx_krkqv57z",
+        "cleanup": "stopped",
+        "calls": [
+          {
+            "service": "Context.dev",
+            "operation": "search",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "status": "complete",
+            "statusCode": null
+          }
+        ]
+      }
+    ],
+    "evidenceError": null,
+    "sources": [
+      {
+        "workerId": "1",
+        "url": "https://www.yachtworld.com/boats-for-sale/type-sail/country-united-states/state-california/",
+        "title": "Sail boats for sale in California",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "1",
+        "url": "https://www.boattrader.com/boats/type-sail/state-ca/",
+        "title": "Sailboats for sale in California",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "1",
+        "url": "https://www.sailboatlistings.com/location/California",
+        "title": "California Sailboats for Sale",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "1",
+        "url": "https://www.yachtworld.com/yacht/2011-outbound-46-10315302/",
+        "title": "Sailing yacht \"GADABOUT\" on water, Outbound 46 model, 2011",
+        "error": "Context queue exceeded this worker’s time budget",
+        "markdownChars": 0
+      },
+      {
+        "workerId": "3",
+        "url": "https://cruisingyachts.net/used-yachts",
+        "title": "Used Sailboats and Motor Yachts for Sale in San Diego, Marina del Rey ...",
+        "error": null,
+        "markdownChars": 10925
+      },
+      {
+        "workerId": "3",
+        "url": "https://www.sailboatlistings.com/cgi-bin/saildata/db.cgi?db=default&uid=default&city=San%20Diego%20Ca&view_records=1&sb=date&so=descend",
+        "title": "San Diego Ca Sailboats for Sale",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "3",
+        "url": "https://californiayachtsales.com/inventory/",
+        "title": "San Diego Boats for Sale from California Yacht Sales",
+        "error": "Context queue exceeded this worker’s time budget",
+        "markdownChars": 0
+      },
+      {
+        "workerId": "2",
+        "url": "https://scyachts.com/",
+        "title": "Sailboats, Power Boats and Yachts for Sale in California. South Coast ...",
+        "error": null,
+        "markdownChars": 3350
+      },
+      {
+        "workerId": "2",
+        "url": "https://californiayachtsales.com/",
+        "title": "California Yacht Sales | Boats for Sale in San Diego",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "2",
+        "url": "https://www.yachtworld.com/boats-for-sale/type-sail/country-united-states/state-california/",
+        "title": "Sail boats for sale in California",
+        "error": "The operation was aborted due to timeout",
+        "markdownChars": 0
+      }
+    ],
+    "generationsError": null,
+    "generations": [
+      {
+        "kind": "plan",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 670,
+            "promptTokenCount": 462,
+            "thoughtsTokenCount": 142,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 462
+              }
+            ],
+            "candidatesTokenCount": 66,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 66
+              }
+            ]
+          },
+          "inputTokens": 462,
+          "totalTokens": 670,
+          "outputTokens": 208,
+          "inputTokenDetails": {
+            "noCacheTokens": 462,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 66,
+            "reasoningTokens": 142
+          }
+        },
+        "error": null
+      },
+      {
+        "kind": "extract",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 21256,
+            "promptTokenCount": 17581,
+            "thoughtsTokenCount": 1279,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 17581
+              }
+            ],
+            "candidatesTokenCount": 2396,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2396
+              }
+            ]
+          },
+          "inputTokens": 17581,
+          "totalTokens": 21256,
+          "outputTokens": 3675,
+          "inputTokenDetails": {
+            "noCacheTokens": 17581,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 2396,
+            "reasoningTokens": 1279
+          }
+        },
+        "error": null,
+        "listingTitles": [
+          "2023 Bali 4.6",
+          "2019 Beneteau Oceanis 51.1",
+          "2020 Jeanneau 349 Sun Odyssey",
+          "1980 Downeaster Pilothouse"
+        ]
+      },
+      {
+        "kind": "extract",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 15039,
+            "promptTokenCount": 11764,
+            "thoughtsTokenCount": 1066,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 11764
+              }
+            ],
+            "candidatesTokenCount": 2209,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2209
+              }
+            ]
+          },
+          "inputTokens": 11764,
+          "totalTokens": 15039,
+          "outputTokens": 3275,
+          "inputTokenDetails": {
+            "noCacheTokens": 11764,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 2209,
+            "reasoningTokens": 1066
+          }
+        },
+        "error": null,
+        "listingTitles": [
+          "1987 Tayana Vancouver 42 Center Cockpit",
+          "2005 Beneteau Oceanis 423",
+          "1988 Hylas 44 Center Cockpit",
+          "2009 Hunter 50 Center Cockpit"
+        ]
+      },
+      {
+        "kind": "extract",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 37109,
+            "promptTokenCount": 33086,
+            "thoughtsTokenCount": 1750,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 33086
+              }
+            ],
+            "candidatesTokenCount": 2273,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2273
+              }
+            ]
+          },
+          "inputTokens": 33086,
+          "totalTokens": 37109,
+          "outputTokens": 4023,
+          "inputTokenDetails": {
+            "noCacheTokens": 33086,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 2273,
+            "reasoningTokens": 1750
+          }
+        },
+        "error": null,
+        "listingTitles": [
+          "2011 Outbound 46",
+          "2011 Alerion Sport 33",
+          "1982 Capital Newport 27S II",
+          "1979 Union Polaris 36"
+        ]
+      },
+      {
+        "kind": "geocode",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 1011,
+            "promptTokenCount": 820,
+            "thoughtsTokenCount": 130,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 820
+              }
+            ],
+            "candidatesTokenCount": 61,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 61
+              }
+            ]
+          },
+          "inputTokens": 820,
+          "totalTokens": 1011,
+          "outputTokens": 191,
+          "inputTokenDetails": {
+            "noCacheTokens": 820,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 61,
+            "reasoningTokens": 130
+          }
+        },
+        "error": null
+      }
+    ]
+  },
+  "parentError": null,
+  "child": {
+    "status": "partial",
+    "finds": 1,
+    "warning": "Some sources could only be read partially or reached the provider cooldown/time limit. Available findings were preserved.",
+    "workers": [
+      {
+        "id": "1",
+        "status": "complete",
+        "message": "Source search returned partial results.",
+        "sandboxId": "bx_fj3raqy4",
+        "cleanup": "stopped",
+        "calls": [
+          {
+            "service": "Context.dev",
+            "operation": "search",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "status": "complete",
+            "statusCode": null
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "status": "complete",
+        "message": "Source search returned partial results.",
+        "sandboxId": "bx_9c4rku4b",
+        "cleanup": "stopped",
+        "calls": [
+          {
+            "service": "Context.dev",
+            "operation": "search",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "status": "complete",
+            "statusCode": null
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "status": "complete",
+        "message": "Source search returned partial results.",
+        "sandboxId": "bx_drucsn2m",
+        "cleanup": "stopped",
+        "calls": [
+          {
+            "service": "Context.dev",
+            "operation": "search",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "Context.dev",
+            "operation": "scrape",
+            "status": "complete",
+            "statusCode": 200
+          },
+          {
+            "service": "AI Gateway",
+            "operation": "extract listings",
+            "status": "complete",
+            "statusCode": null
+          }
+        ]
+      }
+    ],
+    "evidenceError": null,
+    "sources": [
+      {
+        "workerId": "1",
+        "url": "https://scyachts.com/used-boats/brokerage/",
+        "title": "Used Boats, Yachts and Sailboats for Sale in San Diego & Newport Beach, ...",
+        "error": null,
+        "markdownChars": 4690
+      },
+      {
+        "workerId": "1",
+        "url": "https://www.facebook.com/marketplace/newport-beach-ca/sailboats/",
+        "title": "Sailboats for sale in Newport Beach, California",
+        "error": null,
+        "markdownChars": 2930
+      },
+      {
+        "workerId": "1",
+        "url": "https://www.boattrader.com/boats/type-sail/state-ca/city-newport-beach/",
+        "title": "Sailboats for sale in Newport Beach",
+        "error": "Context queue exceeded this worker’s time budget",
+        "markdownChars": 0
+      },
+      {
+        "workerId": "2",
+        "url": "https://www.yachtworld.com/boats-for-sale/type-sail/country-united-states/state-california/city-monterey/",
+        "title": "Sail boats for sale in Monterey",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "2",
+        "url": "https://rubiconyachts.com/yachts-for-sale/sailboats-for-sale",
+        "title": "Sailboats For Sale",
+        "error": "Context queue exceeded this worker’s time budget",
+        "markdownChars": 0
+      },
+      {
+        "workerId": "2",
+        "url": "https://www.silverseasyachts.com/map-hours-directions-boats-dealership--sausalito",
+        "title": "Yacht Sales and Brokerage in Sausalito - San Francisco Bay",
+        "error": "Page not yet inspected",
+        "markdownChars": 0
+      },
+      {
+        "workerId": "3",
+        "url": "https://www.boats.com/boats-for-sale/?boat-type=sail&country=united-states&subdivision=california&page=8",
+        "title": "Page 8 of 38 - Sail boats for sale in California",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "3",
+        "url": "https://ca.boats.com/boats-for-sale/?boat-type=sail&country=united-states&subdivision=california",
+        "title": "Sail boats for sale in California",
+        "error": null,
+        "markdownChars": 22000
+      },
+      {
+        "workerId": "3",
+        "url": "https://www.boats.com/boats-for-sale/?boat-type=sail&country=united-states&subdivision=california&city=san-francisco",
+        "title": "Sail boats for sale in San Francisco, California",
+        "error": "Context queue exceeded this worker’s time budget",
+        "markdownChars": 0
+      }
+    ],
+    "generationsError": null,
+    "generations": [
+      {
+        "kind": "extract",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 25978,
+            "promptTokenCount": 22759,
+            "thoughtsTokenCount": 1137,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 22759
+              }
+            ],
+            "candidatesTokenCount": 2082,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2082
+              }
+            ]
+          },
+          "inputTokens": 22759,
+          "totalTokens": 25978,
+          "outputTokens": 3219,
+          "inputTokenDetails": {
+            "noCacheTokens": 22759,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 2082,
+            "reasoningTokens": 1137
+          }
+        },
+        "error": null,
+        "listingTitles": [
+          "2002 Hunter 340",
+          "2000 Gemini 105Mc",
+          "1985 Beneteau First 42",
+          "1985 Catalina 36"
+        ]
+      },
+      {
+        "kind": "plan-continuation",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 1541,
+            "promptTokenCount": 958,
+            "thoughtsTokenCount": 454,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 958
+              }
+            ],
+            "candidatesTokenCount": 129,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 129
+              }
+            ]
+          },
+          "inputTokens": 958,
+          "totalTokens": 1541,
+          "outputTokens": 583,
+          "inputTokenDetails": {
+            "noCacheTokens": 958,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 129,
+            "reasoningTokens": 454
+          }
+        },
+        "error": null
+      },
+      {
+        "kind": "extract",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 15280,
+            "promptTokenCount": 12055,
+            "thoughtsTokenCount": 1204,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 12055
+              }
+            ],
+            "candidatesTokenCount": 2021,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2021
+              }
+            ]
+          },
+          "inputTokens": 12055,
+          "totalTokens": 15280,
+          "outputTokens": 3225,
+          "inputTokenDetails": {
+            "noCacheTokens": 12055,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 2021,
+            "reasoningTokens": 1204
+          }
+        },
+        "error": null,
+        "listingTitles": [
+          "1983 Catalina 30",
+          "1986 Santa Cruz 50",
+          "1996 Hunter Legend 37.5",
+          "1985 Beneteau First 42"
+        ]
+      },
+      {
+        "kind": "extract",
+        "status": "complete",
+        "usage": {
+          "raw": {
+            "trafficType": "ON_DEMAND",
+            "totalTokenCount": 12977,
+            "promptTokenCount": 9293,
+            "thoughtsTokenCount": 1200,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 9293
+              }
+            ],
+            "candidatesTokenCount": 2484,
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2484
+              }
+            ]
+          },
+          "inputTokens": 9293,
+          "totalTokens": 12977,
+          "outputTokens": 3684,
+          "inputTokenDetails": {
+            "noCacheTokens": 9293,
+            "cacheReadTokens": 0
+          },
+          "outputTokenDetails": {
+            "textTokens": 2484,
+            "reasoningTokens": 1200
+          }
+        },
+        "error": null,
+        "listingTitles": [
+          "2005 Beneteau 57",
+          "2018 Dufour 560 Exclusive",
+          "1996 Beneteau oceanis 440",
+          "1982 Capital newport 27s ii"
+        ]
+      }
+    ]
+  },
+  "childError": null,
+  "continuation": {
+    "saved": true,
+    "linked": true,
+    "voyageNumber": 2,
+    "carriedForward": 1,
+    "expectedCarryForward": 1,
+    "uniqueSources": 1,
+    "totalSources": 1
+  },
+  "temporaryUserRemoved": true
+}

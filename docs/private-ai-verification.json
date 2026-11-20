@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-11-20T02:58:35.362Z",
+  "status": 200,
+  "answer": "The capital of France is **Paris**.",
+  "attestation": {
+    "binding": "tls-exporter",
+    "imageDigest": "sha256:ba6d0bbef1a79858aab93ca69bf0d29048e99130518b3a44ecf5001daf8cc1d1",
+    "expiresAt": 1795147085
+  },
+  "route": {
+    "contains_prompt_or_completion": false,
+    "cost_microdollars": 61,
+    "fallback_attempt_count": 0,
+    "fallback_candidate_count": 15,
+    "gateway_region": "us-west1",
+    "generation_id": "gen-bd6c6c305ce35972979e4cd510e5b5bf",
+    "output_tokens": 25,
+    "reasoning_tokens": 15,
+    "router": "direct",
+    "selected_endpoint": "deepseek/deepseek-v4.1-flash-1017@tinfoil/prepaid",
+    "selected_model": "deepseek/deepseek-v4.1-flash-1017",
+    "selected_provider": "tinfoil",
+    "total_cost_microdollars": 61,
+    "uncached_input_tokens": 37,
+    "upstream_attempt_count": 1,
+    "usage_type": "Credits"
+  }
+}

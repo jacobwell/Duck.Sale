@@ -1,6 +1,6 @@
 import "server-only";
 import { adminDb, saveRun } from "./db";
-import { planSearch, extractListings } from "./ai";
+import { planSearch, planContinuation, extractListings } from "./ai";
 import { discover } from "./boat";
 import { locateListings } from "./geocode";
 import type {
@@ -17,14 +17,26 @@ export async function executeSearch(
   input: SearchInput,
   emit: (e: SearchEvent) => void,
   signal: AbortSignal,
+  continuation?: {
+    queries: string[];
+    urls: string[];
+    note?: string | null;
+    priorListings?: Listing[];
+  },
+  lineage?: {
+    parent_run_id: string;
+    root_run_id: string;
+    voyage_number: number;
+  },
 ) {
   const run: SearchRun = {
     id,
     ...input,
     status: "running",
-    listings: [],
+    listings: continuation?.priorListings || [],
     workers: [],
     created_at: new Date().toISOString(),
+    ...lineage,
   };
   // Serialize writes so a slower earlier event cannot overwrite newer worker/results state.
   let writes = Promise.resolve();
@@ -43,7 +55,9 @@ export async function executeSearch(
     emit({ type: "worker", worker: merged });
   }
   try {
-    const plan = await planSearch(id, userId, input, signal);
+    const plan = continuation
+      ? await planContinuation(id, userId, input, continuation, signal)
+      : await planSearch(id, userId, input, signal);
     run.workers = plan.workers.map((w, i) => ({
       ...w,
       id: String(i + 1),
@@ -66,6 +80,14 @@ export async function executeSearch(
         let extractionCall: ApiCall | undefined;
         try {
           const evidence = await discover(id, initial, update, signal);
+          if (continuation?.urls.length) {
+            const inspected = new Set(
+              continuation.urls.map(normalizeSourceUrl),
+            );
+            evidence.pages = evidence.pages.filter(
+              (page) => !inspected.has(normalizeSourceUrl(page.url)),
+            );
+          }
           const savedEvidence = await adminDb().from("source_evidence").insert({
             run_id: id,
             user_id: userId,
@@ -117,6 +139,10 @@ export async function executeSearch(
               return u.toString().replace(/\/$/, "");
             };
             if (
+              !continuation?.urls.some(
+                (url) =>
+                  normalizeSourceUrl(url) === normalized(listing.sourceUrl),
+              ) &&
               !run.listings.some(
                 (l) =>
                   normalized(l.sourceUrl) === normalized(listing.sourceUrl),
@@ -154,6 +180,11 @@ export async function executeSearch(
             status: "failed",
             message:
               error instanceof Error &&
+              /^Boat sandbox (?:create|startup|command) failed/.test(
+                error.message,
+              )
+                ? error.message + ". No Context calls were made."
+                : error instanceof Error &&
               /^Context (search|scrape) returned HTTP \d+$/.test(error.message)
                 ? error.message +
                   ". The provider could not complete this request."
@@ -207,5 +238,17 @@ export async function executeSearch(
       })
       .eq("id", id);
     emit({ type: "error", message });
+  }
+}
+function normalizeSourceUrl(value: string) {
+  try {
+    const url = new URL(value);
+    url.hash = "";
+    for (const key of [...url.searchParams.keys()])
+      if (key.startsWith("utm_") || key === "fbclid")
+        url.searchParams.delete(key);
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return value;
   }
 }
