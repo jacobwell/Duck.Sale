@@ -6,6 +6,9 @@ const config: NextConfig = {
     process.env.BOATDUCK_BUILD_DIR ||
     ".next",
   serverExternalPackages: ["@boatdev/sdk", "@lore-hex/trusted-router"],
+  outputFileTracingIncludes: {
+    "/api/food/search": ["./.vendor/doordash/dd-cli-v0.2.6-linux-amd64/**/*"],
+  },
   images: {
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
   },

@@ -3833,3 +3833,41 @@ main {
 .secret-shortlist h4 { margin-bottom:6px; }
 .secret-voyage-details > summary { padding:16px 0; }
 @media(max-width:640px) { .secret-shortlist .secret-result { padding:18px; } .secret-shortlist .secret-source-button { display:flex; text-align:center; } }
+
+/* DoorDash discovery: a snack break for the crew. */
+.food-page { max-width:1200px; margin:auto; padding:28px 32px 70px; color:#203e32; }
+.food-nav { display:flex; justify-content:space-between; align-items:center; gap:20px; padding-bottom:24px; border-bottom:1px solid #cbd2bf; }
+.food-nav a { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; font-weight:750; }
+.food-nav span { font-weight:400; font-size:13px; }
+.food-hero { display:flex; justify-content:space-between; align-items:center; padding:46px 0 30px; gap:24px; }
+.food-kicker { font-size:11px; letter-spacing:1.6px; font-weight:700; }
+.food-hero h1 { font-size:clamp(30px,4vw,50px); line-height:1.1; letter-spacing:-2px; margin:14px 0; }
+.food-hero em { color:#9c522c; font-style:normal; }
+.food-mascot { position:relative; background:#e8d891; border-radius:50%; width:180px; height:180px; display:grid; place-items:center; flex-shrink:0; }
+.food-mascot > span { position:absolute; right:8px; top:35px; font-size:55px; transform:rotate(-15deg); }
+.food-mascot small { position:absolute; bottom:24px; font-size:8px; letter-spacing:1.1px; }
+.food-search { max-width:780px; background:#fffef8; border:1px solid #d0d7c5; border-radius:20px; padding:30px; box-shadow:0 8px 25px #203e3208; }
+.food-search h2 { margin:0 0 22px; font-size:26px; }
+.food-search > label { display:block; font-size:13px; font-weight:700; margin:18px 0 8px; }
+.food-search input:not([type=radio]) { width:100%; padding:14px; border:1px solid #bfcbb8; border-radius:8px; background:#fbfcf5; color:#203e32; font:inherit; }
+.food-chips { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 24px; }
+.food-page button { cursor:pointer; font:inherit; }
+.food-chips button { padding:7px 14px; background:#edf0e1; color:#294c38; border:1px solid #d4dbc6; border-radius:30px; font-size:12px; }
+.food-location { display:flex; gap:10px; }.food-location input { min-width:0; }
+.food-location button { white-space:nowrap; border:0; background:#e9d88c; border-radius:8px; padding:10px 18px; color:#203e32; }
+.food-places { border:1px solid #d0d7c5; border-radius:8px; margin:16px 0; padding:12px; }
+.food-places legend { font-size:12px; padding:0 5px; }.food-places label { display:flex; align-items:center; gap:10px; padding:10px; font-size:13px; cursor:pointer; }
+.food-fine { font-size:12px; line-height:1.65; color:#52634d; }.food-fine a { color:inherit; }
+.food-launch { width:100%; background:#254c39; color:#fffde7; padding:16px; border:0; border-radius:8px; font-weight:700!important; }
+.food-page button:disabled { opacity:.55; cursor:not-allowed; }
+.food-progress { display:flex; gap:12px; align-items:center; font-size:13px; padding:18px 0 4px; }.food-progress > span { font-size:28px; animation:food-bob 1.7s ease-in-out infinite; }.food-progress button { border:0; background:transparent; color:#465b42; text-decoration:underline; }
+@keyframes food-bob { 50% { transform:translateY(-5px) rotate(8deg); } }
+.food-results { margin:42px 0; }.food-results h2 { font-size:32px; scroll-margin-top:24px; }.food-results h2:focus { outline:none; }
+.food-results > p { font-size:13px; }
+.food-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:24px; }
+.food-cards article { border:1px solid #cbd5bf; border-radius:14px; overflow:hidden; background:#fffef8; }
+.food-cards img,.food-photo-empty { width:100%; height:180px; object-fit:cover; background:#ebe8d3; }.food-photo-empty { display:grid; place-items:center; font-size:55px; }
+.food-card-copy { padding:20px; }.food-card-copy h3 { margin:0 0 12px; font-size:20px; }.food-card-copy p { font-size:13px; }.food-card-copy small { display:block; font-size:11px; }.food-card-copy a { display:block; margin-top:18px; padding:13px; background:#254c39; color:#fffde7; border-radius:8px; text-align:center; text-decoration:none; font-size:13px; font-weight:700; }
+.food-footer { border-top:1px solid #cbd2bf; padding-top:26px; font-size:13px; line-height:1.7; }.food-footer a { color:#284e3b; font-weight:700; }
+@media(max-width:700px) { .food-page { padding:20px 18px 40px; }.food-nav span { display:none; }.food-nav a { font-size:12px; }.food-hero { padding:28px 0; }.food-mascot { display:none; }.food-search { padding:20px; }.food-cards { grid-template-columns:1fr; }.food-location { flex-wrap:wrap; }.food-location button { width:100%; } }
+@media(prefers-reduced-motion:reduce) { .food-progress > span { animation:none; } }

@@ -729,6 +729,7 @@ export function Workspace({ initialId }: { initialId?: string }) {
           >
             🕵️ Private Mode
           </Link>
+          <Link href="/food" style={{ padding: "12px 16px", display: "block" }}>🍕 Feed the crew</Link>
           <button
             className={view === "discover" ? "active" : ""}
             onClick={() => setView("discover")}
