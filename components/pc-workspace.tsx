@@ -129,6 +129,8 @@ export function PcWorkspace() {
             .map((s) => s.url)
             .join("\n")}`,
       ),
+      ...(build.corrections || []),
+      ...(build.researchIssues || []),
       ...(build.review?.checks.map(
         (c) => `${c.name}: ${c.status}\n${c.detail}`,
       ) || []),
@@ -160,8 +162,9 @@ export function PcWorkspace() {
             <em>Questionable supervision.</em>
           </h1>
           <p>
-            Eight parts. One hopefully very good PC. The duck plans, scouts
-            sources, and checks whether the bits belong together.
+            Eight parts. One hopefully very good PC. The duck plans, reads
+            manufacturer specs, and compares sockets, clearances, memory and
+            power.
           </p>
         </div>
         <svg
@@ -270,6 +273,84 @@ export function PcWorkspace() {
             {busy ? "⚙ " : ""}
             {build.message}
           </p>
+          {build.verificationVersion === 2 && (
+            <section
+              className="pc-verdict"
+              aria-label="Compatibility evidence coverage"
+            >
+              <h2>
+                {busy
+                  ? "Checking the cargo…"
+                  : build.review?.checks.some((c) => c.status === "conflict")
+                    ? "Hold the shopping cart."
+                    : "Your pre-purchase checklist"}
+              </h2>
+              <div className="pc-metrics">
+                <span>
+                  <strong>
+                    {build.review?.checks.filter(
+                      (c) => c.status === "supported",
+                    ).length ?? 0}
+                  </strong>{" "}
+                  supported checks
+                </span>
+                <span>
+                  <strong>
+                    {build.review?.checks.filter((c) => c.status === "conflict")
+                      .length ?? 0}
+                  </strong>{" "}
+                  conflicts
+                </span>
+                <span>
+                  <strong>
+                    {build.review?.checks.filter((c) => c.status === "verify")
+                      .length ?? "—"}
+                  </strong>{" "}
+                  need checking
+                </span>
+                <span>
+                  <strong>
+                    {
+                      new Set(
+                        build.sources
+                          .filter((s) => s.kind === "manufacturer-page")
+                          .map((s) => s.slot),
+                      ).size
+                    }
+                    /8
+                  </strong>{" "}
+                  parts with manufacturer pages
+                </span>
+              </div>
+              <p>
+                Evidence coverage, not a success percentage. A missing spec
+                never counts as a pass.
+              </p>
+              {build.review && (
+                <a href="#pc-checklist">
+                  See compatibility checks before shopping ↓
+                </a>
+              )}
+              {!!build.corrections?.length && (
+                <details open>
+                  <summary>Parts corrected during this run</summary>
+                  {build.corrections.map((c) => (
+                    <p key={c}>{c}</p>
+                  ))}
+                </details>
+              )}
+              {!!build.researchIssues?.length && (
+                <details>
+                  <summary>
+                    Research gaps ({build.researchIssues.length})
+                  </summary>
+                  {build.researchIssues.map((c, i) => (
+                    <p key={i}>{c}</p>
+                  ))}
+                </details>
+              )}
+            </section>
+          )}
           {build.plan && (
             <>
               <div className="pc-heading">
@@ -322,7 +403,19 @@ export function PcWorkspace() {
                             >
                               {s.title} ↗
                             </a>
-                            <p>{s.text}</p>
+                            <p>
+                              {s.kind === "manufacturer-page"
+                                ? "Manufacturer page read"
+                                : "Search snippet only"}
+                              {s.retrievedAt
+                                ? ` · ${new Date(s.retrievedAt).toLocaleDateString()}`
+                                : ""}
+                            </p>
+                            {s.issue && <p>{s.issue}</p>}
+                            <details>
+                              <summary>Read captured evidence</summary>
+                              <p>{s.text}</p>
+                            </details>
                           </div>
                         ))}
                       </details>
@@ -346,55 +439,61 @@ export function PcWorkspace() {
             </>
           )}
           {build.review && (
-            <section className="pc-review">
+            <section className="pc-review" id="pc-checklist">
               <p className="food-kicker">
-                CURSORY COMPATIBILITY REVIEW · NOT A BUILD CERTIFICATION
+                SPECIFICATION CHECKLIST · REVIEW BEFORE BUYING
               </p>
               <h2>Will it all fit together?</h2>
               <p>{build.review.summary}</p>
               <p className="food-fine">
-                “Supported” means the quoted research supports the check. It
-                does not verify your purchased revision or replace manufacturer
-                specifications. Every “Verify” needs your attention.
+                {build.verificationVersion === 2
+                  ? "Supported checks compare quoted exact-model manufacturer specifications in code. BIOS, assembly details and missing evidence still need your attention. This does not certify the hardware."
+                  : "This saved build used the older snippet-based review. Run a new build for manufacturer specification checks."}
               </p>
-              {build.review.checks.map((c) => (
-                <article key={c.name} className={"pc-check " + c.status}>
-                  <div>
-                    <span>
-                      {c.status === "supported"
-                        ? "Evidence supports"
-                        : c.status === "conflict"
-                          ? "Conflict found"
-                          : "Verify before buying"}
-                    </span>
-                    <h3>{c.name}</h3>
-                    <p>{c.detail}</p>
-                  </div>
-                  {c.evidence.length > 0 && (
-                    <details>
-                      <summary>Show evidence</summary>
-                      {c.evidence.map((e, i) => {
-                        const s = build.sources.find(
-                          (s) => s.id === e.sourceId,
-                        )!;
-                        return (
-                          <blockquote key={i}>
-                            {e.quote}
-                            <br />
-                            <a
-                              href={s.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {s.title} ↗
-                            </a>
-                          </blockquote>
-                        );
-                      })}
-                    </details>
-                  )}
-                </article>
-              ))}
+              {[...build.review.checks]
+                .sort(
+                  (a, b) =>
+                    ({ conflict: 0, verify: 1, supported: 2 })[a.status] -
+                    { conflict: 0, verify: 1, supported: 2 }[b.status],
+                )
+                .map((c) => (
+                  <article key={c.name} className={"pc-check " + c.status}>
+                    <div>
+                      <span>
+                        {c.status === "supported"
+                          ? "Evidence supports"
+                          : c.status === "conflict"
+                            ? "Conflict found"
+                            : "Verify before buying"}
+                      </span>
+                      <h3>{c.name}</h3>
+                      <p>{c.detail}</p>
+                    </div>
+                    {c.evidence.length > 0 && (
+                      <details>
+                        <summary>Show evidence</summary>
+                        {c.evidence.map((e, i) => {
+                          const s = build.sources.find(
+                            (s) => s.id === e.sourceId,
+                          )!;
+                          return (
+                            <blockquote key={i}>
+                              {e.quote}
+                              <br />
+                              <a
+                                href={s.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {s.title} ↗
+                              </a>
+                            </blockquote>
+                          );
+                        })}
+                      </details>
+                    )}
+                  </article>
+                ))}
             </section>
           )}
         </section>

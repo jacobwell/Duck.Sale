@@ -8,7 +8,7 @@ A fleet of little search boats. Real source links. A suspiciously large duck bud
 
 **[Try it live](https://duck.sale)** · **[Install & run locally](#install-and-run-locally)** · **[Watch the 3-minute demo](https://youtu.be/XXRGiBiYMJ0)** · **[Open Private Mode](https://duck.sale/private)** · **[Download the deck](https://duck.sale/demo/duck-sale-deck.pptx)**
 
-🖥️ **[Build a PC](https://duck.sale/pc)** — a bonus eight-part PC planner. NY Token Exchange proposes models, Context.dev researches sources, and NYTE gives a preliminary compatibility review with exact evidence quotes. Budget allocations are targets, not live prices. Save the build, download the list, or send any part to the full fleet. [How PC mode works](docs/PC-MODE.md).
+🖥️ **[Build a PC](https://duck.sale/pc)** — a bonus eight-part PC planner. NY Token Exchange proposes models and extracts quoted specifications; Context.dev reads manufacturer pages; code runs 18 compatibility checks for sockets, memory, fit, storage and power. Concrete conflicts can trigger one bounded parts correction. Missing evidence and BIOS/assembly checks stay explicit. Budget allocations are targets, not live prices. Save the build, download the list, or send any part to the full fleet. [How PC mode works](docs/PC-MODE.md).
 
 🍕 **[Feed the crew](https://duck.sale/food)** — a DoorDash food and retail scout. Main searches can also launch **Dash Duck**, a fourth scout for plausible retail items, alternatives or accessories. Pick a city, find restaurants, groceries or retail items, then browse and order yourself on DoorDash. Search only: no carts, payments, orders, or personal account data are exposed. [Optional setup and token renewal](docs/DOORDASH.md).
 

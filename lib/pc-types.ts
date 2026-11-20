@@ -35,23 +35,13 @@ export const pcPlanSchema = z
     (p) => new Set(p.parts.map((x) => x.slot)).size === 8,
     "Every slot needs exactly one part",
   );
-export const pcChecks = [
-  "CPU / motherboard socket",
-  "Memory generation",
-  "Motherboard / case form factor",
-  "GPU / case clearance",
-  "Cooler mounting / clearance",
-  "PSU wattage / connectors",
-  "BIOS support",
-  "Storage interface",
-] as const;
 export const pcReviewSchema = z
   .object({
     summary: z.string().max(700),
     checks: z
       .array(
         z.object({
-          name: z.enum(pcChecks),
+          name: z.string().max(100),
           status: z.enum(["supported", "conflict", "verify"]),
           detail: z.string().max(600),
           evidence: z
@@ -64,15 +54,19 @@ export const pcReviewSchema = z
             .max(4),
         }),
       )
-      .length(8),
+      .min(1)
+      .max(32),
   })
-  .refine((r) => new Set(r.checks.map((c) => c.name)).size === 8);
+  .refine((r) => new Set(r.checks.map((c) => c.name)).size === r.checks.length);
 export type PcSource = {
   id: string;
   slot: string;
   title: string;
   url: string;
   text: string;
+  kind?: "search-snippet" | "manufacturer-page";
+  retrievedAt?: string;
+  issue?: string;
 };
 export type PcBuild = {
   id: string;
@@ -82,6 +76,10 @@ export type PcBuild = {
   plan?: z.infer<typeof pcPlanSchema>;
   sources: PcSource[];
   review?: z.infer<typeof pcReviewSchema>;
+  facts?: import("./pc-compatibility").PcFact[];
+  researchIssues?: string[];
+  corrections?: string[];
+  verificationVersion?: number;
   error?: string;
   updated_at?: string;
 };
