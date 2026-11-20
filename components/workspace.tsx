@@ -1574,11 +1574,11 @@ export function Workspace({ initialId }: { initialId?: string }) {
               </a>
               <span>×</span>
               <a
-                href="https://vercel.com/ai-gateway"
+                href="https://thetokenexchange.com"
                 target="_blank"
                 rel="noreferrer"
               >
-                Vercel
+                NY Token Exchange
               </a>
             </span>
           </footer>
