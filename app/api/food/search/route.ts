@@ -10,6 +10,10 @@ export async function GET() {
 const input = z
   .object({
     mode: z.enum(["restaurants", "retail"]).default("restaurants"),
+    storeId: z
+      .string()
+      .regex(/^\d{1,20}$/)
+      .optional(),
     query: z.string().trim().min(2).max(160),
     latitude: z.number().finite().min(-90).max(90),
     longitude: z.number().finite().min(-180).max(180),
@@ -55,15 +59,16 @@ export async function POST(request: Request) {
       { status: /hourly|busy/.test(error.message) ? 429 : 503, headers },
     );
   try {
-    const stores = await discoverFood(
+    const result = await discoverFood(
       data.query,
       data.latitude,
       data.longitude,
       AbortSignal.any([request.signal, AbortSignal.timeout(58000)]),
       data.mode,
+      data.storeId,
     );
     return Response.json(
-      { stores, source: "DoorDash", retrievedAt: new Date().toISOString() },
+      { ...result, source: "DoorDash", retrievedAt: new Date().toISOString() },
       { headers },
     );
   } catch {

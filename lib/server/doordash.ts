@@ -1,4 +1,5 @@
 import "server-only";
+import { retailDiscovery } from "./retail-discovery";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
@@ -20,6 +21,7 @@ const itemSchema = z.object({
   store_name: z.string().min(1).max(300),
   price: z.number().finite().nonnegative().optional().nullable(),
   product_url: z.string().optional().nullable(),
+  unavailable_reason: z.unknown().optional(),
 });
 export function foodReady() {
   const expiry = Date.parse(process.env.DOORDASH_TOKEN_EXPIRES_AT || "");
@@ -36,6 +38,7 @@ export async function discoverFood(
   longitude: number,
   signal: AbortSignal,
   mode: "restaurants" | "retail" = "restaurants",
+  storeId?: string,
 ) {
   if (!foodReady()) throw Error("unavailable");
   const bin =
@@ -46,48 +49,62 @@ export async function discoverFood(
         )
       : process.env.DOORDASH_CLI_PATH;
   if (!bin) throw Error("unavailable");
-  // Two fixed read-only discovery commands. No arbitrary command names or flags.
-  // No saved addresses, account history, carts or checkout.
-  // This isolated process receives only its one credential, not other app secrets.
-  const { stdout } = await execute(
-    bin,
-    [
-      "--json-output",
-      mode === "retail" ? "find-item-across-retailers" : "search",
-      "--query",
-      query,
-      "--lat",
-      String(latitude),
-      "--lng",
-      String(longitude),
-      ...(mode === "retail"
-        ? ["--max", "12", "--radius", "5"]
-        : ["--limit", "8"]),
-      "--intent",
-      'Summary: Help a Duck.Sale visitor discover food or retail items and continue on DoorDash.\nuser prompt/purpose: "Find nearby options; do not order."',
-    ],
-    {
-      encoding: "utf8",
-      timeout: 55000,
-      maxBuffer: 1_000_000,
-      signal,
-      env: {
-        NODE_ENV: "production",
-        PATH: "/usr/bin:/bin",
-        HOME: "/tmp",
-        TMPDIR: "/tmp",
-        LANG: "en_US.UTF-8",
-        DD_CLI_ACCESS_TOKEN: process.env.DD_CLI_ACCESS_TOKEN!,
-        PYTHON_KEYRING_BACKEND: "keyring.backends.null.Keyring",
+  const run = async (
+    command:
+      | "search"
+      | "find-item-across-retailers"
+      | "find-nearby-stores"
+      | "find-items",
+    args: string[],
+  ) => {
+    const { stdout } = await execute(
+      bin,
+      [
+        "--json-output",
+        command,
+        ...args,
+        "--intent",
+        'Summary: Help a Duck.Sale visitor discover food or retail items; no orders.\nuser prompt/purpose: "Find nearby options; do not order."',
+      ],
+      {
+        encoding: "utf8",
+        timeout: 15000,
+        maxBuffer: 1_000_000,
+        signal,
+        env: {
+          NODE_ENV: "production",
+          PATH: "/usr/bin:/bin",
+          HOME: "/tmp",
+          TMPDIR: "/tmp",
+          LANG: "en_US.UTF-8",
+          DD_CLI_ACCESS_TOKEN: process.env.DD_CLI_ACCESS_TOKEN!,
+          PYTHON_KEYRING_BACKEND: "keyring.backends.null.Keyring",
+        },
       },
-    },
-  );
-  const data = JSON.parse(stdout);
+    );
+    return JSON.parse(stdout);
+  };
+  const discovery =
+    mode === "retail"
+      ? await retailDiscovery(run, query, latitude, longitude, storeId)
+      : null;
+  const data = discovery
+    ? { success: true, results: discovery.results }
+    : await run("search", [
+        "--query",
+        query,
+        "--lat",
+        String(latitude),
+        "--lng",
+        String(longitude),
+        "--limit",
+        "8",
+      ]);
   if (mode === "retail") {
     if (data.success !== true || !Array.isArray(data.results))
       throw Error("provider");
     const seen = new Set<string>();
-    const items = data.results.slice(0, 12).flatMap((raw: unknown) => {
+    const items = data.results.slice(0, 80).flatMap((raw: unknown) => {
       const parsed = itemSchema.safeParse(raw);
       if (!parsed.success) return [];
       const p = parsed.data,
@@ -122,7 +139,7 @@ export async function discoverFood(
           id,
           name: p.item_name,
           storeName: p.store_name,
-          price: p.price ?? null,
+          price: p.unavailable_reason ? null : (p.price ?? null),
           image: null,
           distance: null,
           rating: null,
@@ -134,7 +151,12 @@ export async function discoverFood(
       ];
     });
     if (data.results.length && !items.length) throw Error("schema");
-    return items;
+    return {
+      stores: items.slice(0, 40),
+      coverage: discovery
+        ? { summary: discovery.summary, receipts: discovery.receipts }
+        : null,
+    };
   }
   if (data.success !== true || !Array.isArray(data.stores))
     throw Error("provider");
@@ -177,5 +199,5 @@ export async function discoverFood(
     ];
   });
   if (data.stores.length && !stores.length) throw Error("schema");
-  return stores;
+  return { stores, coverage: null };
 }

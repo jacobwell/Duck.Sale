@@ -19,6 +19,11 @@ type Store = {
   url: string;
 };
 export function FoodWorkspace() {
+  const [storeId, setStoreId] = useState("");
+  const [coverage, setCoverage] = useState<{
+    summary: string;
+    receipts: string[];
+  } | null>(null);
   const [mode, setMode] = useState<"restaurants" | "retail">("restaurants");
   const [query, setQuery] = useState("pizza"),
     [city, setCity] = useState("San Francisco"),
@@ -110,6 +115,7 @@ export function FoodWorkspace() {
     setSeconds(0);
     setSearchedPlace(selectedPlace.label);
     setStores(null);
+    setCoverage(null);
     setNotice(
       mode === "retail"
         ? "Searching nearby retailers for matching items…"
@@ -122,6 +128,9 @@ export function FoodWorkspace() {
         body: JSON.stringify({
           query,
           mode,
+          ...(mode === "retail" && storeId.trim()
+            ? { storeId: storeId.trim() }
+            : {}),
           latitude: selectedPlace.latitude,
           longitude: selectedPlace.longitude,
         }),
@@ -131,6 +140,7 @@ export function FoodWorkspace() {
       if (c.signal.aborted) return;
       if (!r.ok) throw Error(d.error);
       setStores(d.stores);
+      setCoverage(d.coverage ?? null);
       setNotice(
         d.stores.length
           ? "The duck found options. Open DoorDash to choose your delivery address and order yourself."
@@ -231,6 +241,26 @@ export function FoodWorkspace() {
             </button>
           ))}
         </div>
+        {mode === "retail" && (
+          <div className="food-fine">
+            <p>
+              Searches 25 miles around your city. If matches are sparse, the
+              duck checks additional store branches.
+            </p>
+            <label htmlFor="food-store">
+              Specific DoorDash store ID (optional)
+            </label>
+            <input
+              id="food-store"
+              value={storeId}
+              maxLength={20}
+              inputMode="numeric"
+              disabled={busy || finding}
+              onChange={(e) => setStoreId(e.target.value.replace(/\D/g, ""))}
+              placeholder="e.g. 37130185 — search this branch directly"
+            />
+          </div>
+        )}
         <label htmlFor="food-city">City to search</label>
         <div className="food-location">
           <input
@@ -334,6 +364,19 @@ export function FoodWorkspace() {
             {searchedPlace} · Distances are from the selected city point. Finish
             on DoorDash with your own account.
           </p>
+          {coverage && (
+            <details className="food-fine">
+              <summary>
+                Where the duck searched · {coverage.receipts.length} steps
+              </summary>
+              <p>{coverage.summary}</p>
+              <ul>
+                {coverage.receipts.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+            </details>
+          )}
           <div className="food-cards">
             {stores.map((s) => (
               <article key={s.id}>
@@ -409,8 +452,9 @@ export function FoodWorkspace() {
         </a>
         <p>
           Product and restaurant information comes from DoorDash. Retail search
-          covers up to 12 item/store matches within five miles of the selected
-          city point. Availability and prices can change.
+          starts within 25 miles of the city point and can check additional
+          branches. Up to 40 title-matched results; coverage is not exhaustive.
+          Availability and prices can change.
         </p>
       </footer>
     </main>

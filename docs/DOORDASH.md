@@ -4,7 +4,7 @@
 
 ## Account boundary
 
-- The only executable operations are the literal CLI `search` and `find-item-across-retailers` commands, with validated query, explicit latitude/longitude, a fixed limit and a fixed discovery-only purpose.
+- The only executable operations are the literal CLI `search`, `find-item-across-retailers`, `find-nearby-stores` and `find-items` commands, with validated query, explicit latitude/longitude, a fixed limit and a fixed discovery-only purpose.
 - No arbitrary command, flags, URL, saved-address ID or account ID can be supplied. `execFile` runs without a shell.
 - No routes expose carts, ordering, checkout, payments, history, addresses, promotions or account management.
 - The CLI process receives only the DoorDash access token and basic runtime environment. Other application secrets are not inherited.
@@ -12,11 +12,13 @@
 - Search queries and locations are not saved by Duck.Sale. Supabase stores user ID and start/finish timestamps for admission control. DoorDash receives search queries, selected coordinates, and a fixed discovery-purpose message; its retention policies apply. This is separate from Private Mode.
 - Restaurant photos load from DoorDash's public CDN. Browser requests to DoorDash links and photos are external requests.
 
-Retail returns up to 12 items within five miles of the selected city point. Product names, stores and prices come directly from DoorDash. The response does not supply currency or photos, so currency is not inferred and no product photos are fabricated. Confirm currency and stock on DoorDash.
+Retail starts with a 25-mile search and up to 40 provider candidates. A deterministic title filter retains model numbers and requires substantial query-word overlap. This is a heuristic, not semantic AI verification; synonyms can be missed. If fewer than three matches remain, four discovery centers shifted ten miles north/south/east/west find additional branches (each provider discovery area has a fixed 16-mile radius). Up to six branch catalogs are searched, prioritized by broad product-category rules. Branch IDs stay distinct. At most eleven provider calls are made, with no more than two in flight per search. A specific numeric store ID bypasses discovery and searches only that branch. This does not read favorites or saved addresses.
+
+The UI reports discovery counts, each catalog searched and partial failures. Coverage is not exhaustive and does not establish delivery eligibility. Up to 40 deduplicated title matches are displayed. Prices and product links come from DoorDash; rows with an unavailable reason do not quote a price. No product photos are fabricated. Confirm currency and stock on DoorDash.
 
 ## Limits
 
-Ten searches per account per hour, sixty across the feature per hour, one active search per account, and at most three active globally. Each CLI process has a 55-second timeout and a 1 MB output limit. Admission slots recover after 90 seconds. Search results are city-level candidates, not delivery quotes. Availability, fees and prices must be confirmed on DoorDash. No account-specific discounts, fees or estimated delivery times are displayed.
+Ten searches per account per hour, sixty across the feature per hour, one active search per account, and at most three active globally. Each CLI process has a 15-second timeout, the complete search has a 58-second deadline and a 1 MB output limit. Admission slots recover after 90 seconds. Search results are city-level candidates, not delivery quotes. Availability, fees and prices must be confirmed on DoorDash. No account-specific discounts, fees or estimated delivery times are displayed.
 
 ## Setup and expiry
 
@@ -46,3 +48,5 @@ Official CLI and release: https://github.com/doordash-oss/doordash-cli/releases/
 - City lookup returned a selectable San Francisco result.
 - Response checked against the explicit public-field allowlist, excluding the raw account/address envelope.
 - Lint, TypeScript and production compilation passed. No order, cart, payment or account-history operations were invoked.
+
+- Expanded live local discovery found Explorer 200 at Big 5 branches 37130185 and 37129964 for $19.99 each in approximately six seconds; the initial broad search alone found no qualifying title matches.
