@@ -1,5 +1,6 @@
 import { z } from "zod";
 export const searchInputSchema = z.object({
+  boatCount: z.number().int().min(1).max(100).optional(),
   query: z.string().trim().min(5).max(1000),
   location: z.string().trim().max(120).default("Anywhere"),
   budget: z.number().nonnegative().max(1_000_000_000).nullable().default(null),

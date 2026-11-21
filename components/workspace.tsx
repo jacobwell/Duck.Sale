@@ -114,8 +114,10 @@ function ListingImage({ listing }: { listing: Listing }) {
 export function Workspace({
   initialId,
   initialSearch,
+  superMode = false,
 }: {
   initialId?: string;
+  superMode?: boolean;
   initialSearch?: { query: string; location: string; budget: string };
 }) {
   const [view, setView] = useState<View>("discover"),
@@ -128,6 +130,7 @@ export function Workspace({
     ),
     [budget, setBudget] = useState(initialSearch?.budget ?? "30000"),
     [intent, setIntent] = useState("buy");
+  const [boatCount, setBoatCount] = useState(3);
   const [busy, setBusy] = useState(false),
     [config, setConfig] = useState<AppConfig | null>(null),
     [session, setSession] = useState<Session | null>(null),
@@ -530,7 +533,11 @@ export function Workspace({
       if (event.type === "run") {
         current = { ...current, id: event.id };
         requestedRunId.current = event.id;
-        window.history.replaceState(null, "", `/search/${event.id}`);
+        window.history.replaceState(
+          null,
+          "",
+          `/search/${event.id}${superMode ? "?super=true" : ""}`,
+        );
       }
       if (event.type === "worker") {
         current = {
@@ -564,20 +571,24 @@ export function Workspace({
     try {
       const fresh = await browserDb()!.auth.getSession();
       const token = fresh.data.session?.access_token;
-      const response = await fetch("/api/search", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        superMode ? "/api/search?super=true" : "/api/search",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            query,
+            location,
+            budget: budget ? Number(budget) : null,
+            intent,
+            boatCount,
+          }),
+          signal: controller.signal,
         },
-        body: JSON.stringify({
-          query,
-          location,
-          budget: budget ? Number(budget) : null,
-          intent,
-        }),
-        signal: controller.signal,
-      });
+      );
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || "Search failed.");
@@ -631,7 +642,11 @@ export function Workspace({
       if (event.type === "run") {
         current = { ...current, id: event.id };
         requestedRunId.current = event.id;
-        window.history.replaceState(null, "", `/search/${event.id}`);
+        window.history.replaceState(
+          null,
+          "",
+          `/search/${event.id}${superMode ? "?super=true" : ""}`,
+        );
       }
       if (event.type === "worker")
         current = {
@@ -965,6 +980,30 @@ export function Workspace({
                     disabled={busy}
                   />
                 </div>
+                <div className="fleet-size-control">
+                  <label htmlFor="fleet-size">Search boats</label>
+                  <select
+                    id="fleet-size"
+                    value={boatCount}
+                    disabled={busy}
+                    onChange={(e) => setBoatCount(Number(e.target.value))}
+                  >
+                    {Array.from({ length: 50 }, (_, i) => i + 1).map((n) => (
+                      <option key={n} value={n}>
+                        {n} {n === 1 ? "boat" : "boats"}
+                      </option>
+                    ))}
+                    {superMode && (
+                      <option value={100}>100 boats · Super fleet</option>
+                    )}
+                  </select>
+                  <small>
+                    {boatCount > 3
+                      ? "Staggered launch · larger fleets take longer and use more credits."
+                      : "Complementary search angles."}{" "}
+                    A retail scout may also join.
+                  </small>
+                </div>
                 <div className="search-controls">
                   <label className="location-control">
                     <MapPin size={16} />
@@ -1071,6 +1110,7 @@ export function Workspace({
               style={{ scrollMarginTop: "24px" }}
             >
               <FleetMap
+                key={run?.id || "new-search"}
                 run={run}
                 busy={busy}
                 onSelect={setDetail}
@@ -1110,14 +1150,16 @@ export function Workspace({
                     <div>
                       <strong>
                         <span className="worker-callsign">
-                          {run.workers.length > 4
-                            ? `Seeker ${w.id}`
-                            : [
-                                "Captain Quack",
-                                "Duck Norris",
-                                "The Quackup Plan",
-                                "Dash Duck",
-                              ][Number(w.id) - 1] || "Field duck"}
+                          {w.name.startsWith("DoorDash ")
+                            ? "Dash Duck"
+                            : run.workers.length > 4
+                              ? `Seeker ${w.id}`
+                              : [
+                                  "Captain Quack",
+                                  "Duck Norris",
+                                  "The Quackup Plan",
+                                  "Dash Duck",
+                                ][Number(w.id) - 1] || "Field duck"}
                         </span>{" "}
                         {w.name}
                       </strong>
@@ -1757,8 +1799,9 @@ export function Workspace({
           <div className="how-list">
             <p>
               <strong>01 · A plan, made for you</strong>AI turns your request
-              into three web search angles, plus a DoorDash retail scout when a
-              nearby item, alternative or accessory is plausible.
+              into your chosen number of web search angles, plus a DoorDash
+              retail scout when a nearby item, alternative or accessory is
+              plausible.
             </p>
             <p>
               <strong>02 · Three ducks, out exploring</strong>Each duck gets a

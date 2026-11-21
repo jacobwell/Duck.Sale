@@ -1,6 +1,6 @@
 # Fleet pilots (10, 25 or 100 seekers)
 
-The opt-in `scripts/ten-seeker-pilot.ts` starts ten real Boat.dev sandboxes by default, or 25 with `PILOT_SEEKERS=25` against ten coastal/lake searches. It uses the regular evidence, extraction, geocoding, deduplication, persistence and cleanup path. The ordinary public search still plans three Boat workers plus an optional DoorDash scout. The pilot is server-only; arbitrary public fleet sizes are not enabled.
+The opt-in `scripts/ten-seeker-pilot.ts` starts ten real Boat.dev sandboxes by default, or 25 with `PILOT_SEEKERS=25` against ten coastal/lake searches. It uses the regular evidence, extraction, geocoding, deduplication, persistence and cleanup path. The CLI pilot uses fixed regional queries. The public search now defaults to three workers and supports a 1–50 selector, plus exactly 100 when super mode is enabled in the URL. Its AI planner creates the selected number of angles; an optional DoorDash scout is separate.
 
 Run with your own server environment and an existing search ID belonging to the account that should receive the saved result:
 
@@ -22,13 +22,13 @@ This spends provider credits. It does not start a local server. Private receipts
 - Re-extracting the failed Great Lakes worker's saved evidence succeeded with two listings. This was an isolated extraction check; the saved ten-seeker run remains an honest 15-find partial run.
 - Invalid extraction output now receives one fresh AI attempt with schema-specific instructions and the same evidence. Both generation attempts remain recorded. Persistent errors still surface as failures; source URL and quote checks are retained.
 
-The first two runs used the three-request shared Context queue. At the time of the ten-seeker run, the shared queue allowed six requests, preserving FIFO admission, cooldown and bounded leases. Public searches remain three seekers; only the opt-in pilot gets the longer collection budget. They do not establish support for ten simultaneous Context requests or a 100-worker fleet. Results may be sold, stale, outside the query's city, or lack a verified price; inspect the saved listing's source/status/caveats.
+The first two runs used the three-request shared Context queue. At the time of the ten-seeker run, the shared queue allowed six requests, preserving FIFO admission, cooldown and bounded leases. At that point public searches used three seekers. Larger public fleets now also use the longer collection budget. They do not establish support for ten simultaneous Context requests or a 100-worker fleet. Results may be sold, stale, outside the query's city, or lack a verified price; inspect the saved listing's source/status/caveats.
 
 ## 25-seeker run
 
 Run `480bc516-72d5-4d45-8f16-a43a38dfa7c2` completed in 210 seconds with 45 deduplicated source-backed finds. All 25 seekers completed; all 25 sandboxes stopped. There were 116 Context calls, zero 429s and one failed BoatTrader scrape. Nine seekers had partial source coverage; the run remains partial rather than claiming every page succeeded.
 
-The run started with six shared Context slots. At 2026-11-21 01:45:14 UTC, after the operator reported upgrading to Pro, capacity was raised to ten; measured peak Context concurrency was ten. This is a mixed-capacity run, not a clean six-slot benchmark. The Pro pricing page lists 100 concurrent requests, but the application intentionally remains capped at ten. Ordinary public searches remain three seekers plus an optional retail scout.
+The run started with six shared Context slots. At 2026-11-21 01:45:14 UTC, after the operator reported upgrading to Pro, capacity was raised to ten; measured peak Context concurrency was ten. This is a mixed-capacity run, not a clean six-slot benchmark. The Pro pricing page lists 100 concurrent requests, but the application intentionally remains capped at ten. The public search default remains three seekers plus an optional retail scout.
 
 ## 100-seeker pilot
 

@@ -4,7 +4,7 @@ import { adminDb, userFor } from "@/lib/server/db";
 import { executeSearch } from "@/lib/server/search";
 import { after } from "next/server";
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 600;
 export async function POST(request: Request) {
   if (!appConfig().ready)
     return Response.json(
@@ -42,6 +42,13 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   const input = parsed.data;
+  const superValue = new URL(request.url).searchParams.get("super");
+  const superMode = superValue === "" || superValue === "true";
+  if ((input.boatCount ?? 3) > 50 && (!superMode || input.boatCount !== 100))
+    return Response.json(
+      { error: "Choose 1–50 boats, or enable super mode for exactly 100." },
+      { status: 400 },
+    );
   const { data: id, error } = await adminDb().rpc("admit_search", {
     owner: user.id,
     search_query: input.query,
@@ -92,7 +99,7 @@ export async function POST(request: Request) {
             user.id,
             input,
             emit,
-            AbortSignal.timeout(260000),
+            AbortSignal.timeout((input.boatCount ?? 3) > 3 ? 560000 : 260000),
           );
         } finally {
           clearInterval(heartbeat);

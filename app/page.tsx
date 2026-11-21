@@ -9,6 +9,7 @@ export default async function Home({
   const budget = typeof p.budget === "string" ? Number(p.budget) : 0;
   return (
     <Workspace
+      superMode={p.super === "" || p.super === "true"}
       initialSearch={
         q
           ? {

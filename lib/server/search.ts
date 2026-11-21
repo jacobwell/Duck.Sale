@@ -79,15 +79,18 @@ export async function executeSearch(
       : continuation
         ? await planContinuation(id, userId, input, continuation, signal)
         : await planSearch(id, userId, input, signal);
+    const retailWorkerId = String(plan.workers.length + 1);
     run.workers = plan.workers.map((w, i) => ({
       ...w,
-      ...(pilotWorkers ? { collectionSeconds: 180 } : {}),
+      ...(pilotWorkers || plan.workers.length > 3
+        ? { collectionSeconds: 180 }
+        : {}),
       id: String(i + 1),
       status: "queued",
     }));
     if (plan.doorDash && input.intent !== "rent" && foodReady())
       run.workers.push({
-        id: "4",
+        id: retailWorkerId,
         name: `DoorDash ${plan.doorDash.kind} scout`,
         query: plan.doorDash.query,
         status: "queued",
@@ -107,7 +110,7 @@ export async function executeSearch(
             ].slice(-45),
           });
         };
-        if (initial.id === "4" && plan.doorDash) {
+        if (initial.id === retailWorkerId && plan.doorDash) {
           try {
             await update({
               ...initial,
@@ -124,26 +127,29 @@ export async function executeSearch(
               async (call) => {
                 await record(call);
                 await update({
-                  ...run.workers.find((w) => w.id === "4")!,
+                  ...run.workers.find((w) => w.id === retailWorkerId)!,
                   message: call.operation,
                 });
               },
             );
-            const added = result.listings.filter(
-              (l) =>
-                !run.listings.some(
-                  (old) =>
-                    normalizeSourceUrl(old.sourceUrl) ===
-                    normalizeSourceUrl(l.sourceUrl),
-                ) &&
-                !continuation?.urls.some(
-                  (url) =>
-                    normalizeSourceUrl(url) === normalizeSourceUrl(l.sourceUrl),
-                ),
-            );
+            const added = result.listings
+              .map((l) => ({ ...l, workerId: retailWorkerId }))
+              .filter(
+                (l) =>
+                  !run.listings.some(
+                    (old) =>
+                      normalizeSourceUrl(old.sourceUrl) ===
+                      normalizeSourceUrl(l.sourceUrl),
+                  ) &&
+                  !continuation?.urls.some(
+                    (url) =>
+                      normalizeSourceUrl(url) ===
+                      normalizeSourceUrl(l.sourceUrl),
+                  ),
+              );
             run.listings.push(...added);
             await update({
-              ...run.workers.find((w) => w.id === "4")!,
+              ...run.workers.find((w) => w.id === retailWorkerId)!,
               status: "complete",
               count: added.length,
               partial: result.partial,
@@ -159,7 +165,7 @@ export async function executeSearch(
                 ? error.message
                 : "DoorDash search could not finish within its queue/provider time budget. Other boats continue.";
             await update({
-              ...run.workers.find((w) => w.id === "4")!,
+              ...run.workers.find((w) => w.id === retailWorkerId)!,
               status: "failed",
               message: safe,
             });
@@ -169,8 +175,8 @@ export async function executeSearch(
         let extractionCall: ApiCall | undefined;
         let failureStage = "source collection";
         try {
-          // Large internal pilots stagger starts to leave headroom below 65/min.
-          if (pilotWorkers?.length === 100) {
+          // Stagger larger fleets to leave headroom below 65 starts/minute.
+          if (plan.workers.length > 3) {
             await delay((Number(initial.id) - 1) * 1200, undefined, { signal });
           }
           const evidence = await discover(id, initial, update, signal);

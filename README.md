@@ -104,7 +104,7 @@ Built for the Boat hackathon with AI-agent assistance under human direction. Cur
 
 ```mermaid
 flowchart LR
-  A[Your search brief] --> B[AI plans three search angles]
+  A[Your search brief] --> B[AI plans your chosen search angles]
   B --> C[Three disposable Boat.dev workers]
   C --> D[Context.dev search and scrape]
   D --> E[AI extracts source-backed listings]
@@ -357,3 +357,7 @@ Legacy database/bucket identifiers and `BOATDUCK_*` environment fallbacks remain
 ---
 
 **No judgment. Just ducks.**
+
+### Pick your fleet size
+
+Normal search offers 1–50 Boat seekers (default 3). An optional DoorDash retail scout is separate. Open `/?super` or `/?super=true` to add the 100-boat option. This URL is a feature switch, not an authentication bypass: sign-in and search limits still apply. Larger fleets launch gradually and share the provider queue. The numbered dispatch dock shows real worker phases and sandbox cleanup; select a berth to filter the radio, or select it again / choose “Show all boats” to clear that filter.

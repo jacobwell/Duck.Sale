@@ -3935,3 +3935,20 @@ main {
   margin: 8px 0 0;
   line-height: 1.5;
 }
+
+/* Search fleet controls and readable, explicitly filtered activity. */
+.fleet-size-control { display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 16px; border-top:1px solid #d8dfcb; }
+.fleet-size-control label { font-size:13px; font-weight:600; }
+.fleet-size-control select { padding:7px 10px; border:1px solid #bbc9ae; border-radius:8px; background:#fff; color:#293d31; }
+.fleet-size-control small { flex-basis:100%; font-size:12px; color:#53634d; }
+.radio-log .log-title { flex-wrap:wrap; }
+.radio-log .log-title strong { font-size:13px; }
+.radio-log .log-title > span, .radio-log .log-title > button { font-size:11px; color:#4b6044; }
+.radio-log .log-entries { height:240px; min-height:160px; color:#243b2b; background:#fafbf6; }
+.radio-log .radio-entry { padding:10px 5px; }
+.radio-log .radio-entry strong { font-size:12px; color:#243b2b; }
+.radio-log .radio-entry div > span { font-size:11px; color:#52634b; white-space:normal; overflow-wrap:anywhere; }
+.radio-log .radio-entry > small { font-size:10px; color:#48633d; }
+.radio-log .radio-entry.failed > small { color:#963d32; }
+.radio-log .log-entries > p { color:#52634b; font-size:13px; }
+.radio-load-more { margin-top:8px; font-size:12px; color:#315b3d; text-decoration:underline; }

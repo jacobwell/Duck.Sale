@@ -1,6 +1,6 @@
 "use client";
 import { FleetDock } from "./fleet-dock";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { geoAlbersUsa, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
@@ -96,13 +96,23 @@ export function FleetMap({
     panX: number;
     panY: number;
   } | null>(null);
-  const [selectedWorker, setSelectedWorker] = useState<string | null>(null);
+  const [selectedWorker, updateSelectedWorker] = useState<string | null>(null);
+  const [callLimit, setCallLimit] = useState(100);
+  const logRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = 0;
+  }, [selectedWorker, run?.id]);
+  function setSelectedWorker(
+    value: string | null | ((previous: string | null) => string | null),
+  ) {
+    updateSelectedWorker(value);
+    setCallLimit(100);
+  }
   const preview = Boolean(run?.recorded);
   const workers = run?.workers || [];
-  const fleetNames =
-    workers.length > 4
-      ? workers.map((w) => w.name)
-      : names.slice(0, workers.some((w) => w.id === "4") ? 4 : 3);
+  const fleetNames = workers.length
+    ? workers.map((w) => w.name)
+    : names.slice(0, 3);
   const items = run?.listings || [];
   const playing = preview && run?.status === "running";
   const points = items.flatMap((item) => {
@@ -198,7 +208,9 @@ export function FleetMap({
         <FleetDock
           workers={workers}
           selected={selectedWorker}
-          onSelect={setSelectedWorker}
+          onSelect={(id) =>
+            setSelectedWorker((current) => (current === id ? null : id))
+          }
         />
       )}
       <div className="ocean-canvas">
@@ -527,14 +539,19 @@ export function FleetMap({
               {preview
                 ? "SOURCE ARCHIVE"
                 : calls.length
-                  ? `${calls.length} recorded calls`
-                  : "AWAITING ORDERS"}
+                  ? `${calls.length} recorded calls${selectedWorker ? ` · seeker ${selectedWorker}` : ""}`
+                  : selectedWorker
+                    ? "NO CALLS FOR THIS BOAT"
+                    : "AWAITING ORDERS"}
             </span>
             {selectedWorker && (
-              <button onClick={() => setSelectedWorker(null)}>Show all</button>
+              <button onClick={() => setSelectedWorker(null)}>
+                Show all boats
+              </button>
             )}
           </div>
           <div
+            ref={logRef}
             className="log-entries"
             role="log"
             aria-label={
@@ -559,7 +576,7 @@ export function FleetMap({
                   </div>
                 ))
             ) : calls.length ? (
-              calls.slice(0, 18).map((c) => (
+              calls.slice(0, callLimit).map((c) => (
                 <div className={`radio-entry ${c.status}`} key={c.id}>
                   <span className="radio-dot" />
                   <div>
@@ -585,12 +602,23 @@ export function FleetMap({
               <p>
                 {preview
                   ? "The boats are acting. The listings are real source snapshots. No APIs are called during playback."
-                  : busy
-                    ? "The captain is plotting search routes. Actual API activity will appear as the workers report in."
-                    : "No mysterious numbers. No pretend progress. Send the ducks and watch the actual calls arrive."}
+                  : selectedWorker
+                    ? `No calls recorded for ${workers.find((w) => w.id === selectedWorker)?.name || `seeker ${selectedWorker}`} (${workers.find((w) => w.id === selectedWorker)?.status || "unknown status"}). Choose Show all boats to see the fleet radio.`
+                    : busy || run?.status === "running"
+                      ? "The captain is plotting search routes. Actual API activity will appear as the workers report in."
+                      : "No mysterious numbers. No pretend progress. Send the ducks and watch the actual calls arrive."}
               </p>
             )}
           </div>
+          {!preview && calls.length > callLimit && (
+            <button
+              className="radio-load-more"
+              onClick={() => setCallLimit((n) => n + 100)}
+            >
+              Show older calls ({Math.min(callLimit, calls.length)} of{" "}
+              {calls.length} shown)
+            </button>
+          )}
         </div>
         <div className="treasure-manifest">
           <div className="log-title">
