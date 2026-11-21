@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     if (raw.length > 9000) throw new Error();
     input = z
       .object({
-        publicQuery: z.string().min(5).max(400),
+        publicQuery: z.string().trim().min(5).max(400),
         brief: z.string().min(5).max(6000),
         approved: z.literal(true),
       })

@@ -9,7 +9,7 @@
     "start": "next start --port 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --experimental-test-module-mocks --test \"lib/**/*.test.ts\"",
+    "test": "node --import tsx --experimental-test-module-mocks --test \"lib/**/*.test.ts\" \"app/**/*.test.ts\"",
     "search:hosted": "node --env-file-if-exists=.env.hosted.local scripts/hosted-search.mjs",
     "demo:issue": "node --env-file=.env.local scripts/issue-demo-access.mjs"
   },
