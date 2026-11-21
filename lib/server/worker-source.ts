@@ -87,6 +87,12 @@ async function scrape(url,title='',description='') {
     else error='Page text unavailable';
     if(page.images?.success) images=(page.images.data||[]).filter(i=>i.url?.startsWith('https://')).slice(0,12).map(i=>({url:i.url,alt:i.alt||''}));
   } catch(e) { error=e.message; }
+  // Long marketplace menus can hide the actual listing links beyond the input cap.
+  // Preserve the header plus the first listing section, with exact source text.
+  if(!itemPath.test(url)) {
+    const first=[...markdown.matchAll(/\[([^\]]{3,180})\]\((https?:\/\/[^\s)]+)\)/g)].find(m=>itemPath.test(m[2]) && canonical(m[2])!==canonical(url));
+    if(first && first.index>2000) markdown=markdown.slice(0,1000)+'\n'+markdown.slice(Math.max(1000,first.index-500),first.index+20000);
+  }
   return {url,title,description,markdown:markdown.slice(0,22000),images,retrievedAt:new Date().toISOString(),error};
 }
 const pages=[];
@@ -101,26 +107,25 @@ try {
   // Preserve real search snippets before slower page reads begin.
   for(const r of results) if(await safeUrl(r.url))pages.push({url:r.url,title:r.title||'',description:r.description||'',markdown:'',images:[],retrievedAt:new Date().toISOString(),error:'Page not yet inspected'});
   snapshot();
-  for(let i=0;i<pages.length;i++) {
-    if(Date.now()+8000>=deadline)break;
+  const initialCount=pages.length;
+  let followed=0;
+  // Read a detail page immediately after its discovery page. Reading every
+  // category first starved detail reads when a larger fleet shared the queue.
+  for(let i=0;i<initialCount;i++) {
+    if(Date.now()+8000>=deadline){searchPartial=true;break;}
     const page=await scrape(pages[i].url,pages[i].title,pages[i].description);
     if(page)pages[i]=page;
     snapshot();
-  }
-  const links=[];
-  for(const p of pages) {
-    if(itemPath.test(p.url))continue;
-    for(const m of p.markdown.matchAll(/\[([^\]]{3,180})\]\((https?:\/\/[^\s)]+)\)/g)) {
+    if(!page || itemPath.test(page.url))continue;
+    for(const m of page.markdown.matchAll(/\[([^\]]{3,180})\]\((https?:\/\/[^\s)]+)\)/g)) {
       const url=m[2];
-      if(itemPath.test(url) && !excluded.has(canonical(url)) && !pages.some(p=>p.url===url) && !links.some(p=>p.url===url)) links.push({url,title:m[1]});
-      if(links.length>=2)break;
+      if(!itemPath.test(url) || excluded.has(canonical(url)) || pages.some(p=>canonical(p.url)===canonical(url)))continue;
+      if(Date.now()+8000>=deadline){searchPartial=true;break;}
+      const detail=await scrape(url,m[1]);
+      if(detail){pages.push(detail);followed++;snapshot();}
+      if(followed>=2)break;
     }
-    if(links.length>=2)break;
-  }
-  for(const l of links) {
-    if(Date.now()+8000>=deadline){searchPartial=true;break;}
-    const page=await scrape(l.url,l.title);if(page)pages.push(page);
-    snapshot();
+    if(followed>=2)break;
   }
   snapshot();
 } catch(e) {

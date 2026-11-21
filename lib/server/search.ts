@@ -31,6 +31,7 @@ export async function executeSearch(
     root_run_id: string;
     voyage_number: number;
   },
+  pilotWorkers?: Array<{ name: string; query: string }>,
 ) {
   const run: SearchRun = {
     id,
@@ -60,9 +61,21 @@ export async function executeSearch(
     emit({ type: "worker", worker: merged });
   }
   try {
-    const plan = continuation
-      ? await planContinuation(id, userId, input, continuation, signal)
-      : await planSearch(id, userId, input, signal);
+    if (
+      pilotWorkers &&
+      (pilotWorkers.length !== 10 ||
+        pilotWorkers.some(
+          (w) =>
+            !w.name || w.name.length > 60 || !w.query || w.query.length > 400,
+        ))
+    )
+      throw new Error("The internal fleet pilot requires ten valid seekers.");
+    // Server-only CLI pilot. Public requests cannot choose an arbitrary fleet size.
+    const plan = pilotWorkers
+      ? { workers: pilotWorkers, doorDash: null }
+      : continuation
+        ? await planContinuation(id, userId, input, continuation, signal)
+        : await planSearch(id, userId, input, signal);
     run.workers = plan.workers.map((w, i) => ({
       ...w,
       id: String(i + 1),

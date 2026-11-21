@@ -28,7 +28,7 @@ export function verifyContextPermit(token: string) {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
     if (
       !/^[0-9a-f-]{36}$/i.test(data.runId) ||
-      !/^[123]$/.test(data.workerId) ||
+      !/^(?:[1-9]|10)$/.test(data.workerId) ||
       !Number.isFinite(data.expires) ||
       data.expires <= Date.now()
     )

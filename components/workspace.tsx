@@ -1089,12 +1089,14 @@ export function Workspace({
                     <div>
                       <strong>
                         <span className="worker-callsign">
-                          {[
-                            "Captain Quack",
-                            "Duck Norris",
-                            "The Quackup Plan",
-                            "Dash Duck",
-                          ][Number(w.id) - 1] || "Field duck"}
+                          {run.workers.length > 4
+                            ? `Seeker ${w.id}`
+                            : [
+                                "Captain Quack",
+                                "Duck Norris",
+                                "The Quackup Plan",
+                                "Dash Duck",
+                              ][Number(w.id) - 1] || "Field duck"}
                         </span>
                         {w.name}
                       </strong>
@@ -1491,7 +1493,8 @@ export function Workspace({
                     run.status === "running" &&
                     view === "discover"
                       ? "The fleet is leaving Duck Harbor."
-                      : busy
+                      : busy ||
+                          (run?.status === "running" && view === "discover")
                         ? "The ducks are out looking."
                         : view === "saved"
                           ? "Keep the good ones close."
@@ -1502,7 +1505,8 @@ export function Workspace({
                     run.status === "running" &&
                     view === "discover"
                       ? "Recorded finds will appear as the voyage unfolds."
-                      : busy
+                      : busy ||
+                          (run?.status === "running" && view === "discover")
                         ? "Results will appear as each worker returns."
                         : view === "saved"
                           ? "Tap the bookmark on a find to add it to your shortlist."
