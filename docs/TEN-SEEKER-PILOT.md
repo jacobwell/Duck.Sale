@@ -33,3 +33,9 @@ The run started with six shared Context slots. At 2026-11-21 01:45:14 UTC, after
 ## 100-seeker pilot
 
 Set `PILOT_SEEKERS=100` for 25 coastal/lake locations with four distinct model/brand searches per location. Launches are staggered 1.2 seconds apart (about 50 starts/minute, below the operator-reported 65/minute Boat cap). This is 100 total seekers, not a promise of 100 simultaneously running sandboxes. Context retains a shared ten-request limit. The overall local pilot deadline is ten minutes; each worker retains the 180-second collection window and cleanup/TTL protection. This remains server-only.
+
+Run `b65fb250-9b66-41f6-9d43-420d7e28734a`: 100 seekers completed in 322 seconds with 87 deduplicated source-backed finds. All 100 sandboxes stopped; peak allocated/searching was 92, not 100. There were 260 Context calls, peak concurrency ten, zero 429s and five failed calls. One structured extraction generation failed and its bounded retry recovered; no seekers failed. Coverage remains partial.
+
+The user explicitly requested this paid pilot after the account's five-search hourly allowance was consumed by earlier checks. `PILOT_OPERATOR_ADMISSION=1` permits that local admin script to admit the requested run after checking no existing account search is running. Public search admission and its limits remain unchanged. No development servers are started by the script.
+
+The UI now includes an accessible numbered SVG dispatch dock with queued, warming-up, searching, extracting, returned and failed phase counts, plus independent sandbox launch/cleanup counts. Berths select the worker's recorded API calls. Counts reflect real persisted worker state; returned does not imply that worker found a listing.
