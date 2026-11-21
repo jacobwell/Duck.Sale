@@ -6,7 +6,15 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 const headers = { "Cache-Control": "no-store, private" };
 export async function GET(request: Request) {
-  const user = await userFor(request);
+  let user;
+  try {
+    user = await userFor(request);
+  } catch {
+    return Response.json(
+      { error: "Supabase is not configured." },
+      { status: 503, headers },
+    );
+  }
   if (!user)
     return Response.json(
       { error: "Sign in on the main page first." },

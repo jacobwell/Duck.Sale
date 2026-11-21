@@ -1,7 +1,15 @@
 import { adminDb, userFor } from "@/lib/server/db";
 import { signIllustrations } from "@/lib/server/illustrations";
 export async function GET(request: Request) {
-  const user = await userFor(request);
+  let user;
+  try {
+    user = await userFor(request);
+  } catch {
+    return Response.json(
+      { error: "Supabase is not configured." },
+      { status: 503 },
+    );
+  }
   if (!user)
     return Response.json(
       { error: "Sign in to load your shortlist." },
