@@ -1,3 +1,4 @@
+import { setTimeout as delay } from "node:timers/promises";
 import { doorDashScout } from "./doordash-scout";
 import { foodReady } from "./doordash";
 import { aiService } from "./models";
@@ -63,14 +64,14 @@ export async function executeSearch(
   try {
     if (
       pilotWorkers &&
-      (![10, 25].includes(pilotWorkers.length) ||
+      (![10, 25, 100].includes(pilotWorkers.length) ||
         pilotWorkers.some(
           (w) =>
             !w.name || w.name.length > 60 || !w.query || w.query.length > 400,
         ))
     )
       throw new Error(
-        "The internal fleet pilot requires ten or twenty-five valid seekers.",
+        "The internal fleet pilot requires 10, 25 or 100 valid seekers.",
       );
     // Server-only CLI pilot. Public requests cannot choose an arbitrary fleet size.
     const plan = pilotWorkers
@@ -168,6 +169,10 @@ export async function executeSearch(
         let extractionCall: ApiCall | undefined;
         let failureStage = "source collection";
         try {
+          // Large internal pilots stagger starts to leave headroom below 65/min.
+          if (pilotWorkers?.length === 100) {
+            await delay((Number(initial.id) - 1) * 1200, undefined, { signal });
+          }
           const evidence = await discover(id, initial, update, signal);
           if (continuation?.urls.length) {
             const inspected = new Set(

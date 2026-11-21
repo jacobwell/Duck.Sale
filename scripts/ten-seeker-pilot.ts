@@ -9,8 +9,8 @@ if (process.env.RUN_TEN_SEEKERS !== "1" || !process.env.PILOT_OWNER_RUN_ID)
     "Explicit opt-in and an existing account-owned run are required.",
   );
 const count = Number(process.env.PILOT_SEEKERS || "10");
-if (![10, 25].includes(count))
-  throw new Error("PILOT_SEEKERS must be 10 or 25.");
+if (![10, 25, 100].includes(count))
+  throw new Error("PILOT_SEEKERS must be 10, 25 or 100.");
 const db = adminDb();
 const { data: parent, error: ownerError } = await db
   .from("search_runs")
@@ -26,7 +26,7 @@ const input = {
   intent: "buy" as const,
   budget: null,
 };
-const workers = [
+const baseWorkers = [
   ["Baywatch Duck", "Catalina 30 for sale San Francisco Bay"],
   ["Seattle Quack", "Catalina 36 for sale Seattle Washington"],
   ["San Diego Sailor", "Hunter 33 for sale San Diego California"],
@@ -52,16 +52,62 @@ const workers = [
   ["Michigan Mate", "Sea Ray for sale Detroit Michigan"],
   ["Texoma Treasure", "Bennington pontoon for sale Lake Texoma"],
   ["Travis Trawler", "Sea Ray for sale Lake Travis Texas"],
-]
-  .slice(0, count)
-  .map(([name, query]) => ({ name, query }));
-const { data: id, error } = await db.rpc("admit_search", {
+].map(([name, query]) => ({ name, query }));
+const workers =
+  count === 100
+    ? [
+        ...baseWorkers,
+        ...baseWorkers.flatMap((worker) => {
+          const location = worker.query.split(" for sale ")[1];
+          const brands = [
+            "Boston Whaler",
+            "Sea Ray",
+            "Bennington pontoon",
+            "Catalina sailboat",
+            "Grady White",
+          ]
+            .filter(
+              (brand) =>
+                !worker.query
+                  .toLowerCase()
+                  .startsWith(brand.toLowerCase().split(" ")[0]),
+            )
+            .slice(0, 3);
+          return brands.map((brand, i) => ({
+            name: `${worker.name} ${i + 2}`,
+            query: `${brand} for sale ${location}`,
+          }));
+        }),
+      ]
+    : baseWorkers.slice(0, count);
+let { data: id, error } = await db.rpc("admit_search", {
   owner: parent.user_id,
   search_query: input.query,
   search_location: input.location,
   search_intent: input.intent,
   search_budget: null,
 });
+if (
+  error?.message === "Five searches per hour. Please try again later." &&
+  process.env.PILOT_OPERATOR_ADMISSION === "1"
+) {
+  // Explicit local operator override for a requested paid pilot; never exposed in public routes.
+  const active = await db
+    .from("search_runs")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", parent.user_id)
+    .eq("status", "running");
+  if (active.error || active.count)
+    throw new Error("An active search must finish before this pilot.");
+  const admitted = await db
+    .from("search_runs")
+    .insert({ user_id: parent.user_id, ...input })
+    .select("id")
+    .single();
+  if (admitted.error) throw new Error("Could not admit operator pilot.");
+  id = admitted.data.id;
+  error = null;
+}
 if (error) throw new Error(error.message);
 const started = Date.now(),
   states = new Map<string, WorkerState>(),
@@ -114,7 +160,7 @@ await executeSearch(
       console.log("New unique listings:", e.listings.length);
     if (e.type === "error") console.log("Run error:", e.message);
   },
-  AbortSignal.timeout(360000),
+  AbortSignal.timeout(count === 100 ? 600000 : 360000),
   undefined,
   undefined,
   workers,

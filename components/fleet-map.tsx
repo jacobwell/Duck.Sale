@@ -1,4 +1,5 @@
 "use client";
+import { FleetDock } from "./fleet-dock";
 import { useRef, useState } from "react";
 import { geoAlbersUsa, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
@@ -193,6 +194,13 @@ export function FleetMap({
           </p>
         </div>
       )}
+      {!preview && (
+        <FleetDock
+          workers={workers}
+          selected={selectedWorker}
+          onSelect={setSelectedWorker}
+        />
+      )}
       <div className="ocean-canvas">
         <div className="chart-tools">
           <button
@@ -360,8 +368,12 @@ export function FleetMap({
             const target = found
               ? [found.xy[0] - 30, found.xy[1] - 35]
               : destinations[i] || [
-                  100 + (i % 5) * 165,
-                  75 + Math.floor(i / 5) * 85,
+                  workers.length > 25
+                    ? 65 + (i % 10) * 84
+                    : 100 + (i % 5) * 165,
+                  workers.length > 25
+                    ? 40 + Math.floor(i / 10) * 46
+                    : 75 + Math.floor(i / 5) * 85,
                 ];
             const isMoving =
               !(preview && demoPaused) &&
@@ -369,9 +381,13 @@ export function FleetMap({
             const afloat = phase !== "queued";
             const position =
               phase === "queued"
-                ? [100 + (i % 5) * 165, 435 - Math.floor(i / 5) * 70]
+                ? workers.length > 25
+                  ? [65 + (i % 10) * 84, 40 + Math.floor(i / 10) * 46]
+                  : [100 + (i % 5) * 165, 435 - Math.floor(i / 5) * 70]
                 : phase === "starting"
-                  ? [port[0] + 35 + i * 25, port[1] - 45 - i * 15]
+                  ? workers.length > 25
+                    ? [65 + (i % 10) * 84, 40 + Math.floor(i / 10) * 46]
+                    : [port[0] + 35 + i * 25, port[1] - 45 - i * 15]
                   : target;
             const route = `M ${port[0]} ${port[1]} Q ${port[0] + (target[0] - port[0]) * 0.25} ${Math.min(port[1], target[1]) - 80 - (i % 4) * 20} ${target[0]} ${target[1]}`;
             return (
@@ -425,9 +441,14 @@ export function FleetMap({
                   <title>{`${name} · ${phase}${w?.sandboxId ? ` · ${w.sandboxId}` : ""}`}</title>
                   <Boat color={colors[i % colors.length]} />
                   <text y="42" textAnchor="middle" className="boat-name">
-                    {name}
+                    {workers.length > 25 ? `#${i + 1}` : name}
                   </text>
-                  <text y="55" textAnchor="middle" className="boat-phase">
+                  <text
+                    y="55"
+                    textAnchor="middle"
+                    className="boat-phase"
+                    visibility={workers.length > 25 ? "hidden" : undefined}
+                  >
                     {preview ? "demo · " : ""}
                     {phase === "queued"
                       ? "in port"
