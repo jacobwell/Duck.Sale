@@ -1,15 +1,15 @@
 # Boat Hackathon eligibility and demo
 
-Source: supplied Teamily group announcement, checked alongside https://boathackathon.com on November 17, 2026. Times below follow the San Francisco event schedule.
+Source: supplied Teamily group announcement and https://boathackathon.com, checked November 20, 2026. Duck.Sale is publicly listed under Demo Day Finalists with site, video and repository links. The listing confirms finalist selection; individual photo and aboard-code receipts are not duplicated here.
 
 | Requirement                                          | Evidence needed                                                        | Status                     |
 | ---------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------- |
-| Accepted builder on BoatHackathon.com                | Acceptance receipt                                                     | User to confirm            |
-| Ship at least one line of code while aboard any boat | Commit/deployment made aboard, boat/date noted                         | User to complete/confirm   |
-| Public boat photo                                    | Post containing #boathackathon and tagging @boathackathon and @teamily | User to provide public URL |
-| Submission form includes public photo link           | Submission receipt                                                     | Pending                    |
-| Submit by November 20, 2026, 5 p.m.                  | Organizer submission confirmation                                      | Pending                    |
-| Selected for invite-only November 21, 1–5 p.m. demo  | Invitation                                                             | Pending                    |
+| Accepted builder on BoatHackathon.com                | Acceptance receipt                                                     | Public finalist listing verified Nov. 20 |
+| Ship at least one line of code while aboard any boat | Commit/deployment made aboard, boat/date noted                         | Not independently inspected; finalist listing verified   |
+| Public boat photo                                    | Post containing #boathackathon and tagging @boathackathon and @teamily | Photo receipt not duplicated here |
+| Submission form includes public photo link           | Submission receipt                                                     | Form not independently inspected; finalist listing verified |
+| Submit by November 20, 2026, 5 p.m.                  | Organizer submission confirmation                                      | Public finalist listing verified Nov. 20 |
+| Selected for invite-only November 21, 1–5 p.m. demo  | Invitation                                                             | Public finalist listing verified Nov. 20 |
 
 ## Sponsor integration
 

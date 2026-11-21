@@ -308,6 +308,9 @@ export async function extractListings(
       !!l.priceEvidence && sourceText.includes(l.priceEvidence);
     const statusGrounded =
       !!l.statusEvidence && sourceText.includes(l.statusEvidence);
+    // A rejected price must not survive in the model's explanatory prose.
+    const mentionsMoney = (text: string) =>
+      /[$€£¥]|\b(?:USD|EUR|GBP|dollars|euros)\b/i.test(text);
     const image =
       l.imageUrl &&
       page.images.some((i) => i.url === l.imageUrl) &&
@@ -321,6 +324,17 @@ export async function extractListings(
         imageUrl: image,
         price: priceGrounded ? l.price : null,
         priceEvidence: priceGrounded ? l.priceEvidence : null,
+        matchReason:
+          !priceGrounded && mentionsMoney(l.matchReason)
+            ? "Potential match from this source. Price and budget fit need verification."
+            : l.matchReason,
+        description:
+          !priceGrounded && mentionsMoney(l.description)
+            ? "Source-linked candidate. Confirm price and listing details with the seller."
+            : l.description,
+        highlights: l.highlights.filter(
+          (text) => priceGrounded || !mentionsMoney(text),
+        ),
         status: statusGrounded ? l.status : "unknown",
         statusEvidence: statusGrounded ? l.statusEvidence : null,
         attributes: l.attributes?.filter((attribute) =>

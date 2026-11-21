@@ -217,6 +217,11 @@ export function Workspace({
   }
   const requestRef = useRef<AbortController | null>(null);
   const fleetRef = useRef<HTMLDivElement | null>(null);
+  const noticeRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!notice || busy) return;
+    noticeRef.current?.scrollIntoView({ block: "nearest", behavior: "instant" });
+  }, [notice, busy]);
   useEffect(() => {
     if (!busy) return;
     const frame = requestAnimationFrame(() => {
@@ -545,7 +550,7 @@ export function Workspace({
           workers: [
             ...current.workers.filter((w) => w.id !== event.worker.id),
             event.worker,
-          ].sort((a, b) => a.id.localeCompare(b.id)),
+          ].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })),
         };
       }
       if (event.type === "results")
@@ -1079,6 +1084,7 @@ export function Workspace({
           {notice && (
             <div
               className={`notice ${run?.sample ? "sample-notice" : ""}`}
+              ref={noticeRef}
               role="status"
             >
               <Info size={17} />
@@ -1646,12 +1652,15 @@ export function Workspace({
               >
                 Watch demo · 3 min
               </a>
+              <a href="/demo/duck-sale-25-boats.mp4" target="_blank" rel="noreferrer">
+                25-boat voyage · 90 sec
+              </a>
               <a
                 href="https://www.youtube.com/watch?v=XXRGiBiYMJ0"
                 target="_blank"
                 rel="noreferrer"
               >
-                Watch on YouTube
+                YouTube · earlier demo
               </a>
               <a href="/demo/duck-sale-deck.pptx" download>
                 Download deck

@@ -37,8 +37,8 @@ export default function Hackathon() {
         <tbody>
           <tr>
             <td>Accepted as a builder</td>
-            <td>Acceptance from BoatHackathon.com</td>
-            <td>Needs confirmation</td>
+            <td>BoatHackathon.com finalist listing</td>
+            <td>Verified Nov. 20, 2026</td>
           </tr>
           <tr>
             <td>Ship code from aboard any boat</td>
@@ -53,11 +53,11 @@ export default function Hackathon() {
           <tr>
             <td>Complete the submission</td>
             <td>Include the public photo URL</td>
-            <td>Due Nov. 20, 5 p.m. PT</td>
+            <td>Project listed among approved finalists</td>
           </tr>
           <tr>
             <td>Show Boat Demo Day</td>
-            <td>Invitation from organizers</td>
+            <td><a href="https://boathackathon.com/#featured-projects" target="_blank" rel="noreferrer">Public Demo Day Finalists listing</a></td>
             <td>Nov. 21, 1–5 p.m. PT</td>
           </tr>
         </tbody>
