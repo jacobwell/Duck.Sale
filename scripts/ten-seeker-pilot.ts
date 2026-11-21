@@ -8,6 +8,9 @@ if (process.env.RUN_TEN_SEEKERS !== "1" || !process.env.PILOT_OWNER_RUN_ID)
   throw new Error(
     "Explicit opt-in and an existing account-owned run are required.",
   );
+const count = Number(process.env.PILOT_SEEKERS || "10");
+if (![10, 25].includes(count))
+  throw new Error("PILOT_SEEKERS must be 10 or 25.");
 const db = adminDb();
 const { data: parent, error: ownerError } = await db
   .from("search_runs")
@@ -34,7 +37,24 @@ const workers = [
   ["Great Lakes Duck", "Catalina sailboat for sale Chicago Lake Michigan"],
   ["Tahoe Treasure", "Sea Ray for sale Lake Tahoe"],
   ["Ozark Oarsman", "Bennington pontoon for sale Lake Ozarks Missouri"],
-].map(([name, query]) => ({ name, query }));
+  ["Portland Paddle", "Catalina 30 for sale Portland Oregon"],
+  ["Puget Pirate", "Ranger Tug for sale Tacoma Washington"],
+  ["LA Lagoon", "Beneteau sailboat for sale Los Angeles"],
+  ["Santa Barbara Skipper", "Catalina sailboat for sale Santa Barbara"],
+  ["Monterey Mallard", "Boston Whaler for sale Monterey California"],
+  ["Key West Quack", "Grady White for sale Key West Florida"],
+  ["Jacksonville Jib", "Sea Ray for sale Jacksonville Florida"],
+  ["Charleston Captain", "Boston Whaler for sale Charleston South Carolina"],
+  ["Norfolk Navigator", "Hunter sailboat for sale Norfolk Virginia"],
+  ["Newport Nest", "Beneteau sailboat for sale Newport Rhode Island"],
+  ["Maine Mallard", "Grady White for sale Portland Maine"],
+  ["Erie Explorer", "Catalina sailboat for sale Cleveland Ohio"],
+  ["Michigan Mate", "Sea Ray for sale Detroit Michigan"],
+  ["Texoma Treasure", "Bennington pontoon for sale Lake Texoma"],
+  ["Travis Trawler", "Sea Ray for sale Lake Travis Texas"],
+]
+  .slice(0, count)
+  .map(([name, query]) => ({ name, query }));
 const { data: id, error } = await db.rpc("admit_search", {
   owner: parent.user_id,
   search_query: input.query,
@@ -142,7 +162,7 @@ const summary = {
 };
 await mkdir(".demo-access", { recursive: true });
 await writeFile(
-  `.demo-access/ten-seeker-pilot-${id}.json`,
+  `.demo-access/${count}-seeker-pilot-${id}.json`,
   JSON.stringify(
     { checkedAt: new Date().toISOString(), summary, run, transitions },
     null,

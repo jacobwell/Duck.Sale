@@ -360,8 +360,8 @@ export function FleetMap({
             const target = found
               ? [found.xy[0] - 30, found.xy[1] - 35]
               : destinations[i] || [
-                  210 + ((i - 4) % 3) * 240,
-                  110 + Math.floor((i - 4) / 3) * 180,
+                  100 + (i % 5) * 165,
+                  75 + Math.floor(i / 5) * 85,
                 ];
             const isMoving =
               !(preview && demoPaused) &&
@@ -369,7 +369,7 @@ export function FleetMap({
             const afloat = phase !== "queued";
             const position =
               phase === "queued"
-                ? [100 + (i % 5) * 165, 435 + Math.floor(i / 5) * 38]
+                ? [100 + (i % 5) * 165, 435 - Math.floor(i / 5) * 70]
                 : phase === "starting"
                   ? [port[0] + 35 + i * 25, port[1] - 45 - i * 15]
                   : target;

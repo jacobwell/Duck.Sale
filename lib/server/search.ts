@@ -63,13 +63,15 @@ export async function executeSearch(
   try {
     if (
       pilotWorkers &&
-      (pilotWorkers.length !== 10 ||
+      (![10, 25].includes(pilotWorkers.length) ||
         pilotWorkers.some(
           (w) =>
             !w.name || w.name.length > 60 || !w.query || w.query.length > 400,
         ))
     )
-      throw new Error("The internal fleet pilot requires ten valid seekers.");
+      throw new Error(
+        "The internal fleet pilot requires ten or twenty-five valid seekers.",
+      );
     // Server-only CLI pilot. Public requests cannot choose an arbitrary fleet size.
     const plan = pilotWorkers
       ? { workers: pilotWorkers, doorDash: null }
