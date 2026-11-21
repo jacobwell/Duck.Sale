@@ -1,0 +1,120 @@
+.panel {
+  margin-top: 28px;
+  border: 1px solid #42696e;
+  border-radius: 18px;
+  background: #173a42;
+  padding: 24px;
+}
+.panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.panel header p {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: #eccc75;
+  margin: 0 0 10px;
+}
+.panel header span {
+  font-size: 12px;
+  color: #b9d4d6;
+}
+.panel .explain {
+  font-size: 13px;
+  max-width: 870px;
+  color: #b9d4d6;
+}
+.ocean {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.ocean svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.treasure {
+  cursor: pointer;
+  outline: none;
+}
+.treasure:focus circle,
+.treasure:hover circle {
+  stroke: #fff;
+  stroke-width: 2;
+}
+.boat {
+  pointer-events: none;
+}
+.panel footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #a9c9cb;
+  margin-top: 14px;
+}
+.receipt {
+  border-top: 1px solid #42696e;
+  margin-top: 18px;
+  padding-top: 12px;
+  max-height: 220px;
+  overflow: auto;
+}
+.receipt h3 {
+  font-size: 17px;
+  margin: 8px 0;
+}
+.receipt p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+.receipt span {
+  display: block;
+  font-size: 11px;
+  color: #a9c9cb;
+}
+.empty {
+  position: absolute;
+  inset: 35% 15%;
+  text-align: center;
+  background: #102e34e8;
+  border-radius: 12px;
+  padding: 22px;
+  font-size: 14px;
+}
+@media (max-width: 700px) {
+  .panel {
+    padding: 14px;
+  }
+  .panel header {
+    display: block;
+  }
+  .panel header span {
+    display: block;
+    margin: 12px 0;
+  }
+  .ocean {
+    overflow-x: auto;
+  }
+  .ocean svg {
+    min-width: 660px;
+  }
+  .empty {
+    position: static;
+  }
+  .panel footer {
+    font-size: 10px;
+  }
+}
+.boat {
+  transition: transform 0.18s linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .boat {
+    transition: none;
+  }
+}

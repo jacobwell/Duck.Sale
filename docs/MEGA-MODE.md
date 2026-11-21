@@ -21,3 +21,9 @@ The original seed workers are repeated deterministically with a 120 ms stagger p
 Timeline lookup uses binary search. The playback clock updates at 5 Hz; it does not replay thousands of React updates per captured event. This stresses client-side fleet calculation, grouping and rendering. It does **not** measure real provider concurrency, database throughput, HTTP stream throughput or sandbox limits. The displayed effect-to-frame delay is a rough browser scheduling observation, not FPS or a comprehensive performance benchmark.
 
 The lab keeps no additional server records beyond the ordinary authenticated search. Recordings are local unless explicitly exported or bundled as a public seed. Do not commit personal-query recordings without review.
+
+## Treasure map
+
+The mega view leads with a US map using recorded city coordinates. Representative seekers follow illustrated curved courses to each find. At the recorded find time, a treasure chest appears; its boat and wake fade over six replay seconds while the chest remains. Nearby pins are clustered in screen space, and a chest opens its recorded source links and selects the seed seeker in the dock. Routes are representative, not multiplied for every virtual worker; active paths are capped at 60. Unplaced and out-of-map listings are counted, never assigned invented coordinates. The full flotilla index remains available in a collapsed section below.
+
+New recordings include city coordinates, seeker IDs and first-result timestamps. The bundled seed was enriched from the same saved search's geocoded listing data; its find times use each seeker's first recorded nonzero-find frame. Older imported/local recordings still work, but need the updated seed or a new recording for geographic plotting.

@@ -54,6 +54,15 @@ export const recordingSchema = z.object({
           .refine((v) => /^https?:\/\//.test(v)),
         price: z.number().nullable(),
         location: z.string().nullable(),
+        workerId: z.string().max(80).optional(),
+        foundAt: z.number().min(0).max(3600000).optional(),
+        locationPoint: z
+          .object({
+            latitude: z.number().min(-90).max(90),
+            longitude: z.number().min(-180).max(180),
+            label: z.string().max(200),
+          })
+          .optional(),
       }),
     )
     .max(5000),
@@ -114,6 +123,17 @@ export function recordEvent(r: Recording, e: SearchEvent, at: number) {
           sourceUrl: l.sourceUrl,
           price: l.price,
           location: l.location,
+          workerId: l.workerId,
+          foundAt: at,
+          ...(l.locationPoint
+            ? {
+                locationPoint: {
+                  latitude: l.locationPoint.latitude,
+                  longitude: l.locationPoint.longitude,
+                  label: l.locationPoint.label,
+                },
+              }
+            : {}),
         });
     }
   }

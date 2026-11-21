@@ -11,6 +11,7 @@ import {
 } from "@/lib/mega-replay";
 import type { SearchEvent } from "@/lib/types";
 import styles from "./mega-fleet.module.css";
+import { MegaMap } from "./mega-map";
 const phases = [
   "queued",
   "starting",
@@ -99,7 +100,7 @@ export function MegaFleet() {
     return () => controller.current?.abort();
   }, []);
   const duration = recording
-    ? recording.durationMs + Math.ceil(total / 25) * 120
+    ? recording.durationMs + Math.ceil(total / 25) * 120 + 6000
     : 1;
   useEffect(() => {
     if (!playing) return;
@@ -530,9 +531,23 @@ export function MegaFleet() {
         </section>
       ) : (
         <>
-          <section className={styles.ocean}>
+          <MegaMap
+            key={recording.runId}
+            recording={recording}
+            time={time}
+            total={total}
+            faults={faults}
+            onSelect={(index) => {
+              setSelected(index);
+              setGroup(Math.floor(index / 25));
+            }}
+          />
+          <details className={styles.ocean}>
+            <summary>
+              Flotilla index · inspect all {groups.length} groups
+            </summary>
             <div className={styles.sectionTitle}>
-              <h2>2. Flotilla radar</h2>
+              <h2>Flotilla radar</h2>
               <span>
                 {groups.length} groups · up to 25 boats each · click to inspect
               </span>
@@ -587,7 +602,7 @@ export function MegaFleet() {
                 </button>
               ))}
             </div>
-          </section>
+          </details>
           <section className={styles.detail}>
             <div>
               <h2>
