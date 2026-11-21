@@ -1657,6 +1657,9 @@ export function Workspace({
               <a href="/demo/duck-sale-features-reel.mp4" target="_blank" rel="noreferrer">
                 Features reel · 3 min
               </a>
+              <a href="/demo/duck-sale-privacy-demo.mp4" target="_blank" rel="noreferrer">
+                Privacy demo · 3 min
+              </a>
               <a href="/demo/duck-sale-25-boats.mp4" target="_blank" rel="noreferrer">
                 25-boat voyage · 90 sec
               </a>
