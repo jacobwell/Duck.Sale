@@ -1,4 +1,6 @@
 import "server-only";
+import { classifyRetailMatches } from "./ai";
+import { aiService } from "./models";
 import { adminDb } from "./db";
 import { discoverFood } from "./doordash";
 import type { ApiCall, Listing, SearchInput } from "@/lib/types";
@@ -87,8 +89,55 @@ export async function doorDashScout(
       undefined,
       record,
     );
+    const saved = await db.from("source_evidence").insert({
+      run_id: runId,
+      user_id: userId,
+      worker_id: "4",
+      evidence: {
+        provider: "DoorDash",
+        query: plan.query,
+        coverage: result.coverage,
+        items: result.stores,
+      },
+    });
+    if (saved.error) throw Error("Could not save DoorDash source evidence");
+    const candidates = result.stores.slice(0, 40);
+    const relevanceCall: ApiCall = {
+      id: crypto.randomUUID(),
+      service: aiService(),
+      operation: "check retail relevance and accessories",
+      startedAt: new Date().toISOString(),
+      status: "running",
+    };
+    if (candidates.length) await record(relevanceCall);
+    let judgments;
+    try {
+      judgments = await classifyRetailMatches(
+        runId,
+        userId,
+        input,
+        candidates.map(({ id, name, storeName }) => ({ id, name, storeName })),
+        signal,
+      );
+      if (candidates.length)
+        await record({
+          ...relevanceCall,
+          status: "complete",
+          finishedAt: new Date().toISOString(),
+        });
+    } catch (error) {
+      if (candidates.length)
+        await record({
+          ...relevanceCall,
+          status: "failed",
+          finishedAt: new Date().toISOString(),
+        });
+      throw error;
+    }
+    const byId = new Map(judgments.map((item) => [item.id, item]));
     const retrievedAt = new Date().toISOString();
-    const listings: Listing[] = result.stores
+    const listings: Listing[] = candidates
+      .filter((s) => byId.has(s.id) && byId.get(s.id)!.kind !== "unrelated")
       .filter(
         (s) =>
           input.budget === null ||
@@ -96,72 +145,61 @@ export async function doorDashScout(
           plan.countryCode !== "US" ||
           s.price <= input.budget,
       )
-      .map((s) => ({
-        id: crypto.randomUUID(),
-        workerId: "4",
-        retrievedAt,
-        source: "DoorDash",
-        sourceUrl: s.url,
-        title: (plan.kind === "item"
-          ? s.name
-          : `${plan.kind === "accessory" ? "Accessory" : "Alternative"}: ${s.name}`
-        ).slice(0, 200),
-        imageUrl: s.image,
-        location: null,
-        price: s.price,
-        currency: plan.countryCode === "US" ? "USD" : null,
-        priceUnit: "unknown",
-        status: "unknown",
-        description:
-          `DoorDash catalog result from ${s.storeName}. ${plan.reason}`.slice(
-            0,
-            700,
-          ),
-        highlights: [
-          `${plan.kind === "item" ? "Item match" : plan.kind === "accessory" ? "Accessory, not the requested item" : "Alternative, not an exact match"}`,
-          `Store branch ${s.id.split(":")[0]}`,
-        ],
-        caveats: [
-          "Confirm stock, quantity, final price and delivery on DoorDash.",
-          "Search centered on " +
-            [plan.city, plan.region].filter(Boolean).join(", ") +
-            "; store coordinates not verified.",
-          ...(plan.kind !== "item"
-            ? [
-                "This is a related suggestion, not fulfillment of the original item request.",
-              ]
-            : []),
-        ],
-        evidence: JSON.stringify({
-          item: s.name,
-          store: s.storeName,
-          storeId: s.id.split(":")[0],
-        }).slice(0, 600),
-        priceEvidence:
-          s.price === null
-            ? null
-            : `DoorDash returned listed price ${s.price}; final price and quantity require confirmation.`,
-        statusEvidence: null,
-        confidence: "medium",
-        matchReason: `${plan.kind}: ${plan.reason}`.slice(0, 300),
-      }));
-    const saved = await db
-      .from("source_evidence")
-      .insert({
-        run_id: runId,
-        user_id: userId,
-        worker_id: "4",
-        evidence: {
-          provider: "DoorDash",
-          query: plan.query,
-          coverage: result.coverage,
-          items: result.stores,
-        },
+      .map((s) => {
+        const match = byId.get(s.id)!;
+        return {
+          id: crypto.randomUUID(),
+          workerId: "4",
+          retrievedAt,
+          source: "DoorDash",
+          sourceUrl: s.url,
+          title: (match.kind === "item"
+            ? s.name
+            : `${match.kind === "accessory" ? "Accessory" : "Alternative"}: ${s.name}`
+          ).slice(0, 200),
+          imageUrl: s.image,
+          location: null,
+          price: s.price,
+          currency: plan.countryCode === "US" ? "USD" : null,
+          priceUnit: "unknown",
+          status: "unknown",
+          description:
+            `DoorDash catalog result from ${s.storeName}. ${match.reason}`.slice(
+              0,
+              700,
+            ),
+          highlights: [
+            `${match.kind === "item" ? "Item match" : match.kind === "accessory" ? "Accessory, not the requested item" : "Alternative, not an exact match"}`,
+            `Store branch ${s.id.split(":")[0]}`,
+          ],
+          caveats: [
+            "Confirm stock, quantity, final price and delivery on DoorDash.",
+            "Search centered on " +
+              [plan.city, plan.region].filter(Boolean).join(", ") +
+              "; store coordinates not verified.",
+            ...(match.kind !== "item"
+              ? [
+                  "This is a related suggestion, not fulfillment of the original item request.",
+                ]
+              : []),
+          ],
+          evidence: JSON.stringify({
+            item: s.name,
+            store: s.storeName,
+            storeId: s.id.split(":")[0],
+          }).slice(0, 600),
+          priceEvidence:
+            s.price === null
+              ? null
+              : `DoorDash returned listed price ${s.price}; final price and quantity require confirmation.`,
+          statusEvidence: null,
+          confidence: "medium",
+          matchReason: `${match.kind}: ${match.reason}`.slice(0, 300),
+        };
       });
-    if (saved.error) throw Error("Could not save DoorDash source evidence");
     return {
       listings,
-      message: `Server-side DoorDash scout · ${plan.kind}. ${result.coverage?.receipts.join(" · ") || "Catalog search complete"}`,
+      message: `Server-side DoorDash scout · ${listings.length} relevant items/alternatives/accessories; ${candidates.length - listings.length} omitted after relevance/budget review. ${result.coverage?.receipts.join(" · ") || "Catalog search complete"}`,
       partial: !!result.coverage?.receipts.some((s) =>
         /partial|unavailable/.test(s),
       ),
