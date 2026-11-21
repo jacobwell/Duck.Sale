@@ -213,6 +213,20 @@ export function Workspace({
     }
   }
   const requestRef = useRef<AbortController | null>(null);
+  const fleetRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!busy) return;
+    const frame = requestAnimationFrame(() => {
+      fleetRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+        block: "start",
+      });
+      fleetRef.current?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [busy]);
   const requestedRunId = useRef(initialId);
   const loadedFormId = useRef<string | undefined>(undefined);
   useEffect(() => {
@@ -1050,18 +1064,25 @@ export function Workspace({
             </div>
           )}
           {view === "discover" && (
-            <FleetMap
-              run={run}
-              busy={busy}
-              onSelect={setDetail}
-              onSample={sample}
-              demoPaused={demoPaused}
-              onToggleDemo={() => setDemoPaused((p) => !p)}
-              onShowAll={() => {
-                setDemoStep(demoTotal);
-                setRun(demoFrame(demoTotal));
-              }}
-            />
+            <div
+              ref={fleetRef}
+              tabIndex={-1}
+              aria-label="Live search progress"
+              style={{ scrollMarginTop: "24px" }}
+            >
+              <FleetMap
+                run={run}
+                busy={busy}
+                onSelect={setDetail}
+                onSample={sample}
+                demoPaused={demoPaused}
+                onToggleDemo={() => setDemoPaused((p) => !p)}
+                onShowAll={() => {
+                  setDemoStep(demoTotal);
+                  setRun(demoFrame(demoTotal));
+                }}
+              />
+            </div>
           )}
           {view === "discover" && !run?.recorded && run?.workers.length ? (
             <section className="fleet">
@@ -1097,7 +1118,7 @@ export function Workspace({
                                 "The Quackup Plan",
                                 "Dash Duck",
                               ][Number(w.id) - 1] || "Field duck"}
-                        </span>
+                        </span>{" "}
                         {w.name}
                       </strong>
                       <p>

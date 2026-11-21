@@ -1,5 +1,10 @@
 import "server-only";
-import { generateText, Output, type ModelMessage } from "ai";
+import {
+  generateText,
+  NoObjectGeneratedError,
+  Output,
+  type ModelMessage,
+} from "ai";
 import { z } from "zod";
 import { adminDb } from "./db";
 import type { Evidence } from "./boat";
@@ -30,6 +35,7 @@ async function generate<T extends z.ZodType>(
   schema: T,
   messages: ModelMessage[],
   signal: AbortSignal,
+  schemaRetry = false,
 ): Promise<z.output<T>> {
   const id = crypto.randomUUID(),
     db = adminDb();
@@ -84,6 +90,29 @@ async function generate<T extends z.ZodType>(
         error: `${category}: generation or persistence failed; inspect provider dashboard with this timestamp.`,
       })
       .eq("id", id);
+    if (
+      kind === "extract" &&
+      !schemaRetry &&
+      !signal.aborted &&
+      NoObjectGeneratedError.isInstance(error)
+    ) {
+      return generate(
+        runId,
+        userId,
+        kind,
+        schema,
+        [
+          ...messages,
+          {
+            role: "user",
+            content:
+              "The previous extraction did not satisfy the JSON schema. Extract again from the supplied evidence only. Respect every enum, required nullable field, string length, and array limit. Return fewer listings if needed, or an empty listings array when evidence is insufficient. Never invent missing facts.",
+          },
+        ],
+        signal,
+        true,
+      );
+    }
     throw new Error(
       `${kind === "plan" ? "Search planning" : "Listing extraction"} failed. Check ${aiService()} access and try again.`,
     );

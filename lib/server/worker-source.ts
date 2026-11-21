@@ -3,7 +3,7 @@ export const workerSource = String.raw`
 import { readFile } from 'node:fs/promises';
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
-const { query, permitUrl, permitToken, excludeUrls=[] } = JSON.parse(await readFile('/home/user/boatduck-input.json', 'utf8'));
+const { query, permitUrl, permitToken, collectionBudgetMs=120000, excludeUrls=[] } = JSON.parse(await readFile('/home/user/boatduck-input.json', 'utf8'));
 const canonical=u=>{try{const x=new URL(u);x.hash='';for(const k of [...x.searchParams.keys()])if(k.startsWith('utm_')||k==='fbclid')x.searchParams.delete(k);return x.toString().replace(/\/$/,'')}catch{return u}};
 const excluded=new Set(excludeUrls.map(canonical));
 function privateIP(ip) {
@@ -22,7 +22,7 @@ async function safeUrl(s) {
   } catch { return false; }
 }
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
-const deadline=Date.now()+120000;
+const deadline=Date.now()+Math.min(180000,Math.max(60000,Number(collectionBudgetMs)||120000));
 async function permit(requestId,release=false,cooldownMs=0) {
  const r=await fetch(permitUrl,{method:'POST',headers:{Authorization:'Bearer '+permitToken,'Content-Type':'application/json'},body:JSON.stringify({requestId,release,cooldownMs}),signal:AbortSignal.timeout(8000)});
  if(!r.ok)throw new Error('Context request queue unavailable');
@@ -127,6 +127,9 @@ try {
     }
     if(followed>=2)break;
   }
+  // Unvisited search seeds are not failed page reads when the detail-page goal
+  // was already met. Actual timeouts and provider partial responses remain partial.
+  for(let i=pages.length-1;i>=0;i--)if(pages[i].error==='Page not yet inspected')pages.splice(i,1);
   snapshot();
 } catch(e) {
   if(pages.length){snapshot(true);console.error('Kept partial source evidence: '+e.message);}

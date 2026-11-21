@@ -68,6 +68,7 @@ export type Listing = z.infer<typeof listingSchema> & {
   locationPoint?: LocationPoint;
 };
 export type WorkerState = {
+  collectionSeconds?: number;
   id: string;
   name: string;
   query: string;

@@ -94,7 +94,7 @@ await executeSearch(
       console.log("New unique listings:", e.listings.length);
     if (e.type === "error") console.log("Run error:", e.message);
   },
-  AbortSignal.timeout(320000),
+  AbortSignal.timeout(360000),
   undefined,
   undefined,
   workers,
@@ -107,6 +107,22 @@ const { data: run } = await db
 const savedWorkers = (run?.workers || []) as WorkerState[];
 const calls = savedWorkers.flatMap((w) => w.calls || []);
 const context = calls.filter((c) => c.service === "Context.dev");
+const boundaries = context
+  .flatMap((c) =>
+    c.finishedAt
+      ? [
+          { time: Date.parse(c.startedAt), delta: 1 },
+          { time: Date.parse(c.finishedAt), delta: -1 },
+        ]
+      : [],
+  )
+  .sort((a, b) => a.time - b.time || a.delta - b.delta);
+let activeContext = 0,
+  peakContext = 0;
+for (const event of boundaries) {
+  activeContext += event.delta;
+  peakContext = Math.max(peakContext, activeContext);
+}
 const summary = {
   runId: id,
   status: run?.status,
@@ -115,6 +131,7 @@ const summary = {
   sandboxes: new Set(savedWorkers.map((w) => w.sandboxId).filter(Boolean)).size,
   peakAllocated,
   peakSearching,
+  peakContext,
   completed: savedWorkers.filter((w) => w.status === "complete").length,
   failed: savedWorkers.filter((w) => w.status === "failed").length,
   stopped: savedWorkers.filter((w) => w.cleanup === "stopped").length,

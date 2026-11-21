@@ -78,6 +78,7 @@ export async function executeSearch(
         : await planSearch(id, userId, input, signal);
     run.workers = plan.workers.map((w, i) => ({
       ...w,
+      ...(pilotWorkers ? { collectionSeconds: 180 } : {}),
       id: String(i + 1),
       status: "queued",
     }));
@@ -163,6 +164,7 @@ export async function executeSearch(
           return;
         }
         let extractionCall: ApiCall | undefined;
+        let failureStage = "source collection";
         try {
           const evidence = await discover(id, initial, update, signal);
           if (continuation?.urls.length) {
@@ -173,6 +175,19 @@ export async function executeSearch(
               (page) => !inspected.has(normalizeSourceUrl(page.url)),
             );
           }
+          failureStage = "saving source evidence";
+          // PostgreSQL jsonb rejects NUL characters occasionally present in scraped text.
+          for (const page of evidence.pages) {
+            page.title = page.title.replace(/\u0000/g, "");
+            page.description = page.description.replace(/\u0000/g, "");
+            page.markdown = page.markdown.replace(/\u0000/g, "");
+            page.images = page.images
+              .filter((image) => !image.url.includes("\u0000"))
+              .map((image) => ({
+                ...image,
+                alt: image.alt.replace(/\u0000/g, ""),
+              }));
+          }
           const savedEvidence = await adminDb().from("source_evidence").insert({
             run_id: id,
             user_id: userId,
@@ -180,7 +195,9 @@ export async function executeSearch(
             evidence,
           });
           if (savedEvidence.error)
-            throw new Error("Could not save source evidence.");
+            throw new Error(
+              `Could not save source evidence (${savedEvidence.error.code}).`,
+            );
           await update({
             ...run.workers.find((w) => w.id === initial.id)!,
             status: "extracting",
@@ -193,6 +210,7 @@ export async function executeSearch(
             status: "running",
           };
           await record(extractionCall);
+          failureStage = "listing extraction";
           const extracted = await extractListings(
             id,
             userId,
@@ -206,6 +224,7 @@ export async function executeSearch(
             finishedAt: new Date().toISOString(),
           });
           extractionCall = undefined;
+          failureStage = "location lookup";
           const located = await locateListings(
             extracted.map((listing) => ({ ...listing, workerId: initial.id })),
             id,
@@ -243,7 +262,7 @@ export async function executeSearch(
             count: extracted.length,
             partial: evidence.partial || evidence.pages.some((p) => !!p.error),
             message: evidence.partial
-              ? "Source search returned partial results."
+              ? `${evidence.pages.filter((p) => p.markdown).length} pages read; ${evidence.pages.filter((p) => p.error).length} page reads incomplete. Provider or collection-window coverage was partial.`
               : evidence.pages.some((p) => p.error)
                 ? "Some pages could only be read partially."
                 : `${evidence.pages.length} sources inspected`,
@@ -259,6 +278,7 @@ export async function executeSearch(
           console.error("Duck.Sale worker failed", {
             worker: initial.id,
             category: error instanceof Error ? error.name : "UnknownError",
+            stage: failureStage,
           });
           await update({
             ...run.workers.find((w) => w.id === initial.id)!,
@@ -268,7 +288,12 @@ export async function executeSearch(
               /^Boat sandbox (?:create|startup|command) failed/.test(
                 error.message,
               )
-                ? error.message + ". No Context calls were made."
+                ? error.message +
+                  (run.workers
+                    .find((w) => w.id === initial.id)
+                    ?.calls?.some((c) => c.service === "Context.dev")
+                    ? ". Check the recorded Context calls for this seeker."
+                    : ". No Context calls were recorded.")
                 : error instanceof Error &&
                     /^Context (search|scrape) returned HTTP \d+$/.test(
                       error.message,
@@ -283,7 +308,7 @@ export async function executeSearch(
                     : error instanceof Error &&
                         error.message === "Context request queue unavailable"
                       ? "The shared Context queue is temporarily unavailable. Retry shortly."
-                      : "Worker failed. Check Boat, Context, and AI provider access or retry this search.",
+                      : `Seeker stopped during ${failureStage}. ${error instanceof Error && /^Could not save source evidence \([A-Z0-9]+\)\.$/.test(error.message) ? error.message : "Retry this seeker; other results are preserved."}`,
           });
         }
       }),

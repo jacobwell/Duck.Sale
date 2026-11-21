@@ -39,6 +39,7 @@ export async function discover(
     onCleanupStart?: () => void;
   },
 ): Promise<Evidence> {
+  const collectionSeconds = worker.collectionSeconds === 180 ? 180 : 120;
   const boat = new BoatApi(
     new Configuration({
       basePath: "https://boat.dev/api/v1",
@@ -49,7 +50,9 @@ export async function discover(
           signal: AbortSignal.any([
             ...(init?.signal ? [init.signal] : []),
             AbortSignal.timeout(
-              String(input).includes("/command") ? 145000 : 25000,
+              String(input).includes("/command")
+                ? (collectionSeconds + 25) * 1000
+                : 25000,
             ),
           ]),
         }),
@@ -67,7 +70,7 @@ export async function discover(
     const created = await boat.create({
       name: `duck-sale-${runId.slice(0, 8)}-${worker.id}`,
       type: "small",
-      ttlSeconds: 240,
+      ttlSeconds: collectionSeconds + 120,
       noEnv: true,
       snapshots: false,
       monitoring: false,
@@ -85,6 +88,7 @@ export async function discover(
           path: "boatduck-input.json",
           content: JSON.stringify({
             query: worker.query,
+            collectionBudgetMs: collectionSeconds * 1000,
             excludeUrls: worker.excludeUrls || [],
             permitUrl: `${process.env.DUCK_SALE_APP_URL || process.env.BOATDUCK_APP_URL || "https://duck.sale"}/api/context-permit`,
             permitToken: issueContextPermit(runId, worker.id),
@@ -153,7 +157,7 @@ export async function discover(
       privacy
         ? "node /home/user/boatduck-vpn.mjs"
         : "node /home/user/boatduck-worker.mjs",
-      { timeoutSeconds: 135, signal },
+      { timeoutSeconds: collectionSeconds + 15, signal },
     )) {
       if (frame.type === "stdout") {
         buffer += String(frame.data || "");
