@@ -993,13 +993,16 @@ export function Workspace({
                     disabled={busy}
                     onChange={(e) => setBoatCount(Number(e.target.value))}
                   >
-                    {[3, 5, 10, 25, 50].map((n) => (
+                    {[3, 5, 10, 25].map((n) => (
                       <option key={n} value={n}>
                         {n} {n === 1 ? "boat" : "boats"}
                       </option>
                     ))}
                     {superMode && (
-                      <option value={100}>100 boats · Super fleet</option>
+                      <>
+                        <option value={50}>50 boats · Super fleet</option>
+                        <option value={100}>100 boats · Super fleet</option>
+                      </>
                     )}
                   </select>
                   <small>

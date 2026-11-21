@@ -360,4 +360,4 @@ Legacy database/bucket identifiers and `BOATDUCK_*` environment fallbacks remain
 
 ### Pick your fleet size
 
-Normal search offers 3, 5, 10, 25 or 50 Boat seekers (default 3). An optional DoorDash retail scout is separate. Open `/?super` or `/?super=true` to add the 100-boat option. This URL is a feature switch, not an authentication bypass: sign-in and search limits still apply. Larger fleets launch gradually and share the provider queue. The numbered dispatch dock shows real worker phases and sandbox cleanup; select a berth to filter the radio, or select it again / choose “Show all boats” to clear that filter.
+Normal search offers 3, 5, 10 or 25 Boat seekers (default 3). An optional DoorDash retail scout is separate. Open `/?super` or `/?super=true` to add the 50- and 100-boat options. This URL is a feature switch, not an authentication bypass: sign-in and search limits still apply. Larger fleets launch gradually and share the provider queue. The numbered dispatch dock shows real worker phases and sandbox cleanup; select a berth to filter the radio, or select it again / choose “Show all boats” to clear that filter.
