@@ -988,7 +988,7 @@ export function Workspace({
                     disabled={busy}
                     onChange={(e) => setBoatCount(Number(e.target.value))}
                   >
-                    {Array.from({ length: 50 }, (_, i) => i + 1).map((n) => (
+                    {[3, 5, 10, 25, 50].map((n) => (
                       <option key={n} value={n}>
                         {n} {n === 1 ? "boat" : "boats"}
                       </option>

@@ -1,6 +1,6 @@
 # Fleet pilots (10, 25 or 100 seekers)
 
-The opt-in `scripts/ten-seeker-pilot.ts` starts ten real Boat.dev sandboxes by default, or 25 with `PILOT_SEEKERS=25` against ten coastal/lake searches. It uses the regular evidence, extraction, geocoding, deduplication, persistence and cleanup path. The CLI pilot uses fixed regional queries. The public search now defaults to three workers and supports a 1–50 selector, plus exactly 100 when super mode is enabled in the URL. Its AI planner creates the selected number of angles; an optional DoorDash scout is separate.
+The opt-in `scripts/ten-seeker-pilot.ts` starts ten real Boat.dev sandboxes by default, or 25 with `PILOT_SEEKERS=25` against ten coastal/lake searches. It uses the regular evidence, extraction, geocoding, deduplication, persistence and cleanup path. The CLI pilot uses fixed regional queries. The public search now defaults to three workers and offers 3, 5, 10, 25 or 50 seekers, plus exactly 100 when super mode is enabled in the URL. Its AI planner creates the selected number of angles; an optional DoorDash scout is separate.
 
 Run with your own server environment and an existing search ID belonging to the account that should receive the saved result:
 

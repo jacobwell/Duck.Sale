@@ -44,9 +44,13 @@ export async function POST(request: Request) {
   const input = parsed.data;
   const superValue = new URL(request.url).searchParams.get("super");
   const superMode = superValue === "" || superValue === "true";
-  if ((input.boatCount ?? 3) > 50 && (!superMode || input.boatCount !== 100))
+  if (
+    ![3, 5, 10, 25, 50, ...(superMode ? [100] : [])].includes(
+      input.boatCount ?? 3,
+    )
+  )
     return Response.json(
-      { error: "Choose 1–50 boats, or enable super mode for exactly 100." },
+      { error: "Choose 3, 5, 10, 25 or 50 boats. Super mode also allows 100." },
       { status: 400 },
     );
   const { data: id, error } = await adminDb().rpc("admit_search", {
