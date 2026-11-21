@@ -17,7 +17,7 @@ export default async function Home({
               location:
                 typeof p.location === "string"
                   ? p.location.slice(0, 120)
-                  : "Anywhere",
+                  : "United States",
               budget:
                 Number.isFinite(budget) && budget > 0
                   ? String(Math.min(budget, 1000000000))

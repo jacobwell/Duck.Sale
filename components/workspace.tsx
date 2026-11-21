@@ -126,7 +126,7 @@ export function Workspace({
       initialSearch?.query || categories[0].options[0].query,
     ),
     [location, setLocation] = useState(
-      initialSearch?.location || "San Francisco Bay",
+      initialSearch?.location || "United States",
     ),
     [budget, setBudget] = useState(initialSearch?.budget ?? "30000"),
     [intent, setIntent] = useState("buy");
@@ -211,7 +211,6 @@ export function Workspace({
     );
     setIntent(id === "boats" && index === 5 ? "rent" : "buy");
     if (id !== categoryId) {
-      setLocation(id === "boats" ? "San Francisco Bay" : "Anywhere");
       setBudget("");
     }
   }
@@ -283,7 +282,7 @@ export function Workspace({
           setFeedbackTarget(null);
           setNotice("");
           setQuery("");
-          setLocation("Anywhere");
+          setLocation("United States");
           setBudget("");
           setIntent("buy");
           setView("discover");
@@ -1019,7 +1018,7 @@ export function Workspace({
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       aria-label="Search location"
-                      placeholder="Anywhere"
+                      placeholder="United States"
                       maxLength={120}
                       disabled={busy}
                     />

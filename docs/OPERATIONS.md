@@ -50,7 +50,7 @@ node --env-file=.env.local scripts/migrate.mjs
 
 The migration runner uses the supplied Supabase public root CA with certificate and hostname validation. It records applied migrations and wraps schema changes in a transaction.
 
-Tables: `search_runs`, `source_evidence`, `generations`, `saved_listings`. All have RLS; the authenticated browser can only read its own searches/evidence/generations and manage its own saved items. Paid work is admitted by a server-only SQL function with transactional limits: five searches per user per hour, one active search per user, and 30 searches across the fleet per hour.
+Tables: `search_runs`, `source_evidence`, `generations`, `saved_listings`. All have RLS; the authenticated browser can only read its own searches/evidence/generations and manage its own saved items. Paid work is admitted by a server-only SQL function with transactional limits: one active search per user and 30 searches across the fleet per hour. There is no per-user hourly search quota.
 
 Supabase Auth's Site URL is configured for `https://duck.sale`, with that domain and `http://localhost:3000/**` allowed for redirects. Email authentication is enabled. For public signups beyond Supabase's default email restrictions, configure a mail provider in Supabase Auth. The app never sends outreach; email links are only requested by users signing in.
 

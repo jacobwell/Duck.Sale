@@ -311,7 +311,7 @@ Already using the original checkout? Its `.vercel` directory is ignored. A clone
 - **Live:** parallel discovery, source receipts, city pins, continuation, account history, shortlist, and optional labeled illustrations.
 - **Private:** separate approved query/private brief, confidential gateway verification, VPN worker checks, bounded cleanup, and no saved private search content.
 - **Without keys:** the UI and recorded 20-boat replay. This is not a free live-search engine.
-- **Limits:** five searches per account per hour, one active search per account, and 30 across the fleet per hour. Private voyages additionally serialize access to the dedicated VPN identity. Optional NYTE query preparation has a separate allowance of five drafts/account/hour and 30 fleet-wide/hour, with one active draft per account.
+- **Limits:** one active search per account and 30 across the fleet per hour; no per-account hourly search quota. Private voyages additionally serialize access to the dedicated VPN identity. Optional NYTE query preparation has a separate allowance of five drafts/account/hour and 30 fleet-wide/hour, with one active draft per account.
 - **Coverage:** searches can be partial or empty. Prices, seller identity, inventory, condition, and shipping still require confirmation with the source.
 - **Persistence:** standard mode stores searches and evidence; Private Mode retains only admission metadata. “Estimated cost unavailable” is not “free.”
 - **Not implemented:** seller outreach, buying, price alerts, authenticated marketplace crawling, or a promise of exhaustive coverage.
